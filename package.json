@@ -10,6 +10,8 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "at-ui": "^1.3.3",
+    "at-ui-style": "^1.5.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
