@@ -12,10 +12,9 @@ export default {
 </script>
 
 <style>
-  body {
-    margin: 0;
-  }
-  #app {
-
-  }
+    body {
+        margin: 0;
+        overflow-y: hidden;
+        overflow-x: hidden;
+     }
 </style>
