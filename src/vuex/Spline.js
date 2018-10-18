@@ -5,11 +5,6 @@ export default {
         fx: [],
         h: [],
 
-        printx: {
-            x: [],
-            y: []
-        },
-
         n: 0,
 
         coeffC: [],
@@ -84,26 +79,26 @@ export default {
                 state.d.push((state.c[i + 1] - state.c[i]) / (3 * state.h[i]));
             }
         },
-        pointSpline: function (state, params)
-        {
-            var i = 0;
-            var ost = true;
-
-            var x = params.x;
-
-            while (ost)
-            {
-                if ((i<state.x.length-1)&&(state.x[i] <= x) && (state.x[i+1] >x))
-                {
-                    ost = false;
-                } else {
-                    i++;
-                }
-            }
-
-            var xt = x - state.x[i];
-            return state.a[i] + state.b[i] * xt + state.c[i] * xt * xt + state.d[i] * xt * xt * xt;
-        },
+        // pointSpline: function (state, params)
+        // {
+        //     var i = 0;
+        //     var ost = true;
+        //
+        //     var x = params.x;
+        //
+        //     while (ost)
+        //     {
+        //         if ((i<state.x.length-1)&&(state.x[i] <= x) && (state.x[i+1] >x))
+        //         {
+        //             ost = false;
+        //         } else {
+        //             i++;
+        //         }
+        //     }
+        //
+        //     var xt = x - state.x[i];
+        //     return state.a[i] + state.b[i] * xt + state.c[i] * xt * xt + state.d[i] * xt * xt * xt;
+        // },
 
 },
     getters: {
@@ -114,9 +109,9 @@ export default {
             var i = 0;
             var ost = true;
 
-            while (ost)
+            while ((ost)&&(i>=0)&& (i < state.x.length - 1))
             {
-                if ((i<state.x.length-1)&&(state.x[i] <= x) && (state.x[i+1] >x))
+                if ( ( state.x[i] <= x ) && ( state.x[i+1] > x ) )
                 {
                     ost = false;
                 } else {
@@ -125,7 +120,13 @@ export default {
             }
 
             var xt = x - state.x[i];
-            return state.a[i] + state.b[i] * xt + state.c[i] * xt * xt + state.d[i] * xt * xt * xt;
+            if (i < state.b.length)
+            {
+                return state.a[i] + state.b[i] * xt + state.c[i] * xt * xt + state.d[i] * xt * xt * xt;
+            } else
+            {
+                return 0;
+            }
         },
         getStart: (state) => state.x[0],
         getFinish: (state) => state.x[state.x.length-1],

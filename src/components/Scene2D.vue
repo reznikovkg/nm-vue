@@ -3,7 +3,7 @@
         <div class="scena-2d">
             <canvas id="canvas-scene" :width="canvasWidth" :height="canvasHeight"
                 @wheel="wheelSize"
-                @mousedown="cameraDragStart"
+                @mousedown="canvasMouseDown"
                 @mousemove="cameraDrag"
                 @mouseup="cameraDragStop"
             ></canvas>
@@ -18,6 +18,18 @@
                 <h4>CG-VUE</h4>
             </div>
             <at-tabs>
+                <at-tab-pane label="Nav" name="nav">
+                    <div class="tab-pad">
+                        <div class="row">
+                            <at-button
+                                    v-for="item in nav"
+                                    :icon="item.icon"
+                                    :class="{ 'at-btn--primary': item.status}"
+                                    @click="choiseNav(item.title)"
+                                    circle></at-button>
+                        </div>
+                    </div>
+                </at-tab-pane>
                 <at-tab-pane label="Grid" name="grid">
                     <div class="tab-pad">
                         <div class="row no-gutter">
@@ -34,7 +46,6 @@
                         <p>Size serifs: <i @click="grid.serifsSize--" class="icon icon-minus"></i> {{ grid.serifsSize }} <i @click="grid.serifsSize++" class="icon icon-plus"></i></p>
                         <at-slider v-model="grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>
                     </div>
-
                 </at-tab-pane>
                 <at-tab-pane label="Plot" name="plot">
                     <div class="tab-pad">
@@ -42,7 +53,7 @@
                         <at-checkbox v-model="plot.spline" label="Shenzhen">Spline</at-checkbox>
                         <at-button type="primary" @click="setSpline">Update spline</at-button>
 
-
+                        <p>{{ points }}</p>
                     </div>
                 </at-tab-pane>
             </at-tabs>
@@ -56,6 +67,18 @@
         name: "Scena2D",
         data () {
             return {
+                nav: {
+                    moveCenter: {
+                        status: true,
+                        title: 'moveCenter',
+                        icon: 'icon-move'
+                    },
+                    addPoint: {
+                        status: false,
+                        title: 'addPoint',
+                        icon: 'icon-plus-circle'
+                    },
+                },
                 canvasWidth: document.body.clientWidth,
                 canvasHeight: document.body.clientHeight,
 
@@ -85,10 +108,17 @@
                 },
                 plot: {
                     fun: true,
-                    spline: false
+                    spline: false,
+                    points: true
                 },
                 spline: {
-                    isActive: false
+                    isActive: false,
+                    points: []
+                },
+                points: {
+                    x: [1,2,3,4],
+                    fx: [1,0,1,0],
+                    h: [1,1,1]
                 }
             }
         },
@@ -103,12 +133,42 @@
 
         },
         methods: {
+            choiseNav: function(title){
+                var nav = this.nav;
+                for (var item in nav) {
+                    console.log(item);
+                    if (this.nav[`${item}`].title === title) {
+                        this.nav[`${item}`].status = true;
+                    } else {
+                        this.nav[`${item}`].status = false
+                    }
+                }
+
+            },
+            canvasMouseDown: function (e) {
+                if (this.nav.moveCenter.status) {
+                    this.cameraDragStart(e);
+                }
+
+                if (this.nav.addPoint.status) {
+                    this.addPoint(e);
+                }
+            },
+            addPoint: function (e) {
+                this.points.x.push(this.ScreenToWorldX(e.clientX));
+                this.points.fx.push(this.ScreenToWorldY(e.clientY));
+
+                this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
+
+
+            },
 
             reBuild: function () {
                 this.clear();
                 this.axisPlot();
                 this.plotFun();
                 this.plotSpline();
+                this.plotPoints();
             },
             /**
              * Start grag
@@ -126,9 +186,11 @@
              * @param e
              */
             cameraDrag: function (e) {
-                if (this.camera.drag.status) {
-                    this.camera.center.x = e.clientX - this.camera.drag.x;
-                    this.camera.center.y = e.clientY - this.camera.drag.y;
+                if (this.nav.moveCenter.status) {
+                    if (this.camera.drag.status) {
+                        this.camera.center.x = e.clientX - this.camera.drag.x;
+                        this.camera.center.y = e.clientY - this.camera.drag.y;
+                    }
                 }
             },
             /**
@@ -389,30 +451,19 @@
             },
 
             setSpline: function () {
-                if (this.plot.spline) {
-                    this.$store.commit('tMatrix/setABCF', {
-                        b:[-1,4,12,4],
-                        a:[0,3,2,1],
-                        c:[2,6,4,0],
-                        f:[12,8,2,3]
-                    });
-                    this.$store.commit('tMatrix/solveX');
-
-                    this.$store.commit('setXFX', {
-                        x: [1,2,3,4],
-                        fx: [1,0,1,0],
-                        h: [1,1,1,1]
-                    });
-                    this.$store.commit('setCoeffC');
+                this.$store.commit('setXFX', {
+                    x: this.points.x,
+                    fx: this.points.fx,
+                    h: this.points.h
+                });
+                this.$store.commit('setCoeffC');
 
 
 
-                    this.$store.commit('tMatrix/setABCF', this.$store.getters['getCoeffC']);
+                this.$store.commit('tMatrix/setABCF', this.$store.getters['getCoeffC']);
 
-                    this.$store.commit('tMatrix/solveX');
-                    this.$store.commit('setCoeffSpline', this.$store.getters['tMatrix/getX']);
-                }
-
+                this.$store.commit('tMatrix/solveX');
+                this.$store.commit('setCoeffSpline', this.$store.getters['tMatrix/getX']);
                 this.spline.isActive = true;
             },
             plotSpline: function (x) {
@@ -440,9 +491,9 @@
                     this.moveTo(ctx, start,this.mainSpline(start));
                     for (var i = start; i < finish; i += 0.01)
                     {
-
                         this.lineTo(ctx, i, this.mainSpline(i));
                     }
+
 
                     ctx.stroke();
                 }
@@ -450,6 +501,45 @@
             mainSpline: function (x) {
                 return this.$store.getters.pointSpline(x);
             },
+
+
+
+            plotPoints: function () {
+                if (!this.plot.points) {
+                    return;
+                }
+
+                var ctx = this.canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.strokeStyle = '#107e00';
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 3;
+
+
+                var s = Math.abs(
+                    this.ScreenToWorldY(0) -
+                    this.ScreenToWorldY(this.grid.serifsSize)
+                );
+
+                for (var i = 0; i < this.points.x.length; i++) {
+
+                    this.moveTo(ctx,this.points.x[i]+(s/2), this.points.fx[i]-(s/2));
+                    this.lineTo(ctx,this.points.x[i]-(s/2), this.points.fx[i]+(s/2));
+
+
+                    this.moveTo(ctx,this.points.x[i]+(s/2), this.points.fx[i]+(s/2));
+                    this.lineTo(ctx,this.points.x[i]-(s/2), this.points.fx[i]-(s/2));
+
+                }
+
+                ctx.stroke();
+            },
+
+
+
+
+
             clickOpenNav: function () {
                 this.openNav = !this.openNav;
             },
@@ -473,6 +563,12 @@
                 },
                 deep: true
             },
+            points: {
+                handler: function () {
+                    this.reBuild();
+                },
+                deep: true
+            }
         }
     }
 </script>
