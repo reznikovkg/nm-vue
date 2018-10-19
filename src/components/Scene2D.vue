@@ -23,6 +23,7 @@
                         <div class="row">
                             <at-button
                                     v-for="item in nav"
+                                    :key="item.title"
                                     :icon="item.icon"
                                     :class="{ 'at-btn--primary': item.status}"
                                     @click="choiseNav(item.title)"
@@ -49,11 +50,45 @@
                 </at-tab-pane>
                 <at-tab-pane label="Plot" name="plot">
                     <div class="tab-pad">
-                        <at-checkbox v-model="plot.fun" label="Shenzhen">Function</at-checkbox>
-                        <at-checkbox v-model="plot.spline" label="Shenzhen">Spline</at-checkbox>
-                        <at-button type="primary" @click="setSpline">Update spline</at-button>
-
-                        <p>{{ points }}</p>
+                        <h3>Function</h3>
+                        <div class="row no-gutter">
+                            <at-checkbox v-model="plot.fun" label="Shenzhen">Show</at-checkbox>
+                        </div>
+                        <h3>Spline</h3>
+                        <div class="row no-gutter">
+                            <at-checkbox v-model="plot.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
+                        </div>
+                        <div class="row no-gutter">
+                            <at-button type="primary" @click="setSpline">Update spline</at-button>
+                        </div>
+                        <h3>Newton</h3>
+                        <div class="row no-gutter">
+                            <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom">Show</at-checkbox>
+                        </div>
+                        <div class="row no-gutter">
+                            <at-button type="primary" @click="setPNewton">Update polynom</at-button>
+                        </div>
+                        <h3>Points</h3>
+                        <div class="row no-gutter">
+                            <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
+                        </div>
+                        <div class="row no-gutter">
+                            <at-button type="primary" @click="clearPoints">Remove points</at-button>
+                        </div>
+                        <div class="row">
+                            <div class="row-fix-width">
+                                <p>x</p>
+                                <p v-for="item in points.x">{{ item }}</p>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>fx</p>
+                                <p v-for="item in points.fx">{{ item }}</p>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>h</p>
+                                <p v-for="item in points.h">{{ item }}</p>
+                            </div>
+                        </div>
                     </div>
                 </at-tab-pane>
             </at-tabs>
@@ -109,17 +144,18 @@
                 plot: {
                     fun: true,
                     spline: false,
-                    points: true
+                    points: true,
+                    polynom: false
                 },
                 spline: {
-                    isActive: false,
-                    points: []
+                    isActive: false
                 },
                 points: {
                     x: [1,2,3,4],
                     fx: [1,0,1,0],
                     h: [1,1,1]
-                }
+                },
+                polynom: null
             }
         },
         computed: {
@@ -136,7 +172,6 @@
             choiseNav: function(title){
                 var nav = this.nav;
                 for (var item in nav) {
-                    console.log(item);
                     if (this.nav[`${item}`].title === title) {
                         this.nav[`${item}`].status = true;
                     } else {
@@ -158,9 +193,9 @@
                 this.points.x.push(this.ScreenToWorldX(e.clientX));
                 this.points.fx.push(this.ScreenToWorldY(e.clientY));
 
-                this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
-
-
+                if (this.points.x.length > 1) {
+                    this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
+                }
             },
 
             reBuild: function () {
@@ -169,6 +204,7 @@
                 this.plotFun();
                 this.plotSpline();
                 this.plotPoints();
+                this.plotPNewton();
             },
             /**
              * Start grag
@@ -451,20 +487,24 @@
             },
 
             setSpline: function () {
-                this.$store.commit('setXFX', {
+                if (this.points.x.length < 3) {
+                    return;
+                }
+                this.$store.commit('spline/setXFX', {
                     x: this.points.x,
                     fx: this.points.fx,
                     h: this.points.h
                 });
-                this.$store.commit('setCoeffC');
+                this.$store.commit('spline/setCoeffC');
 
 
 
-                this.$store.commit('tMatrix/setABCF', this.$store.getters['getCoeffC']);
+                this.$store.commit('tMatrix/setABCF', this.$store.getters['spline/getCoeffC']);
 
                 this.$store.commit('tMatrix/solveX');
-                this.$store.commit('setCoeffSpline', this.$store.getters['tMatrix/getX']);
+                this.$store.commit('spline/setCoeffSpline', this.$store.getters['tMatrix/getX']);
                 this.spline.isActive = true;
+
             },
             plotSpline: function (x) {
                 if (!this.spline.isActive) {
@@ -478,8 +518,8 @@
                     ctx.setLineDash([]);
                     ctx.lineWidth = 2;
 
-                    var start = this.$store.getters['getStart'];
-                    var finish = this.$store.getters['getFinish'];
+                    var start = this.$store.getters['spline/getStart'];
+                    var finish = this.$store.getters['spline/getFinish'];
 
                     if (this.ScreenToWorldX(0) > start) {
                         start = this.ScreenToWorldX(0);
@@ -494,16 +534,23 @@
                         this.lineTo(ctx, i, this.mainSpline(i));
                     }
 
-
                     ctx.stroke();
                 }
             },
             mainSpline: function (x) {
-                return this.$store.getters.pointSpline(x);
+                return this.$store.getters['spline/pointSpline'](x);
             },
 
 
+            clearPoints: function () {
+                this.plot.spline = false;
+                this.spline.isActive = false;
 
+                this.points.x = [];
+                this.points.fx = [];
+                this.points.h = [];
+
+            },
             plotPoints: function () {
                 if (!this.plot.points) {
                     return;
@@ -538,6 +585,52 @@
 
 
 
+
+
+            setPNewton: function () {
+                if (this.points.x.length < 3) {
+                    return;
+                }
+
+                this.polynom = new pNewton([this.points.x, this.points.fx]);
+
+
+            },
+
+            plotPNewton: function (x) {
+                if (!this.polynom) {
+                    return;
+                }
+
+                if (!this.plot.polynom) {
+                    return
+                }
+                var ctx = this.canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.strokeStyle = '#aa7000';
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 2;
+
+                var start = this.points.x[0];
+                var finish = this.points.x[this.points.x.length-1];
+
+                if (this.ScreenToWorldX(0) > start) {
+                    start = this.ScreenToWorldX(0);
+                }
+                if (this.ScreenToWorldX(this.canvasWidth) < finish) {
+                    finish = this.ScreenToWorldX(this.canvasWidth);
+                }
+
+                this.moveTo(ctx, start,this.polynom.pointPolynom(start));
+                for (var i = start; i < finish; i += 0.01)
+                {
+                    this.lineTo(ctx, i, this.polynom.pointPolynom(i));
+                }
+
+                ctx.stroke();
+
+            },
 
 
             clickOpenNav: function () {
@@ -623,6 +716,17 @@
         }
         & .tab-pad {
             padding: 0 10px;
+            & h3 {
+                margin-top: 10px;
+            }
+
+            & .row {
+                & .row-fix-width {
+                    width: 50px;
+                    overflow: hidden;
+                    margin-right: 20px;
+                }
+            }
         }
     }
 </style>

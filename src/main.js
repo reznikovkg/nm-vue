@@ -12,12 +12,15 @@ Vue.use(AtComponents);
 
 
 import Spline from './vuex/Spline'
+//import pNewton from './vuex/pNewton'
 import tMatrix from './vuex/tMatrix'
+
 
 const store = new Vuex.Store({
     modules: {
         spline: Spline,
-        tMatrix: tMatrix
+        tMatrix: tMatrix,
+        //pNewton: pNewton
     }
 });
 

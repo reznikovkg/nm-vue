@@ -1,5 +1,6 @@
 
 export default {
+    namespaced: true,
     state: {
         x: [],
         fx: [],
@@ -56,8 +57,12 @@ export default {
         {
             var CC = params.x;
 
-            state.c.push(CC[0] - 0 / 3);
+            state.a = [];
+            state.b = [];
+            state.c = [];
+            state.d = [];
 
+            state.c.push(CC[0] - 0 / 3);
 
             for (var i = 0; i < state.n - 1; i++)
             {
@@ -65,7 +70,6 @@ export default {
             }
 
             state.a = state.fx;
-
 
             state.d.push(0 / 6);
             state.c.push(0 / 2);
