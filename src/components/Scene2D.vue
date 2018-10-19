@@ -4,8 +4,8 @@
             <canvas id="canvas-scene" :width="canvasWidth" :height="canvasHeight"
                 @wheel="wheelSize"
                 @mousedown="canvasMouseDown"
-                @mousemove="cameraDrag"
-                @mouseup="cameraDragStop"
+                @mousemove="canvasMouseDrag"
+                @mouseup="canvasMouseUp"
             ></canvas>
         </div>
 
@@ -63,7 +63,7 @@
                         </div>
                         <h3>Newton</h3>
                         <div class="row no-gutter">
-                            <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom">Show</at-checkbox>
+                            <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
                         </div>
                         <div class="row no-gutter">
                             <at-button type="primary" @click="setPNewton">Update polynom</at-button>
@@ -72,6 +72,9 @@
                         <div class="row no-gutter">
                             <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
                         </div>
+
+                        <p>Step points: {{ points.minStep }}</p>
+                        <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
                         <div class="row no-gutter">
                             <at-button type="primary" @click="clearPoints">Remove points</at-button>
                         </div>
@@ -113,6 +116,11 @@
                         title: 'addPoint',
                         icon: 'icon-plus-circle'
                     },
+                    addComboPoints: {
+                        status: false,
+                        title: 'addComboPoints',
+                        icon: 'icon-trending-up'
+                    },
                 },
                 canvasWidth: document.body.clientWidth,
                 canvasHeight: document.body.clientHeight,
@@ -142,7 +150,7 @@
 
                 },
                 plot: {
-                    fun: true,
+                    fun: false,
                     spline: false,
                     points: true,
                     polynom: false
@@ -151,11 +159,16 @@
                     isActive: false
                 },
                 points: {
+                    combo: false,
+                    minStep: 1,
                     x: [1,2,3,4],
                     fx: [1,0,1,0],
                     h: [1,1,1]
                 },
-                polynom: null
+                polynom: {
+                    isActive: false,
+                    polynom: null
+                }
             }
         },
         computed: {
@@ -188,13 +201,67 @@
                 if (this.nav.addPoint.status) {
                     this.addPoint(e);
                 }
+
+                if (this.nav.addComboPoints.status) {
+                    this.addComboPointsStart(e);
+                }
             },
-            addPoint: function (e) {
+            canvasMouseDrag: function (e) {
+                if (this.nav.moveCenter.status) {
+                    this.cameraDrag(e);
+                }
+
+                if (this.nav.addComboPoints.status) {
+                    this.addComboPointsDrag(e);
+                }
+            },
+            canvasMouseUp: function (e) {
+                if (this.nav.moveCenter.status) {
+                    this.cameraDragStop();
+                }
+
+                if (this.nav.addComboPoints.status) {
+                    this.addComboPointsStop();
+                }
+            },
+            addComboPointsStart: function (e) {
+                this.points.x = [];
+                this.points.fx = [];
+                this.points.h = [];
+
+                this.points.combo = true;
+
+                this.spline.isActive = false;
+                this.polynom.isActive = false;
+                this.plot.spline = false;
+                this.plot.polynom = false;
+
+
                 this.points.x.push(this.ScreenToWorldX(e.clientX));
                 this.points.fx.push(this.ScreenToWorldY(e.clientY));
+            },
+            addComboPointsDrag: function (e) {
+                if (!this.points.combo) {
+                    return;
+                }
+                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.ScreenToWorldX(e.clientX) ) {
+                    return;
+                }
 
-                if (this.points.x.length > 1) {
-                    this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
+                this.points.x.push(this.ScreenToWorldX(e.clientX));
+                this.points.fx.push(this.ScreenToWorldY(e.clientY));
+                this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
+
+            },
+            addComboPointsStop: function () {
+                this.points.combo = false;
+
+                if ((this.spline.isActive)&&(this.plot.spline)) {
+                    this.setSpline();
+                }
+
+                if ((this.polynom.isActive)&&(this.plot.polynom)) {
+                    this.setPNewton();
                 }
             },
 
@@ -486,6 +553,8 @@
                 return Math.sin(x);
             },
 
+
+
             setSpline: function () {
                 if (this.points.x.length < 3) {
                     return;
@@ -551,6 +620,25 @@
                 this.points.h = [];
 
             },
+            addPoint: function (e) {
+                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.ScreenToWorldX(e.clientX) ) {
+                    return;
+                }
+                this.points.x.push(this.ScreenToWorldX(e.clientX));
+                this.points.fx.push(this.ScreenToWorldY(e.clientY));
+
+                if (this.points.x.length > 1) {
+                    this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
+                }
+
+                if ((this.spline.isActive)&&(this.plot.spline)) {
+                    this.setSpline();
+                }
+
+                if ((this.polynom.isActive)&&(this.plot.polynom)) {
+                    this.setPNewton();
+                }
+            },
             plotPoints: function () {
                 if (!this.plot.points) {
                     return;
@@ -592,13 +680,13 @@
                     return;
                 }
 
-                this.polynom = new pNewton([this.points.x, this.points.fx]);
-
+                this.polynom.polynom = new pNewton([this.points.x, this.points.fx]);
+                this.polynom.isActive = true;
 
             },
 
-            plotPNewton: function (x) {
-                if (!this.polynom) {
+            plotPNewton: function () {
+                if (!this.polynom.isActive) {
                     return;
                 }
 
@@ -622,15 +710,20 @@
                     finish = this.ScreenToWorldX(this.canvasWidth);
                 }
 
-                this.moveTo(ctx, start,this.polynom.pointPolynom(start));
+                this.moveTo(ctx, start,this.polynom.polynom.pointPolynom(start));
                 for (var i = start; i < finish; i += 0.01)
                 {
-                    this.lineTo(ctx, i, this.polynom.pointPolynom(i));
+                    this.lineTo(ctx, i, this.polynom.polynom.pointPolynom(i));
                 }
 
                 ctx.stroke();
 
             },
+
+
+
+
+
 
 
             clickOpenNav: function () {
