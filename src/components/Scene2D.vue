@@ -1,7 +1,7 @@
 <template>
     <div class="component-scene-2d">
         <div class="scena-2d">
-            <canvas id="canvas-scene" :width="canvasWidth" :height="canvasHeight"
+            <canvas id="canvas-scene" :width="camera2D.field.width" :height="camera2D.field.height"
                 @wheel="wheelSize"
                 @mousedown="canvasMouseDown"
                 @mousemove="canvasMouseDrag"
@@ -34,18 +34,18 @@
                 <at-tab-pane label="Grid" name="grid">
                     <div class="tab-pad">
                         <div class="row no-gutter">
-                            <at-checkbox v-model="grid.axiss" label="Shenzhen">Axis</at-checkbox>
+                            <at-checkbox v-model="camera2D.grid.axiss" label="Shenzhen">Axis</at-checkbox>
                         </div>
                         <div class="row no-gutter">
-                            <at-checkbox v-model="grid.grid" label="Shenzhen">Grid</at-checkbox>
+                            <at-checkbox v-model="camera2D.grid.grid" label="Shenzhen">Grid</at-checkbox>
                         </div>
                         <div class="row no-gutter">
-                            <at-checkbox v-model="grid.serifs" label="Shenzhen">Serifs</at-checkbox>
+                            <at-checkbox v-model="camera2D.grid.serifs" label="Shenzhen">Serifs</at-checkbox>
                         </div>
-                        <p>Step serifs: <i @click="grid.serifsStep--" class="icon icon-minus"></i> {{ grid.serifsStep }} <i @click="grid.serifsStep++" class="icon icon-plus"></i></p>
-                        <at-slider v-model="grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>
-                        <p>Size serifs: <i @click="grid.serifsSize--" class="icon icon-minus"></i> {{ grid.serifsSize }} <i @click="grid.serifsSize++" class="icon icon-plus"></i></p>
-                        <at-slider v-model="grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>
+                        <p>Step serifs: <i @click="camera2D.grid.serifsStep--" class="icon icon-minus"></i> {{ camera2D.grid.serifsStep }} <i @click="camera2D.grid.serifsStep++" class="icon icon-plus"></i></p>
+                        <at-slider v-model="camera2D.grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>
+                        <p>Size serifs: <i @click="camera2D.grid.serifsSize--" class="icon icon-minus"></i> {{ camera2D.grid.serifsSize }} <i @click="camera2D.grid.serifsSize++" class="icon icon-plus"></i></p>
+                        <at-slider v-model="camera2D.grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>
                     </div>
                 </at-tab-pane>
                 <at-tab-pane label="Plot" name="plot">
@@ -105,6 +105,13 @@
         name: "Scena2D",
         data () {
             return {
+                camera2D: {
+                    field: {
+                        width: 0,
+                        height: 0
+                    },
+                    wheelSize(){}
+                },
                 nav: {
                     moveCenter: {
                         status: true,
@@ -122,33 +129,8 @@
                         icon: 'icon-trending-up'
                     },
                 },
-                canvasWidth: document.body.clientWidth,
-                canvasHeight: document.body.clientHeight,
-
                 openNav: false,
-                camera: {
-                    drag: {
-                        status: false,
-                        x: null,
-                        y: null
-                    },
-                    center: {
-                        x: document.body.clientWidth/2,
-                        y: document.body.clientHeight/2
-                    },
-                    mas: {
-                        px: 50,
-                        py: 50
-                    }
-                },
-                grid: {
-                    axiss: true,
-                    grid: true,
-                    serifs: true,
-                    serifsStep: 10.0,
-                    serifsSize: 30
 
-                },
                 plot: {
                     fun: false,
                     spline: false,
@@ -156,7 +138,8 @@
                     polynom: false
                 },
                 spline: {
-                    isActive: false
+                    isActive: false,
+                    spline: null
                 },
                 points: {
                     combo: false,
@@ -177,6 +160,8 @@
             }
         },
         mounted: function () {
+            this.camera2D = new Camera2D();
+            this.camera2D.setCanvas(this.canvas);
 
             this.reBuild();
 
@@ -193,37 +178,6 @@
                 }
 
             },
-            canvasMouseDown: function (e) {
-                if (this.nav.moveCenter.status) {
-                    this.cameraDragStart(e);
-                }
-
-                if (this.nav.addPoint.status) {
-                    this.addPoint(e);
-                }
-
-                if (this.nav.addComboPoints.status) {
-                    this.addComboPointsStart(e);
-                }
-            },
-            canvasMouseDrag: function (e) {
-                if (this.nav.moveCenter.status) {
-                    this.cameraDrag(e);
-                }
-
-                if (this.nav.addComboPoints.status) {
-                    this.addComboPointsDrag(e);
-                }
-            },
-            canvasMouseUp: function (e) {
-                if (this.nav.moveCenter.status) {
-                    this.cameraDragStop();
-                }
-
-                if (this.nav.addComboPoints.status) {
-                    this.addComboPointsStop();
-                }
-            },
             addComboPointsStart: function (e) {
                 this.points.x = [];
                 this.points.fx = [];
@@ -237,19 +191,19 @@
                 this.plot.polynom = false;
 
 
-                this.points.x.push(this.ScreenToWorldX(e.clientX));
-                this.points.fx.push(this.ScreenToWorldY(e.clientY));
+                this.points.x.push(this.camera2D.ScreenToWorldX(e.clientX));
+                this.points.fx.push(this.camera2D.ScreenToWorldY(e.clientY));
             },
             addComboPointsDrag: function (e) {
                 if (!this.points.combo) {
                     return;
                 }
-                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.ScreenToWorldX(e.clientX) ) {
+                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.camera2D.ScreenToWorldX(e.clientX) ) {
                     return;
                 }
 
-                this.points.x.push(this.ScreenToWorldX(e.clientX));
-                this.points.fx.push(this.ScreenToWorldY(e.clientY));
+                this.points.x.push(this.camera2D.ScreenToWorldX(e.clientX));
+                this.points.fx.push(this.camera2D.ScreenToWorldY(e.clientY));
                 this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
 
             },
@@ -266,109 +220,51 @@
             },
 
             reBuild: function () {
-                this.clear();
-                this.axisPlot();
+                this.camera2D.clear();
+                this.camera2D.axisPlot();
+
                 this.plotFun();
                 this.plotSpline();
                 this.plotPoints();
                 this.plotPNewton();
             },
-            /**
-             * Start grag
-             * Status: done
-             * @param e
-             */
-            cameraDragStart: function (e) {
-                this.camera.drag.status = true;
-                this.camera.drag.x = e.clientX - this.camera.center.x;
-                this.camera.drag.y = e.clientY - this.camera.center.y;
-            },
-            /**
-             * Drag
-             * Status: done
-             * @param e
-             */
-            cameraDrag: function (e) {
+
+
+            canvasMouseDown(e) {
                 if (this.nav.moveCenter.status) {
-                    if (this.camera.drag.status) {
-                        this.camera.center.x = e.clientX - this.camera.drag.x;
-                        this.camera.center.y = e.clientY - this.camera.drag.y;
-                    }
+                    this.camera2D.dragToStart(e);
+                }
+
+                if (this.nav.addPoint.status) {
+                    this.addPoint(e);
+                }
+
+                if (this.nav.addComboPoints.status) {
+                    this.addComboPointsStart(e);
                 }
             },
-            /**
-             * Stop grad
-             * Status: done
-             */
-            cameraDragStop: function () {
-                this.camera.drag.status = false;
+            canvasMouseDrag: function (e) {
+                if (this.nav.moveCenter.status) {
+                    this.camera2D.dragTo(e);
+                }
+
+                if (this.nav.addComboPoints.status) {
+                    this.addComboPointsDrag(e);
+                }
             },
-            /**
-             * Wheel window scene
-             * Status: done
-             */
+            canvasMouseUp: function (e) {
+                if (this.nav.moveCenter.status) {
+                    this.camera2D.dragToStop();
+                }
+
+                if (this.nav.addComboPoints.status) {
+                    this.addComboPointsStop();
+                }
+            },
+
+
             wheelSize: function (e) {
-                var k = 1;
-                if (e.deltaY < 0) { k = 1.1; } else { k = 0.9; }
-
-
-                if ((this.camera.mas.px * k > 0) && (this.camera.mas.py * k > 0)) {
-                    this.camera.mas.px *= k;
-                    this.camera.mas.py *= k;
-
-                    this.camera.center.x -= (k-1)*this.camera.mas.px*this.ScreenToWorldX(e.clientX);
-                    this.camera.center.y += (k-1)*this.camera.mas.py*this.ScreenToWorldY(e.clientY);
-                }
-
-            },
-            /**
-             * Clear scene
-             * Status: done
-             */
-            clear: function () {
-                this.canvas.getContext("2d").clearRect(0,0,this.canvasWidth,this.canvasHeight);
-            },
-            /**
-             * World x coord to screen
-             * Status: done
-             */
-            WorldToScreenX: function (x) {
-                return Math.round((this.camera.center.x + this.camera.mas.px*x));
-            },
-            /**
-             * World y coord to screen
-             * Status: done
-             */
-            WorldToScreenY: function (y) {
-                return Math.round((this.camera.center.y - this.camera.mas.py*y));
-            },
-            /**
-             * Screen x coord to world
-             * Status: done
-             */
-            ScreenToWorldX: function (x) {
-                return (x - this.camera.center.x + 0.5) / this.camera.mas.px;
-            },
-            /**
-             * Screen y coord to world
-             * Status: done
-             */
-            ScreenToWorldY: function (y) {
-                return -( y - this.camera.center.y + 0.5) / this.camera.mas.py;
-            },
-            /**
-             * MoveTo for world coords
-             * Status: done
-             */
-            moveTo: function (t, x, y) {
-                t.moveTo(this.WorldToScreenX(x), this.WorldToScreenY(y));
-            },
-            /**
-             * LineTo for world coords
-             * Status: done
-             */
-            lineTo: function (t, x, y) {
-                t.lineTo(this.WorldToScreenX(x), this.WorldToScreenY(y));
+                this.camera2D.wheelSize(e);
             },
 
 
@@ -378,139 +274,6 @@
 
 
 
-
-
-
-
-            /**
-             * Plot axis on scene
-             * Status: process
-             */
-            axisPlot: function () {
-                var ctx = this.canvas.getContext("2d");
-
-                /**
-                 * Grid grid
-                 */
-                if (this.grid.grid) {
-                    ctx.beginPath();
-                    ctx.font = 'italic 18pt Calibri';
-                    ctx.strokeStyle = '#979797';
-                    ctx.lineWidth = 1;
-                    ctx.setLineDash([10, 15]);
-                    for (var i = 30; i < this.canvasHeight; i+= 100) {
-                        ctx.fillText(Math.ceil(this.ScreenToWorldY(i)*1000)/1000, 0, i);
-                        ctx.moveTo(0, i);
-                        ctx.lineTo(this.canvasWidth, i);
-                    }
-                    for (var i = 100; i < this.canvasWidth; i+= 100) {
-                        ctx.fillText(Math.ceil(this.ScreenToWorldX(i)*1000)/1000, i, this.canvasHeight);
-                        ctx.moveTo(i, 0);
-                        ctx.lineTo(i, this.canvasHeight);
-                    }
-                    ctx.stroke();
-                }
-
-
-                /**
-                 * Grid axiss
-                 */
-                if (this.grid.axiss) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = '#000000';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([]);
-
-                    ctx.moveTo(this.camera.center.x, 0);
-                    ctx.lineTo(this.camera.center.x, this.canvasHeight);
-
-                    ctx.moveTo(0, this.camera.center.y);
-                    ctx.lineTo(this.canvasWidth, this.camera.center.y);
-
-                    ctx.stroke();
-                }
-
-
-                if (this.grid.serifs) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = '#000000';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([]);
-
-                    var start = 0;
-                    if (!this.grid.serifsStep){
-                        return;
-                    }
-
-                    var s = Math.abs(
-                        this.ScreenToWorldY(0) -
-                        this.ScreenToWorldY(this.grid.serifsSize)
-                    );
-
-                    /**
-                     * To right & to left
-                     */
-                    if ((this.camera.center.y > 0) && (this.camera.center.y < this.canvasHeight)) {
-
-                        var finish = this.ScreenToWorldX(this.canvasWidth);
-
-                        for (var i = start; i < finish; i+=this.grid.serifsStep) {
-                            this.moveTo(ctx, i+this.grid.serifsStep/2,(s/2));
-                            this.lineTo(ctx, i+this.grid.serifsStep/2,-(s/2));
-                            ctx.fillText(i+this.grid.serifsStep/2, this.WorldToScreenX(i+this.grid.serifsStep/2), this.WorldToScreenY(s/2));
-
-                            this.moveTo(ctx, i+this.grid.serifsStep,s);
-                            this.lineTo(ctx, i+this.grid.serifsStep,-s);
-                            ctx.fillText(i+this.grid.serifsStep, this.WorldToScreenX(i+this.grid.serifsStep), this.WorldToScreenY(s));
-                        }
-
-                        finish = this.ScreenToWorldX(0);
-
-                        for (var i = start; i > finish; i-=this.grid.serifsStep) {
-                            this.moveTo(ctx, i-this.grid.serifsStep/2,(s/2));
-                            this.lineTo(ctx, i-this.grid.serifsStep/2,-(s/2));
-                            ctx.fillText(i-this.grid.serifsStep/2, this.WorldToScreenX(i-this.grid.serifsStep/2), this.WorldToScreenY(s/2));
-
-                            this.moveTo(ctx, i-this.grid.serifsStep,s);
-                            this.lineTo(ctx, i-this.grid.serifsStep,-s);
-                            ctx.fillText(i-this.grid.serifsStep, this.WorldToScreenX(i-this.grid.serifsStep), this.WorldToScreenY(s));
-                        }
-                    }
-
-                    /**
-                     * To top & to bot
-                     */
-                    if ((this.camera.center.x > 0) && (this.camera.center.x < this.canvasWidth)) {
-
-                        start = 0;
-                        finish = this.ScreenToWorldY(0);
-
-                        for (var i = start; i < finish; i+=this.grid.serifsStep) {
-                            this.moveTo(ctx, (s/2),i+this.grid.serifsStep/2);
-                            this.lineTo(ctx, -(s/2),i+this.grid.serifsStep/2);
-                            ctx.fillText(i+this.grid.serifsStep/2, this.WorldToScreenX(s/2), this.WorldToScreenY(i+this.grid.serifsStep/2));
-
-                            this.moveTo(ctx, s, i+this.grid.serifsStep);
-                            this.lineTo(ctx, -s, i+this.grid.serifsStep);
-                            ctx.fillText(i+this.grid.serifsStep, this.WorldToScreenX(s), this.WorldToScreenY(i+this.grid.serifsStep));
-                        }
-
-                        finish = this.ScreenToWorldY(this.canvasHeight);
-
-                        for (var i = start; i > finish-this.grid.serifsStep; i-=this.grid.serifsStep) {
-                            this.moveTo(ctx, (s/2),i+this.grid.serifsStep/2);
-                            this.lineTo(ctx, -(s/2),i+this.grid.serifsStep/2);
-                            ctx.fillText(i+this.grid.serifsStep/2, this.WorldToScreenX(s/2), this.WorldToScreenY(i+this.grid.serifsStep/2));
-
-                            this.moveTo(ctx, s, i+this.grid.serifsStep);
-                            this.lineTo(ctx, -s, i+this.grid.serifsStep);
-                            ctx.fillText(i+this.grid.serifsStep, this.WorldToScreenX(s), this.WorldToScreenY(i+this.grid.serifsStep));
-                        }
-                    }
-                    ctx.stroke();
-                }
-
-            },
 
             /**
              * Plot function on scene
@@ -527,23 +290,24 @@
                     var start = 0;
                     var finish = 30;
 
-                    if (this.ScreenToWorldX(0) > start) {
-                        start = this.ScreenToWorldX(0);
+                    if (this.camera2D.ScreenToWorldX(0) > start) {
+                        start = this.camera2D.ScreenToWorldX(0);
                     }
-                    if (this.ScreenToWorldX(this.canvasWidth) < finish) {
-                        finish = this.ScreenToWorldX(this.canvasWidth);
+                    if (this.camera2D.ScreenToWorldX(this.canvasWidth) < finish) {
+                        finish = this.camera2D.ScreenToWorldX(this.canvasWidth);
                     }
 
-                    this.moveTo(ctx, start,this.mainFunction(start));
+                    this.camera2D.moveTo(start,this.mainFunction(start));
                     for (var i = start; i < finish; i += 0.01)
                     {
 
-                        this.lineTo(ctx, i, this.mainFunction(i));
+                        this.camera2D.lineTo(i, this.mainFunction(i));
                     }
 
                     ctx.stroke();
                 }
             },
+
             /**
              * Function
              * @param x
@@ -554,24 +318,27 @@
             },
 
 
-
             setSpline: function () {
                 if (this.points.x.length < 3) {
                     return;
                 }
-                this.$store.commit('spline/setXFX', {
+
+                this.spline.spline = new Spline();
+
+                this.spline.spline.setXFX({
                     x: this.points.x,
                     fx: this.points.fx,
                     h: this.points.h
                 });
-                this.$store.commit('spline/setCoeffC');
+
+                this.spline.spline.setCoeffC();
+
+                var matr = new tMatrix();
+                matr.setABCF(this.spline.spline.getCoeffC());
+                matr.solveX();
 
 
-
-                this.$store.commit('tMatrix/setABCF', this.$store.getters['spline/getCoeffC']);
-
-                this.$store.commit('tMatrix/solveX');
-                this.$store.commit('spline/setCoeffSpline', this.$store.getters['tMatrix/getX']);
+                this.spline.spline.setCoeffSpline(matr.getX());
                 this.spline.isActive = true;
 
             },
@@ -587,33 +354,34 @@
                     ctx.setLineDash([]);
                     ctx.lineWidth = 2;
 
-                    var start = this.$store.getters['spline/getStart'];
-                    var finish = this.$store.getters['spline/getFinish'];
+                    var start = this.spline.spline.getStart();
+                    var finish = this.spline.spline.getFinish();
 
-                    if (this.ScreenToWorldX(0) > start) {
-                        start = this.ScreenToWorldX(0);
+                    if (this.camera2D.ScreenToWorldX(0) > start) {
+                        start = this.camera2D.ScreenToWorldX(0);
                     }
-                    if (this.ScreenToWorldX(this.canvasWidth) < finish) {
-                        finish = this.ScreenToWorldX(this.canvasWidth);
+                    if (this.camera2D.ScreenToWorldX(this.canvasWidth) < finish) {
+                        finish = this.camera2D.ScreenToWorldX(this.canvasWidth);
                     }
 
-                    this.moveTo(ctx, start,this.mainSpline(start));
+                    this.camera2D.moveTo(start,this.mainSpline(start));
                     for (var i = start; i < finish; i += 0.01)
                     {
-                        this.lineTo(ctx, i, this.mainSpline(i));
+                        this.camera2D.lineTo(i, this.mainSpline(i));
                     }
 
                     ctx.stroke();
                 }
             },
             mainSpline: function (x) {
-                return this.$store.getters['spline/pointSpline'](x);
+                return this.spline.spline.pointSpline(x);
             },
 
 
             clearPoints: function () {
                 this.plot.spline = false;
                 this.spline.isActive = false;
+                this.spline.spline = null;
 
                 this.points.x = [];
                 this.points.fx = [];
@@ -621,11 +389,11 @@
 
             },
             addPoint: function (e) {
-                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.ScreenToWorldX(e.clientX) ) {
+                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.camera2D.ScreenToWorldX(e.clientX) ) {
                     return;
                 }
-                this.points.x.push(this.ScreenToWorldX(e.clientX));
-                this.points.fx.push(this.ScreenToWorldY(e.clientY));
+                this.points.x.push(this.camera2D.ScreenToWorldX(e.clientX));
+                this.points.fx.push(this.camera2D.ScreenToWorldY(e.clientY));
 
                 if (this.points.x.length > 1) {
                     this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
@@ -653,18 +421,18 @@
 
 
                 var s = Math.abs(
-                    this.ScreenToWorldY(0) -
-                    this.ScreenToWorldY(this.grid.serifsSize)
+                    this.camera2D.ScreenToWorldY(0) -
+                    this.camera2D.ScreenToWorldY(this.camera2D.grid.serifsSize)
                 );
 
                 for (var i = 0; i < this.points.x.length; i++) {
 
-                    this.moveTo(ctx,this.points.x[i]+(s/2), this.points.fx[i]-(s/2));
-                    this.lineTo(ctx,this.points.x[i]-(s/2), this.points.fx[i]+(s/2));
+                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.fx[i]-(s/2));
+                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.fx[i]+(s/2));
 
 
-                    this.moveTo(ctx,this.points.x[i]+(s/2), this.points.fx[i]+(s/2));
-                    this.lineTo(ctx,this.points.x[i]-(s/2), this.points.fx[i]-(s/2));
+                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.fx[i]+(s/2));
+                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.fx[i]-(s/2));
 
                 }
 
@@ -703,17 +471,17 @@
                 var start = this.points.x[0];
                 var finish = this.points.x[this.points.x.length-1];
 
-                if (this.ScreenToWorldX(0) > start) {
-                    start = this.ScreenToWorldX(0);
+                if (this.camera2D.ScreenToWorldX(0) > start) {
+                    start = this.camera2D.ScreenToWorldX(0);
                 }
-                if (this.ScreenToWorldX(this.canvasWidth) < finish) {
-                    finish = this.ScreenToWorldX(this.canvasWidth);
+                if (this.camera2D.ScreenToWorldX(this.canvasWidth) < finish) {
+                    finish = this.camera2D.ScreenToWorldX(this.canvasWidth);
                 }
 
-                this.moveTo(ctx, start,this.polynom.polynom.pointPolynom(start));
+                this.camera2D.moveTo(start,this.polynom.polynom.pointPolynom(start));
                 for (var i = start; i < finish; i += 0.01)
                 {
-                    this.lineTo(ctx, i, this.polynom.polynom.pointPolynom(i));
+                    this.camera2D.lineTo(i, this.polynom.polynom.pointPolynom(i));
                 }
 
                 ctx.stroke();
@@ -731,13 +499,7 @@
             },
         },
         watch: {
-            camera: {
-                handler: function () {
-                    this.reBuild();
-                },
-                deep: true
-            },
-            grid: {
+            camera2D: {
                 handler: function () {
                     this.reBuild();
                 },

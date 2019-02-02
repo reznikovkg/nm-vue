@@ -1,0 +1,8 @@
+
+class Vector {
+
+    constructor() {
+
+    }
+
+}
