@@ -2,7 +2,7 @@
     <div class="component-scene-2d">
         <div class="scena-2d">
             <canvas id="canvas-scene" :width="camera2D.field.width" :height="camera2D.field.height"
-                @wheel="wheelSize"
+                @wheel="canvasWheel"
                 @mousedown="canvasMouseDown"
                 @mousemove="canvasMouseDrag"
                 @mouseup="canvasMouseUp"
@@ -84,8 +84,8 @@
                                 <p v-for="item in points.x">{{ item }}</p>
                             </div>
                             <div class="row-fix-width">
-                                <p>fx</p>
-                                <p v-for="item in points.fx">{{ item }}</p>
+                                <p>y</p>
+                                <p v-for="item in points.y">{{ item }}</p>
                             </div>
                             <div class="row-fix-width">
                                 <p>h</p>
@@ -110,8 +110,8 @@
                         width: 0,
                         height: 0
                     },
-                    wheelSize(){}
                 },
+                points: {},
                 nav: {
                     moveCenter: {
                         status: true,
@@ -141,13 +141,6 @@
                     isActive: false,
                     spline: null
                 },
-                points: {
-                    combo: false,
-                    minStep: 1,
-                    x: [1,2,3,4],
-                    fx: [1,0,1,0],
-                    h: [1,1,1]
-                },
                 polynom: {
                     isActive: false,
                     polynom: null
@@ -163,10 +156,34 @@
             this.camera2D = new Camera2D();
             this.camera2D.setCanvas(this.canvas);
 
+            this.points = new Points([1,2,3,4], [1,0,1,0]);
+
             this.reBuild();
 
         },
+        created: function() {
+            document.addEventListener('keydown', this.keyPress, false);
+            document.addEventListener('keypress', this.keyPress, false);
+        },
+        destroyed: function() {
+            document.removeEventListener('keydown', this.keyPress, false);
+            document.removeEventListener('keypress', this.keyPress, false);
+        },
         methods: {
+            /**
+             * Open/Close nav by clic
+             *
+             * Status: Done
+             */
+            clickOpenNav: function () {
+                this.openNav = !this.openNav;
+            },
+
+            /**
+             * Choise navigation canvas
+             *
+             * Status: Done
+             */
             choiseNav: function(title){
                 var nav = this.nav;
                 for (var item in nav) {
@@ -176,49 +193,44 @@
                         this.nav[`${item}`].status = false
                     }
                 }
-
             },
-            addComboPointsStart: function (e) {
-                this.points.x = [];
-                this.points.fx = [];
-                this.points.h = [];
 
-                this.points.combo = true;
-
-                this.spline.isActive = false;
-                this.polynom.isActive = false;
-                this.plot.spline = false;
-                this.plot.polynom = false;
-
-
-                this.points.x.push(this.camera2D.ScreenToWorldX(e.clientX));
-                this.points.fx.push(this.camera2D.ScreenToWorldY(e.clientY));
-            },
-            addComboPointsDrag: function (e) {
-                if (!this.points.combo) {
-                    return;
-                }
-                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.camera2D.ScreenToWorldX(e.clientX) ) {
-                    return;
-                }
-
-                this.points.x.push(this.camera2D.ScreenToWorldX(e.clientX));
-                this.points.fx.push(this.camera2D.ScreenToWorldY(e.clientY));
-                this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
-
-            },
-            addComboPointsStop: function () {
-                this.points.combo = false;
-
-                if ((this.spline.isActive)&&(this.plot.spline)) {
-                    this.setSpline();
-                }
-
-                if ((this.polynom.isActive)&&(this.plot.polynom)) {
-                    this.setPNewton();
+            /**
+             * Key press to action
+             *
+             * Status: Process
+             */
+            keyPress: function(evt) {
+                switch (evt.keyCode) {
+                    case 82: {
+                        this.points.AT2D_RotationDeg(Math.PI / 18); break;
+                    }
+                    case 87: {
+                        this.points.AT2D_Scaling(1.1, 1.1); break;
+                    }
+                    case 81: {
+                        this.points.AT2D_Scaling(0.9, 0.9); break;
+                    }
+                    case 37: {
+                        this.points.AT2D_Translation(-0.5,0); break;
+                    }
+                    case 38: {
+                        this.points.AT2D_Translation(0,0.5); break;
+                    }
+                    case 39: {
+                        this.points.AT2D_Translation(0.5,0); break;
+                    }
+                    case 40: {
+                        this.points.AT2D_Translation(0,-0.5); break;
+                    }
                 }
             },
 
+            /**
+             * Rebuild canvas
+             *
+             * Status: Optional
+             */
             reBuild: function () {
                 this.camera2D.clear();
                 this.camera2D.axisPlot();
@@ -229,7 +241,11 @@
                 this.plotPNewton();
             },
 
-
+            /**
+             * Mouse canvas down
+             *
+             * Status: Optional
+             */
             canvasMouseDown(e) {
                 if (this.nav.moveCenter.status) {
                     this.camera2D.dragToStart(e);
@@ -243,6 +259,12 @@
                     this.addComboPointsStart(e);
                 }
             },
+
+            /**
+             * Mouse canvas drag
+             *
+             * Status: Optional
+             */
             canvasMouseDrag: function (e) {
                 if (this.nav.moveCenter.status) {
                     this.camera2D.dragTo(e);
@@ -252,6 +274,12 @@
                     this.addComboPointsDrag(e);
                 }
             },
+
+            /**
+             * Mouse canvas up
+             *
+             * Status: Optional
+             */
             canvasMouseUp: function (e) {
                 if (this.nav.moveCenter.status) {
                     this.camera2D.dragToStop();
@@ -262,10 +290,110 @@
                 }
             },
 
-
-            wheelSize: function (e) {
+            /**
+             * Mouse canvas wheel
+             *
+             * Status: Optional
+             */
+            canvasWheel: function (e) {
                 this.camera2D.wheelSize(e);
             },
+
+
+            /**
+             * Combo-adding points (start method)
+             *
+             * Status: Done *
+             */
+            addComboPointsStart: function (e) {
+                this.points.clear();
+
+                this.points.combo = true;
+
+                this.spline.isActive = false;
+                this.polynom.isActive = false;
+                this.plot.spline = false;
+                this.plot.polynom = false;
+
+                this.points.addPoint(
+                    this.camera2D.ScreenToWorldX(e.clientX),
+                    this.camera2D.ScreenToWorldY(e.clientY)
+                );
+            },
+
+            /**
+             * Combo-adding points (drag method)
+             *
+             * Status: Done *
+             */
+            addComboPointsDrag: function (e) {
+                if (!this.points.combo) {
+                    return;
+                }
+                if (this.points.x[this.points.x.length-1] + this.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
+                    return;
+                }
+
+                this.points.addPoint(
+                    this.camera2D.ScreenToWorldX(e.clientX),
+                    this.camera2D.ScreenToWorldY(e.clientY)
+                );
+            },
+
+            /**
+             * Combo-adding points (stop method)
+             *
+             * Status: Done *
+             */
+            addComboPointsStop: function () {
+                this.points.combo = false;
+
+                if ((this.spline.isActive)&&(this.plot.spline)) {
+                    this.setSpline();
+                }
+
+                if ((this.polynom.isActive)&&(this.plot.polynom)) {
+                    this.setPNewton();
+                }
+            },
+
+            /**
+             * Add point for nav
+             *
+             * Status: Optional
+             */
+            addPoint: function (e) {
+                if (this.points.x[this.points.x.length-1] + this.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
+                    return;
+                }
+
+                this.points.addPoint(
+                    this.camera2D.ScreenToWorldX(e.clientX),
+                    this.camera2D.ScreenToWorldY(e.clientY)
+                );
+
+                if ((this.spline.isActive)&&(this.plot.spline)) {
+                    this.setSpline();
+                }
+
+                if ((this.polynom.isActive)&&(this.plot.polynom)) {
+                    this.setPNewton();
+                }
+            },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -327,7 +455,7 @@
 
                 this.spline.spline.setXFX({
                     x: this.points.x,
-                    fx: this.points.fx,
+                    fx: this.points.y,
                     h: this.points.h
                 });
 
@@ -383,29 +511,8 @@
                 this.spline.isActive = false;
                 this.spline.spline = null;
 
-                this.points.x = [];
-                this.points.fx = [];
-                this.points.h = [];
+                this.points.clear();
 
-            },
-            addPoint: function (e) {
-                if (this.points.x[this.points.x.length-1] + this.points.minStep > this.camera2D.ScreenToWorldX(e.clientX) ) {
-                    return;
-                }
-                this.points.x.push(this.camera2D.ScreenToWorldX(e.clientX));
-                this.points.fx.push(this.camera2D.ScreenToWorldY(e.clientY));
-
-                if (this.points.x.length > 1) {
-                    this.points.h.push(this.points.x[this.points.x.length-1]-this.points.x[this.points.x.length-2]);
-                }
-
-                if ((this.spline.isActive)&&(this.plot.spline)) {
-                    this.setSpline();
-                }
-
-                if ((this.polynom.isActive)&&(this.plot.polynom)) {
-                    this.setPNewton();
-                }
             },
             plotPoints: function () {
                 if (!this.plot.points) {
@@ -427,12 +534,12 @@
 
                 for (var i = 0; i < this.points.x.length; i++) {
 
-                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.fx[i]-(s/2));
-                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.fx[i]+(s/2));
+                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.y[i]-(s/2));
+                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.y[i]+(s/2));
 
 
-                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.fx[i]+(s/2));
-                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.fx[i]-(s/2));
+                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.y[i]+(s/2));
+                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.y[i]-(s/2));
 
                 }
 
@@ -448,7 +555,7 @@
                     return;
                 }
 
-                this.polynom.polynom = new pNewton([this.points.x, this.points.fx]);
+                this.polynom.polynom = new pNewton([this.points.x, this.points.y]);
                 this.polynom.isActive = true;
 
             },
@@ -493,10 +600,6 @@
 
 
 
-
-            clickOpenNav: function () {
-                this.openNav = !this.openNav;
-            },
         },
         watch: {
             camera2D: {
@@ -513,6 +616,7 @@
             },
             points: {
                 handler: function () {
+                    this.points.setH();
                     this.reBuild();
                 },
                 deep: true
