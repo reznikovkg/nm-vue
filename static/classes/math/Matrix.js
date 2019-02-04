@@ -199,4 +199,8 @@ class Matrix {
     getStrSecond(){
         return this.cells[1];
     }
+
+    getStrThird(){
+        return this.cells[2];
+    }
 }

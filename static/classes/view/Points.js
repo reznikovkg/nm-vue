@@ -114,4 +114,115 @@ class Points {
         this.y = matr.getStrSecond();
     }
 
+
+
+
+    /**
+     * Affine transform translation of points 3D
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @constructor
+     *
+     * Status: done
+     */
+    AT3D_Translation(x,y,z) {
+        var matr = AT3D_Translation(x,y,z).compWith(new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity.cells
+        ]), true);
+
+        this.x = matr.getStrFirst();
+        this.y = matr.getStrSecond();
+        this.z = matr.getStrThird();
+    }
+
+    /**
+     * Affine transform scaling of points 3D
+     *
+     * @param kx
+     * @param ky
+     * @param kz
+     * @constructor
+     *
+     * Status: done
+     */
+    AT3D_Scaling(kx,ky,kz) {
+        var matr = AT3D_Scaling(kx,ky,kz).compWith(new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity.cells
+        ]), true);
+
+        this.x = matr.getStrFirst();
+        this.y = matr.getStrSecond();
+        this.z = matr.getStrThird();
+    }
+
+    /**
+     * Affine transform rotation by X asis of points 3D
+     *
+     * @param phi
+     * @constructor
+     *
+     * Status: done
+     */
+    AT3D_RotationXDeg(phi) {
+        var matr = AT3D_RotationXDeg(phi).compWith(new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity.cells
+        ]), true);
+
+        this.x = matr.getStrFirst();
+        this.y = matr.getStrSecond();
+        this.z = matr.getStrThird();
+    }
+
+    /**
+     * Affine transform rotation by X asis of points 3D
+     *
+     * @param phi
+     * @constructor
+     *
+     * Status: done
+     */
+    AT3D_RotationYDeg(phi) {
+        var matr = AT3D_RotationYDeg(phi).compWith(new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity.cells
+        ]), true);
+
+        this.x = matr.getStrFirst();
+        this.y = matr.getStrSecond();
+        this.z = matr.getStrThird();
+    }
+
+    /**
+     * Affine transform rotation by X asis of points 3D
+     *
+     * @param phi
+     * @constructor
+     *
+     * Status: done
+     */
+    AT3D_RotationZDeg(phi) {
+        var matr = AT3D_RotationZDeg(phi).compWith(new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity.cells
+        ]), true);
+
+        this.x = matr.getStrFirst();
+        this.y = matr.getStrSecond();
+        this.z = matr.getStrThird();
+    }
 }

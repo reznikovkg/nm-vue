@@ -186,11 +186,11 @@
              */
             choiseNav: function(title){
                 var nav = this.nav;
-                for (var item in nav) {
+                for (let item in nav) {
                     if (this.nav[`${item}`].title === title) {
                         this.nav[`${item}`].status = true;
                     } else {
-                        this.nav[`${item}`].status = false
+                        this.nav[`${item}`].status = false;
                     }
                 }
             },
@@ -280,7 +280,7 @@
              *
              * Status: Optional
              */
-            canvasMouseUp: function (e) {
+            canvasMouseUp: function () {
                 if (this.nav.moveCenter.status) {
                     this.camera2D.dragToStop();
                 }
