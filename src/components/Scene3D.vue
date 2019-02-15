@@ -101,6 +101,13 @@
                         height: 0
                     },
                 },
+
+                axis3D: {
+                    x: new Model3D(),
+                    y: new Model3D(),
+                    z: new Model3D()
+                },
+
                 model3D: {},
                 points: {},
                 nav: {
@@ -142,6 +149,10 @@
             this.camera3D = new Camera3D(this.canvas);
             this.camera3D.setCanvas(this.canvas);
 
+
+            this.axis3D.x.setVertices(new Matrix([[1,0],[0,0],[0,0],[1,1]]));
+            this.axis3D.y.setVertices(new Matrix([[0,0],[1,0],[0,0],[1,1]]));
+            this.axis3D.z.setVertices(new Matrix([[0,0],[0,0],[1,0],[1,1]]));
 
             this.model3D = new Model3D();
 
@@ -238,6 +249,24 @@
                     case 105: {
                         this.points.AT3D_RotationZDeg(-Math.PI / 18); break;
                     }
+                    // case 106: {
+                    //     this.camera3D.vN.cells[0]+=1;
+                    //     this.camera3D.updateCamera();
+                    //
+                    //     break;
+                    // }
+                    // case 111: {
+                    //     this.camera3D.vN.cells[1]+=1;
+                    //     this.camera3D.updateCamera();
+                    //
+                    //     break;
+                    // }
+                    // case 109: {
+                    //     this.camera3D.vN.cells[2]+=1;
+                    //     this.camera3D.updateCamera();
+                    //
+                    //     break;
+                    // }
                 }
             },
 
@@ -248,7 +277,7 @@
              */
             reBuild: function () {
                 this.camera3D.clear();
-                this.camera3D.axisPlot3D();
+                this.axisPlot3D();
 
                 // this.plotFun();
                 // this.plotSpline();
@@ -314,6 +343,71 @@
                 this.camera3D.wheelSize(e);
             },
 
+            /**
+             * Plot axis model
+             *
+             * Status: Process
+             */
+            axisPlot3D: function () {
+                // console.log(this.camera3D.worldToProjectF(true));
+
+                // for (var i = 1; i < 2; i++) {
+                //     this.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
+                //     this.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
+                // }
+
+
+                var ctx = this.canvas.getContext("2d");
+
+                /**
+                 * axis X
+                 * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+                 */
+                ctx.beginPath();
+                ctx.strokeStyle = '#1c137e';
+                ctx.setLineDash([]);
+                ctx.lineWidth = 2;
+                this.axis3D.x.project(this.camera3D.worldToProjectF(true), true);
+
+                for (var i = 1; i < 2; i++) {
+                    this.camera3D.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
+                    this.camera3D.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
+                }
+                ctx.stroke();
+
+
+                /**
+                 * axis Y
+                 * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+                 */
+                ctx.beginPath();
+                ctx.strokeStyle = '#0aaa00';
+                ctx.setLineDash([]);
+                ctx.lineWidth = 2;
+                this.axis3D.y.project(this.camera3D.worldToProjectF(true), true);
+
+                for (var i = 1; i < 2; i++) {
+                    this.camera3D.moveTo(this.axis3D.y.getProjectX(i-1), this.axis3D.y.getProjectY(i-1));
+                    this.camera3D.lineTo(this.axis3D.y.getProjectX(i), this.axis3D.y.getProjectY(i));
+                }
+                ctx.stroke();
+
+                /**
+                 * axis Z
+                 * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+                 */
+                ctx.beginPath();
+                ctx.strokeStyle = '#cb0006';
+                ctx.setLineDash([]);
+                ctx.lineWidth = 2;
+                this.axis3D.z.project(this.camera3D.worldToProjectF(true), true);
+
+                for (var i = 1; i < 2; i++) {
+                    this.camera3D.moveTo(this.axis3D.z.getProjectX(i-1), this.axis3D.z.getProjectY(i-1));
+                    this.camera3D.lineTo(this.axis3D.z.getProjectX(i), this.axis3D.z.getProjectY(i));
+                }
+                ctx.stroke();
+            },
 
             // /**
             //  * Combo-adding points (start method)
@@ -422,6 +516,10 @@
                 this.points.clear();
             },
 
+            clearPointsRoot: function () {
+                this.$root.points = [];
+            },
+
             plotPoints: function () {
                 if (!this.plot.points) {
                     return;
@@ -474,9 +572,6 @@
             plotPointsFromRoot: function () {
                 this.points = this.$root.points[0];
             },
-
-
-
 
 
 

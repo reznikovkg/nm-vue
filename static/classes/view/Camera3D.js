@@ -10,20 +10,10 @@ class Camera3D extends Camera2D {
 
         this.d = 10;
 
-        this.worldToView = null;
-        this.viewToProject = null;
-        this.worldToProject = null;
-
-        this.vK = this.vN.divWith(this.vN.norma(), true);
-        this.vI = (this.vT.scalarWith(this.vN,true)).divWith((this.vT.scalarWith(this.vN,true)).norma(), true);
-        this.vJ = this.vK.scalarWith(this.vI,true);
-
-        this.axis = {
-            x: new Points([0, 1])
-        };
-
         this.updateCamera();
     }
+
+
 
     worldToViewF(isReturn = false) {
         if (isReturn) {
@@ -68,12 +58,17 @@ class Camera3D extends Camera2D {
     }
 
     updateCamera() {
+        this.worldToView = null;
+        this.viewToProject = null;
+        this.worldToProject = null;
+
+        this.vK = this.vN.divWith(this.vN.norma(), true);
+        this.vI = (this.vT.scalarWith(this.vN,true)).divWith((this.vT.scalarWith(this.vN,true)).norma(), true);
+        this.vJ = this.vK.scalarWith(this.vI,true);
+
         this.worldToViewF();
         this.viewToProjectF();
         this.worldToProjectF();
     }
 
-    axisPlot3D () {
-
-    }
 }

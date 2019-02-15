@@ -42,10 +42,22 @@
                         <div class="row no-gutter">
                             <at-checkbox v-model="camera2D.grid.serifs" label="Shenzhen">Serifs</at-checkbox>
                         </div>
-                        <p>Step serifs: <i @click="camera2D.grid.serifsStep--" class="icon icon-minus"></i> {{ camera2D.grid.serifsStep }} <i @click="camera2D.grid.serifsStep++" class="icon icon-plus"></i></p>
-                        <at-slider v-model="camera2D.grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>
-                        <p>Size serifs: <i @click="camera2D.grid.serifsSize--" class="icon icon-minus"></i> {{ camera2D.grid.serifsSize }} <i @click="camera2D.grid.serifsSize++" class="icon icon-plus"></i></p>
-                        <at-slider v-model="camera2D.grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>
+
+                        <p>Step serifs:
+                            <i @click="camera2D.grid.serifsStep--" class="icon icon-minus"></i>
+                            {{ camera2D.grid.serifsStep }}
+                            <i @click="camera2D.grid.serifsStep++" class="icon icon-plus"></i>
+                        </p>
+                        <input-float-type v-model="camera2D.grid.serifsStep"></input-float-type>
+                        <!--<at-slider v-model="camera2D.grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>-->
+
+                        <p>Size serifs:
+                            <i @click="camera2D.grid.serifsSize--" class="icon icon-minus"></i>
+                            {{ camera2D.grid.serifsSize }}
+                            <i @click="camera2D.grid.serifsSize++" class="icon icon-plus"></i>
+                        </p>
+                        <input-float-type v-model="camera2D.grid.serifsSize"></input-float-type>
+                        <!--<at-slider v-model="camera2D.grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>-->
                     </div>
                 </at-tab-pane>
                 <at-tab-pane label="Plot" name="plot">
@@ -60,6 +72,7 @@
                         </div>
                         <div class="row no-gutter">
                             <at-button type="primary" @click="setSpline">Update spline</at-button>
+                            <at-button type="primary" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
                         </div>
                         <h3>Newton</h3>
                         <div class="row no-gutter">
@@ -74,15 +87,14 @@
                         </div>
 
                         <p>Step points: {{ points.minStep }}</p>
+                        <input-float-type v-model="points.minStep"></input-float-type>
                         <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
                         <div class="row no-gutter">
                             <at-button type="primary" @click="clearPoints">Remove points</at-button>
+                            <at-button type="primary" @click="clearPointsRoot">Remove points ROOT</at-button>
                         </div>
                         <div class="row no-gutter">
                             <at-button type="primary" @click="addPointsToRoot">Add points to root </at-button>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
                         </div>
                         <div class="row">
                             <div class="row-fix-width">
@@ -107,8 +119,10 @@
 
 <script>
 
+    import InputFloatType from "./Elements/input-float-type";
     export default {
         name: "Scena2D",
+        components: {InputFloatType},
         data () {
             return {
                 camera2D: {
@@ -161,8 +175,7 @@
             }
         },
         mounted: function () {
-            this.camera2D = new Camera2D();
-            this.camera2D.setCanvas(this.canvas);
+            this.camera2D = new Camera2D(this.canvas);
 
             this.points = new Points([1,2,3,4], [1,0,1,0],[0,0,0,0]);
 
@@ -398,6 +411,9 @@
 
 
 
+            clearPointsRoot: function () {
+                this.$root.points = [];
+            },
 
 
 
@@ -648,7 +664,7 @@
                     this.reBuild();
                 },
                 deep: true
-            }
+            },
         }
     }
 </script>
