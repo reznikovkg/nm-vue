@@ -65,6 +65,9 @@
                         <div class="row no-gutter">
                             <at-button type="primary" @click="clearPoints">Remove points</at-button>
                         </div>
+                        <div class="row no-gutter">
+                            <at-button type="primary" @click="plotPointsFromRoot">From root points</at-button>
+                        </div>
                         <div class="row">
                             <div class="row-fix-width">
                                 <p>x</p>
@@ -106,16 +109,11 @@
                         title: 'moveCenter',
                         icon: 'icon-move'
                     },
-                    addPoint: {
-                        status: false,
-                        title: 'addPoint',
-                        icon: 'icon-plus-circle'
-                    },
-                    addComboPoints: {
-                        status: false,
-                        title: 'addComboPoints',
-                        icon: 'icon-trending-up'
-                    },
+                    // addPoint: {
+                    //     status: false,
+                    //     title: 'addPoint',
+                    //     icon: 'icon-plus-circle'
+                    // },
                 },
                 openNav: false,
 
@@ -141,13 +139,15 @@
             }
         },
         mounted: function () {
-            this.camera3D = new Camera3D();
+            this.camera3D = new Camera3D(this.canvas);
             this.camera3D.setCanvas(this.canvas);
+
 
             this.model3D = new Model3D();
 
 
-            this.points = new Points([1,2,3,4], [1,0,1,0], [0,0,0,0]);
+            //this.points = new Points([1,2,3,4], [1,0,1,0], [0,0,0,0]);
+            this.points = new Points([0,5,2.5,2.5,5,0,2.5,2.5,0], [0,0,0,3,0,0,0,3,0], [0,0,-2.5,-1.5,0,0,-2.5,-1.5,0]);
 
             this.reBuild();
 
@@ -248,7 +248,7 @@
              */
             reBuild: function () {
                 this.camera3D.clear();
-                this.camera3D.axisPlot();
+                this.camera3D.axisPlot3D();
 
                 // this.plotFun();
                 // this.plotSpline();
@@ -266,13 +266,13 @@
                     this.camera3D.dragToStart(e);
                 }
 
-                if (this.nav.addPoint.status) {
-                    this.addPoint(e);
-                }
-
-                if (this.nav.addComboPoints.status) {
-                    this.addComboPointsStart(e);
-                }
+                // if (this.nav.addPoint.status) {
+                //     this.addPoint(e);
+                // }
+                //
+                // if (this.nav.addComboPoints.status) {
+                //     this.addComboPointsStart(e);
+                // }
             },
 
             /**
@@ -285,9 +285,9 @@
                     this.camera3D.dragTo(e);
                 }
 
-                if (this.nav.addComboPoints.status) {
-                    this.addComboPointsDrag(e);
-                }
+                // if (this.nav.addComboPoints.status) {
+                //     this.addComboPointsDrag(e);
+                // }
             },
 
             /**
@@ -300,9 +300,9 @@
                     this.camera3D.dragToStop();
                 }
 
-                if (this.nav.addComboPoints.status) {
-                    this.addComboPointsStop();
-                }
+                // if (this.nav.addComboPoints.status) {
+                //     this.addComboPointsStop();
+                // }
             },
 
             /**
@@ -471,7 +471,9 @@
 
 
 
-
+            plotPointsFromRoot: function () {
+                this.points = this.$root.points[0];
+            },
 
 
 

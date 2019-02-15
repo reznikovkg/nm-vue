@@ -78,6 +78,12 @@
                         <div class="row no-gutter">
                             <at-button type="primary" @click="clearPoints">Remove points</at-button>
                         </div>
+                        <div class="row no-gutter">
+                            <at-button type="primary" @click="addPointsToRoot">Add points to root </at-button>
+                        </div>
+                        <div class="row no-gutter">
+                            <at-button type="primary" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
+                        </div>
                         <div class="row">
                             <div class="row-fix-width">
                                 <p>x</p>
@@ -112,6 +118,8 @@
                     },
                 },
                 points: {},
+                pointsToRoot: {},
+                hToRoot: 0.1,
                 nav: {
                     moveCenter: {
                         status: true,
@@ -156,7 +164,7 @@
             this.camera2D = new Camera2D();
             this.camera2D.setCanvas(this.canvas);
 
-            this.points = new Points([1,2,3,4], [1,0,1,0]);
+            this.points = new Points([1,2,3,4], [1,0,1,0],[0,0,0,0]);
 
             this.reBuild();
 
@@ -396,9 +404,29 @@
 
 
 
+            /**
+             * Add points to root from this.points (adding scene)
+             */
+            addPointsToRoot: function () {
+                this.$root.points.push(this.points);
+            },
 
 
 
+            /**
+             * Add points to root from this.points (adding scene)
+             */
+            setPointsToRootFromSpline: function () {
+                this.pointsToRoot = new Points();
+
+                var stepSpline = (this.points.x[this.points.x.length-1] - this.points.x[0])/this.points.x.length;
+
+                for (var i = this.points.x[0]; i < this.points.x[this.points.x.length-1]; i += 0.33) {
+                    this.pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
+                }
+
+                this.$root.points.push(this.pointsToRoot);
+            },
 
 
 

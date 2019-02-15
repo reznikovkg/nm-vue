@@ -1,10 +1,10 @@
 
 class Camera2D {
 
-    constructor() {
-        this.ctx = null;
+    constructor(canvas) {
+        this.canvas = canvas;
 
-        this.canvas = null;
+        this.ctx = this.canvas.getContext("2d");
 
         this.field = {
             width: document.body.clientWidth,

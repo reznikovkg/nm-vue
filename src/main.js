@@ -25,9 +25,14 @@ const store = new Vuex.Store({
 });
 
 new Vue({
-  el: '#app',
-  router,
-  store,
-  components: { App },
-  template: '<App/>'
+    el: '#app',
+        data () {
+            return {
+                points:[]
+            }
+        },
+    router,
+    store,
+    components: { App },
+    template: '<App/>'
 });

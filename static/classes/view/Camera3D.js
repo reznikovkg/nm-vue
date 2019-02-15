@@ -1,8 +1,8 @@
 
 class Camera3D extends Camera2D {
 
-    constructor() {
-        super();
+    constructor(canvas) {
+        super(canvas);
 
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
@@ -18,6 +18,9 @@ class Camera3D extends Camera2D {
         this.vI = (this.vT.scalarWith(this.vN,true)).divWith((this.vT.scalarWith(this.vN,true)).norma(), true);
         this.vJ = this.vK.scalarWith(this.vI,true);
 
+        this.axis = {
+            x: new Points([0, 1])
+        };
 
         this.updateCamera();
     }
@@ -68,5 +71,9 @@ class Camera3D extends Camera2D {
         this.worldToViewF();
         this.viewToProjectF();
         this.worldToProjectF();
+    }
+
+    axisPlot3D () {
+
     }
 }
