@@ -9,6 +9,17 @@
             ></canvas>
         </div>
 
+        <div
+                v-if="!firstLoad"
+                class="loadscene"
+                @click="firstLoadScene">
+            <p><b>Load</b></p>
+        </div>
+
+        <div class="openScene2D">
+            <at-button type="primary" size="large" icon="icon-square" circle @click="clickScene2D"></at-button>
+        </div>
+
         <div class="openNav">
             <at-button type="primary" size="large" icon="icon-settings" circle @click="clickOpenNav"></at-button>
         </div>
@@ -123,6 +134,7 @@
                     // },
                 },
                 openNav: false,
+                firstLoad: false,
 
                 plot: {
                     // fun: false,
@@ -181,6 +193,11 @@
                 this.openNav = !this.openNav;
             },
 
+
+            clickScene2D: function () {
+                this.$router.push({ name: 'scene2d' });
+            },
+
             /**
              * Choise navigation canvas
              *
@@ -195,6 +212,12 @@
                         this.nav[`${item}`].status = false;
                     }
                 }
+            },
+
+
+            firstLoadScene: function () {
+                this.reBuild();
+                this.firstLoad = true;
             },
 
             /**
@@ -600,7 +623,7 @@
     }
 </script>
 
-<style lang="less">
+<style scoped lang="less">
     .component-scene-3d {
         & .scena-3d {
             position: absolute;
@@ -613,9 +636,33 @@
 
         }
 
+        & .loadscene {
+            position: absolute;
+            background: #4f7de2;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            & p {
+                color: #fff;
+            }
+        }
+
         & .openNav {
             position: fixed;
             right: 10px;
+            top: 10px;
+            z-index: 1000;
+        }
+
+
+        & .openScene2D {
+            position: fixed;
+            right: 60px;
             top: 10px;
             z-index: 1000;
         }
@@ -635,8 +682,7 @@
         width: 300px;
         height: 100%;
         background: #fff;
-        border-left: 1px solid #5782d1;
-        box-shadow: 0 0 5px #5782d1;
+        border-left: 2px solid #6190e8;
         padding: 10px;
         transition: 0.3s;
 

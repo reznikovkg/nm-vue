@@ -9,9 +9,21 @@
             ></canvas>
         </div>
 
+        <div
+            v-if="!firstLoad"
+            class="loadscene"
+            @click="firstLoadScene">
+            <p><b>Load</b></p>
+        </div>
+
+        <div class="openScene3D">
+            <at-button type="primary" size="large" icon="icon-box" circle @click="clickScene3D"></at-button>
+        </div>
+
         <div class="openNav">
             <at-button type="primary" size="large" icon="icon-settings" circle @click="clickOpenNav"></at-button>
         </div>
+
 
         <div class="nav-scene" v-if="openNav">
             <div class="head-nav">
@@ -66,26 +78,28 @@
                         <div class="row no-gutter">
                             <at-checkbox v-model="plot.fun" label="Shenzhen">Show</at-checkbox>
                         </div>
+                        <hr>
                         <h3>Spline</h3>
                         <div class="row no-gutter">
                             <at-checkbox v-model="plot.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
                         </div>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="setSpline">Update spline</at-button>
-                            <at-button type="primary" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
+                        <div class="row no-gutter btn">
+                            <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
+                            <at-button type="primary" size="small" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
                         </div>
+                        <hr>
                         <h3>Newton</h3>
                         <div class="row no-gutter">
                             <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
                         </div>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="setPNewton">Update polynom</at-button>
+                        <div class="row no-gutter btn">
+                            <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
                         </div>
+                        <hr>
                         <h3>Points</h3>
                         <div class="row no-gutter">
                             <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
                         </div>
-
                         <p>Step points: {{ points.minStep }}</p>
                         <input-float-type v-model="points.minStep"></input-float-type>
                         <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
@@ -109,6 +123,26 @@
                                 <p>h</p>
                                 <p v-for="item in points.h">{{ item }}</p>
                             </div>
+                        </div>
+                    </div>
+                </at-tab-pane>
+                <at-tab-pane label="Root" name="root">
+                    <div class="tab-pad">
+                        <div class="row" v-for="rPoints in $root.points">
+
+                            <div class="row-fix-width">
+                                <p>x</p>
+                                <p v-for="item in rPoints.x">{{ item }}</p>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>y</p>
+                                <p v-for="item in rPoints.y">{{ item }}</p>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>z</p>
+                                <p v-for="item in rPoints.z">{{ item }}</p>
+                            </div>
+                            <hr>
                         </div>
                     </div>
                 </at-tab-pane>
@@ -152,6 +186,7 @@
                     },
                 },
                 openNav: false,
+                firstLoad: false,
 
                 plot: {
                     fun: false,
@@ -200,6 +235,10 @@
                 this.openNav = !this.openNav;
             },
 
+            clickScene3D: function () {
+                this.$router.push({ name: 'scene3d' });
+            },
+
             /**
              * Choise navigation canvas
              *
@@ -215,6 +254,12 @@
                     }
                 }
             },
+
+            firstLoadScene: function () {
+                this.reBuild();
+                this.firstLoad = true;
+            },
+
 
             /**
              * Key press to action
@@ -669,7 +714,7 @@
     }
 </script>
 
-<style lang="less">
+<style scoped lang="less">
     .component-scene-2d {
         & .scena-2d {
             position: absolute;
@@ -682,12 +727,36 @@
 
         }
 
+        & .loadscene {
+            position: absolute;
+            background: #4f7de2;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            & p {
+                color: #fff;
+            }
+        }
+
         & .openNav {
             position: fixed;
             right: 10px;
             top: 10px;
             z-index: 1000;
         }
+
+        & .openScene3D {
+            position: fixed;
+            right: 60px;
+            top: 10px;
+            z-index: 1000;
+        }
+
     }
 
 
@@ -704,8 +773,7 @@
         width: 300px;
         height: 100%;
         background: #fff;
-        border-left: 1px solid #5782d1;
-        box-shadow: 0 0 5px #5782d1;
+        border-left: 2px solid #6190e8;
         padding: 10px;
         transition: 0.3s;
 
