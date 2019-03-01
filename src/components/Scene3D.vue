@@ -25,85 +25,48 @@
         </div>
 
         <div class="nav-scene" v-if="openNav">
-            <div class="head-nav">
+            <div class="nav-head">
                 <h4>CG-VUE</h4>
             </div>
-            <at-tabs>
-                <at-tab-pane label="Nav" name="nav">
-                    <div class="tab-pad">
-                        <div class="row">
-                            <at-button
-                                    v-for="item in nav"
-                                    :key="item.title"
-                                    :icon="item.icon"
-                                    :class="{ 'at-btn--primary': item.status}"
-                                    @click="choiseNav(item.title)"
-                                    circle></at-button>
-                        </div>
-                    </div>
-                </at-tab-pane>
-                <at-tab-pane label="Grid" name="grid">
-                    <div class="tab-pad">
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="camera3D.grid.axiss" label="Shenzhen">Axis</at-checkbox>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="camera3D.grid.grid" label="Shenzhen">Grid</at-checkbox>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="camera3D.grid.serifs" label="Shenzhen">Serifs</at-checkbox>
-                        </div>
-                        <p>Step serifs: <i @click="camera3D.grid.serifsStep--" class="icon icon-minus"></i> {{ camera3D.grid.serifsStep }} <i @click="camera3D.grid.serifsStep++" class="icon icon-plus"></i></p>
-                        <at-slider v-model="camera3D.grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>
-                        <p>Size serifs: <i @click="camera3D.grid.serifsSize--" class="icon icon-minus"></i> {{ camera3D.grid.serifsSize }} <i @click="camera3D.grid.serifsSize++" class="icon icon-plus"></i></p>
-                        <at-slider v-model="camera3D.grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>
-                    </div>
-                </at-tab-pane>
-                <at-tab-pane label="Plot" name="plot">
-                    <div class="tab-pad">
-                        <h3>Function</h3>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="plot.fun" label="Shenzhen">Show</at-checkbox>
-                        </div>
+            <div class="nav-tabs-head">
+                <at-button
+                        v-for="item in tabs"
+                        :key="item.title"
+                        :icon="item.icon"
+                        :class="{ 'at-btn--primary': item.status}"
+                        @click="choiseTab(item.title)"
+                        size="smaller">{{ item.title }}</at-button>
+            </div>
+            <div class="nav-tabs-body">
+                <div v-if="tabs.nav.status" class="nav-tab">
+                    <at-button
+                            v-for="item in nav"
+                            :key="item.title"
+                            :icon="item.icon"
+                            :class="{ 'at-btn--primary': item.status}"
+                            @click="choiseNav(item.title)"
+                            circle></at-button>
+                </div>
+                <div v-if="tabs.plot.status" class="nav-tab">
 
-                        <h3>Points</h3>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
-                        </div>
-
-                        <p>Step points: {{ points.minStep }}</p>
-                        <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="clearPoints">Remove points</at-button>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="plotPointsFromRoot">From root points</at-button>
-                        </div>
-                        <div class="row">
-                            <div class="row-fix-width">
-                                <p>x</p>
-                                <p v-for="item in points.x">{{ item }}</p>
-                            </div>
-                            <div class="row-fix-width">
-                                <p>y</p>
-                                <p v-for="item in points.y">{{ item }}</p>
-                            </div>
-                            <div class="row-fix-width">
-                                <p>h</p>
-                                <p v-for="item in points.h">{{ item }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </at-tab-pane>
-            </at-tabs>
+                    <at-button type="primary" @click="plotPointsFromRoot">From root points</at-button>
+                </div>
+                <div v-if="tabs.root.status" class="nav-tab">
+                    <root-points></root-points>
+                </div>
+            </div>
         </div>
+
     </div>
 </template>
 
 <script>
 
+    import RootPoints from "./RootPoints";
+    import InputFloatType from "./Elements/input-float-type";
     export default {
         name: "Scena3D",
+        components: {InputFloatType, RootPoints},
         data () {
             return {
                 camera3D: {
@@ -127,11 +90,23 @@
                         title: 'moveCenter',
                         icon: 'icon-move'
                     },
-                    // addPoint: {
-                    //     status: false,
-                    //     title: 'addPoint',
-                    //     icon: 'icon-plus-circle'
-                    // },
+                },
+                tabs: {
+                    nav: {
+                        status: true,
+                        title: 'Nav',
+                        icon: 'icon-move'
+                    },
+                    plot: {
+                        status: false,
+                        title: 'Plot',
+                        icon: 'icon-map'
+                    },
+                    root: {
+                        status: false,
+                        title: 'Root',
+                        icon: 'icon-home'
+                    },
                 },
                 openNav: false,
                 firstLoad: false,
@@ -214,6 +189,21 @@
                 }
             },
 
+            /**
+             * Choise navigation canvas
+             *
+             * Status: Done
+             */
+            choiseTab: function(title){
+                var tabs = this.tabs;
+                for (let item in tabs) {
+                    if (this.tabs[`${item}`].title === title) {
+                        this.tabs[`${item}`].status = true;
+                    } else {
+                        this.tabs[`${item}`].status = false;
+                    }
+                }
+            },
 
             firstLoadScene: function () {
                 this.reBuild();

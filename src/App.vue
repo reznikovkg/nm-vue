@@ -43,30 +43,55 @@ export default {
         margin: 10px 0;
     }
 
-    .row {
-        margin-bottom: 10px;
 
-        button {
-            margin-right: 10px;
-            margin-bottom: 10px;
+    .btn-group {
+        & button {
+            margin-bottom: 5px;
         }
-
-        &.btn {
-            &:last-child {
-              margin: 0;
-            }
-            margin-bottom: 0;
-        }
-
     }
 
-    .at-tabs {
-        overflow: hidden;
+
+    .nav-scene {
         position: absolute;
-        right: 10px;
-        left: 10px;
-        bottom: 10px;
-        top: 60px;
-        overflow-y: scroll;
+        right: 0;
+        top: 0;
+        width: 300px;
+        height: 100%;
+        background: #fff;
+        border-left: 2px solid #6190e8;
+        padding: 10px;
+        transition: 0.3s;
+
+        & .nav-head {
+            & h4 {
+
+                line-height: 40px;
+                font-size: 24px;
+                color: #6190e8;
+            }
+        }
+
+        & .nav-tabs-head {
+            margin-top: 10px;
+            & button {
+                margin-bottom: 5px;
+                margin-right: 5px;
+            }
+        }
+
+        /*& .tab-pad {*/
+            /*padding: 0 10px;*/
+            /*& h3 {*/
+                /*margin-top: 10px;*/
+            /*}*/
+
+            /*& .row {*/
+                /*& .row-fix-width {*/
+                    /*width: 50px;*/
+                    /*overflow: hidden;*/
+                    /*margin-right: 20px;*/
+                /*}*/
+            /*}*/
+        /*}*/
     }
 </style>

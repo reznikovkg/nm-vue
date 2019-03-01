@@ -26,127 +26,96 @@
 
 
         <div class="nav-scene" v-if="openNav">
-            <div class="head-nav">
+            <div class="nav-head">
                 <h4>CG-VUE</h4>
             </div>
-            <at-tabs>
-                <at-tab-pane label="Nav" name="nav">
-                    <div class="tab-pad">
-                        <div class="row">
-                            <at-button
-                                    v-for="item in nav"
-                                    :key="item.title"
-                                    :icon="item.icon"
-                                    :class="{ 'at-btn--primary': item.status}"
-                                    @click="choiseNav(item.title)"
-                                    circle></at-button>
-                        </div>
-                    </div>
-                </at-tab-pane>
-                <at-tab-pane label="Grid" name="grid">
-                    <div class="tab-pad">
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="camera2D.grid.axiss" label="Shenzhen">Axis</at-checkbox>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="camera2D.grid.grid" label="Shenzhen">Grid</at-checkbox>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="camera2D.grid.serifs" label="Shenzhen">Serifs</at-checkbox>
-                        </div>
+            <div class="nav-tabs-head">
+                <at-button
+                        v-for="item in tabs"
+                        :key="item.title"
+                        :icon="item.icon"
+                        :class="{ 'at-btn--primary': item.status}"
+                        @click="choiseTab(item.title)"
+                        size="smaller">{{ item.title }}</at-button>
+            </div>
+            <div class="nav-tabs-body">
+                <div v-if="tabs.nav.status" class="nav-tab">
+                    <at-button
+                            v-for="item in nav"
+                            :key="item.title"
+                            :icon="item.icon"
+                            :class="{ 'at-btn--primary': item.status}"
+                            @click="choiseNav(item.title)"
+                            circle></at-button>
+                </div>
+                <div v-if="tabs.grid.status" class="nav-tab">
+                    <at-checkbox v-model="camera2D.grid.axiss" label="Shenzhen">Axis</at-checkbox>
+                    <at-checkbox v-model="camera2D.grid.grid" label="Shenzhen">Grid</at-checkbox>
+                    <at-checkbox v-model="camera2D.grid.serifs" label="Shenzhen">Serifs</at-checkbox>
 
-                        <p>Step serifs:
-                            <i @click="camera2D.grid.serifsStep--" class="icon icon-minus"></i>
-                            {{ camera2D.grid.serifsStep }}
-                            <i @click="camera2D.grid.serifsStep++" class="icon icon-plus"></i>
-                        </p>
-                        <input-float-type v-model="camera2D.grid.serifsStep"></input-float-type>
-                        <!--<at-slider v-model="camera2D.grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>-->
 
-                        <p>Size serifs:
-                            <i @click="camera2D.grid.serifsSize--" class="icon icon-minus"></i>
-                            {{ camera2D.grid.serifsSize }}
-                            <i @click="camera2D.grid.serifsSize++" class="icon icon-plus"></i>
-                        </p>
-                        <input-float-type v-model="camera2D.grid.serifsSize"></input-float-type>
-                        <!--<at-slider v-model="camera2D.grid.serifsSize" :step="1" :min="2" :max="100"></at-slider>-->
-                    </div>
-                </at-tab-pane>
-                <at-tab-pane label="Plot" name="plot">
-                    <div class="tab-pad">
-                        <h3>Function</h3>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="plot.fun" label="Shenzhen">Show</at-checkbox>
-                        </div>
-                        <hr>
-                        <h3>Spline</h3>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="plot.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
-                        </div>
-                        <div class="row no-gutter btn">
-                            <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
-                            <at-button type="primary" size="small" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
-                        </div>
-                        <hr>
-                        <h3>Newton</h3>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
-                        </div>
-                        <div class="row no-gutter btn">
-                            <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
-                        </div>
-                        <hr>
-                        <h3>Points</h3>
-                        <div class="row no-gutter">
-                            <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
-                        </div>
-                        <p>Step points: {{ points.minStep }}</p>
-                        <input-float-type v-model="points.minStep"></input-float-type>
-                        <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="clearPoints">Remove points</at-button>
-                            <at-button type="primary" @click="clearPointsRoot">Remove points ROOT</at-button>
-                        </div>
-                        <div class="row no-gutter">
-                            <at-button type="primary" @click="addPointsToRoot">Add points to root </at-button>
-                        </div>
-                        <div class="row">
-                            <div class="row-fix-width">
-                                <p>x</p>
-                                <p v-for="item in points.x">{{ item }}</p>
-                            </div>
-                            <div class="row-fix-width">
-                                <p>y</p>
-                                <p v-for="item in points.y">{{ item }}</p>
-                            </div>
-                            <div class="row-fix-width">
-                                <p>h</p>
-                                <p v-for="item in points.h">{{ item }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </at-tab-pane>
-                <at-tab-pane label="Root" name="root">
-                    <div class="tab-pad">
-                        <div class="row" v-for="rPoints in $root.points">
+                    <p>Step serifs:
+                        <i @click="camera2D.grid.serifsStep--" class="icon icon-minus"></i>
+                        {{ camera2D.grid.serifsStep }}
+                        <i @click="camera2D.grid.serifsStep++" class="icon icon-plus"></i>
+                    </p>
+                    <input-float-type v-model="camera2D.grid.serifsStep"></input-float-type>
+                    <!--<at-slider v-model="camera2D.grid.serifsStep" :step="1" :min="1" :max="1000"></at-slider>-->
 
-                            <div class="row-fix-width">
-                                <p>x</p>
-                                <p v-for="item in rPoints.x">{{ item }}</p>
-                            </div>
-                            <div class="row-fix-width">
-                                <p>y</p>
-                                <p v-for="item in rPoints.y">{{ item }}</p>
-                            </div>
-                            <div class="row-fix-width">
-                                <p>z</p>
-                                <p v-for="item in rPoints.z">{{ item }}</p>
-                            </div>
-                            <hr>
+                    <p>Size serifs:
+                        <i @click="camera2D.grid.serifsSize--" class="icon icon-minus"></i>
+                        {{ camera2D.grid.serifsSize }}
+                        <i @click="camera2D.grid.serifsSize++" class="icon icon-plus"></i>
+                    </p>
+                    <input-float-type v-model="camera2D.grid.serifsSize"></input-float-type>
+                </div>
+                <div v-if="tabs.plot.status" class="nav-tab">
+                    <h3>Function</h3>
+                    <at-checkbox v-model="plot.fun" label="Shenzhen">Show</at-checkbox>
+                    <hr>
+                    <h3>Spline</h3>
+                    <at-checkbox v-model="plot.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
+
+                    <div class="btn-group">
+                        <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
+                        <at-button type="primary" size="small" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
+                    </div>
+                    <hr>
+                    <h3>Newton</h3>
+                    <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
+                    <div class="btn-group">
+                        <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
+                    </div>
+                    <hr>
+                    <h3>Points</h3>
+                    <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
+                    <p>Step points: {{ points.minStep }}</p>
+                    <input-float-type v-model="points.minStep"></input-float-type>
+                    <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
+                    <div class="btn-group">
+                        <at-button type="primary" size="small" @click="clearPoints">Remove points</at-button>
+                        <at-button type="primary" size="small" @click="clearPointsRoot">Remove points ROOT</at-button>
+                        <at-button type="primary" size="small" @click="addPointsToRoot">Add points to root</at-button>
+                    </div>
+                    <div class="row">
+                        <div class="row-fix-width">
+                            <p>x</p>
+                            <p v-for="item in points.x">{{ item }}</p>
+                        </div>
+                        <div class="row-fix-width">
+                            <p>y</p>
+                            <p v-for="item in points.y">{{ item }}</p>
+                        </div>
+                        <div class="row-fix-width">
+                            <p>h</p>
+                            <p v-for="item in points.h">{{ item }}</p>
                         </div>
                     </div>
-                </at-tab-pane>
-            </at-tabs>
+                </div>
+                <div v-if="tabs.root.status" class="nav-tab">
+                    <root-points></root-points>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -154,9 +123,10 @@
 <script>
 
     import InputFloatType from "./Elements/input-float-type";
+    import RootPoints from "./RootPoints";
     export default {
         name: "Scena2D",
-        components: {InputFloatType},
+        components: {RootPoints, InputFloatType},
         data () {
             return {
                 camera2D: {
@@ -183,6 +153,28 @@
                         status: false,
                         title: 'addComboPoints',
                         icon: 'icon-trending-up'
+                    },
+                },
+                tabs: {
+                    nav: {
+                        status: true,
+                        title: 'Nav',
+                        icon: 'icon-move'
+                    },
+                    grid: {
+                        status: false,
+                        title: 'Grid',
+                        icon: 'icon-grid'
+                    },
+                    plot: {
+                        status: false,
+                        title: 'Plot',
+                        icon: 'icon-map'
+                    },
+                    root: {
+                        status: false,
+                        title: 'Root',
+                        icon: 'icon-home'
                     },
                 },
                 openNav: false,
@@ -251,6 +243,22 @@
                         this.nav[`${item}`].status = true;
                     } else {
                         this.nav[`${item}`].status = false;
+                    }
+                }
+            },
+
+            /**
+             * Choise navigation canvas
+             *
+             * Status: Done
+             */
+            choiseTab: function(title){
+                var tabs = this.tabs;
+                for (let item in tabs) {
+                    if (this.tabs[`${item}`].title === title) {
+                        this.tabs[`${item}`].status = true;
+                    } else {
+                        this.tabs[`${item}`].status = false;
                     }
                 }
             },
@@ -766,38 +774,5 @@
         opacity: 0;
     }
 
-    .nav-scene {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 300px;
-        height: 100%;
-        background: #fff;
-        border-left: 2px solid #6190e8;
-        padding: 10px;
-        transition: 0.3s;
 
-        & .head-nav {
-            & h4 {
-
-                line-height: 40px;
-                font-size: 24px;
-                color: #6190e8;
-            }
-        }
-        & .tab-pad {
-            padding: 0 10px;
-            & h3 {
-                margin-top: 10px;
-            }
-
-            & .row {
-                & .row-fix-width {
-                    width: 50px;
-                    overflow: hidden;
-                    margin-right: 20px;
-                }
-            }
-        }
-    }
 </style>
