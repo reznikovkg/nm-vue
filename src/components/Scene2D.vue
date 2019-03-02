@@ -477,7 +477,9 @@
              * Add points to root from this.points (adding scene)
              */
             addPointsToRoot: function () {
-                this.$root.points.push(this.points);
+                var points = new Points();
+                points.copy(this.points);
+                this.$root.points.push(points);
             },
 
 

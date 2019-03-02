@@ -56,6 +56,27 @@ class Points {
     }
 
     /**
+     *
+     * @param t
+     */
+    copy(t) {
+        const l = t.x.length;
+
+        for (let i = 0; i < l; i++) {
+            this.x.push(t.x[i]);
+            this.y.push(t.y[i]);
+            this.z.push(t.z[i]);
+            this.identity.cells.push(t.identity.cells[i]);
+        }
+
+        const lH = t.h.length;
+
+        for (let i = 0; i < lH; i++) {
+            this.h.push(t.h[i]);
+        }
+    }
+
+    /**
      * Affine transform rotation of points 2D
      *
      * @param deg

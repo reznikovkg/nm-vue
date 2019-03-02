@@ -1,7 +1,10 @@
 <template>
     <div>
         <p>Root points</p>
-        <div class="row" v-for="rPoints in $root.points">
+        <div v-for="rPoints in $root.points">
+
+            <at-button type="primary" size="small" @click="removePoints(rPoints)">Remove points</at-button>
+
             <div class="row-fix-width">
                 <p>x</p>
                 <p v-for="item in rPoints.x">{{ item.toFixed(2) }}</p>
@@ -21,16 +24,19 @@
 
 <script>
     export default {
-        name: "RootPoints"
+        name: "RootPoints",
+        methods: {
+            removePoints: function (points) {
+
+            }
+        }
     }
 </script>
 
 <style scoped lang="less">
-    .row {
-        & .row-fix-width {
-            width: 50px;
-            overflow: hidden;
-            margin-right: 20px;
-        }
+    .row-fix-width {
+        width: 50px;
+        overflow: hidden;
+        margin-right: 20px;
     }
 </style>
