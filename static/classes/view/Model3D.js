@@ -11,10 +11,6 @@ class Model3D {
         this._Edges = null;
 
         this.edges = new Matrix();
-
-
-
-
     }
 
     setVertices(matr) {
@@ -31,6 +27,14 @@ class Model3D {
         this.projectedVertices = pr.compWith(this.vertices, true);
     }
 
+    applyProject (at,pr) {
+        this.apply(at);
+        this.project(pr);
+    }
+
+    getVerticesLength () {
+        return this.vertices.getColNum();
+    }
 
     getProjectX(t) {
         return this.projectedVertices.cells[0][t] / this.projectedVertices.cells[2][t];

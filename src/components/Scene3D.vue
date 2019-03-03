@@ -50,6 +50,73 @@
                 <div v-if="tabs.plot.status" class="nav-tab">
 
                     <at-button type="primary" @click="plotPointsFromRoot">From root points</at-button>
+                    <hr>
+                    <h3>Model</h3>
+                    <div class="btn-group">
+                        <at-button v-if="!model3D.model3D" type="primary" size="small" @click="createModel3D">Create</at-button>
+                        <!--<at-button v-if="model3D.model3D" type="primary" size="small" @click="removeKinematicModel">Remove</at-button>-->
+                    </div>
+                    <div v-if="model3D.model3D">
+                        <div>
+                            <at-checkbox v-model="plot.model3D" label="Shenzhen" :disabled="model3D.isActive">Show</at-checkbox>
+                        </div>
+
+                        <!--<div class="rowFlex">-->
+                            <!--<div class="row-fix-width" style="width: 80px">-->
+                                <!--<p>Guide</p>-->
+                                <!--<at-select v-model="kinematicModel.selectGuide" :placeholder="'Guide'">-->
+                                    <!--<at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>-->
+                                <!--</at-select>-->
+                            <!--</div>-->
+                            <!--<div class="row-fix-width" style="width: 80px">-->
+                                <!--<p>Form</p>-->
+                                <!--<at-select v-model="kinematicModel.selectForm" :placeholder="'Form'">-->
+                                    <!--<at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>-->
+                                <!--</at-select>-->
+                            <!--</div>-->
+                            <!--<div class="row-fix-width">-->
+                                <!--<p>Action</p>-->
+                                <!--<at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="btn-group">-->
+                            <!--<at-button type="primary" size="small" @click="kinematicModelPlotDefault">Plot default</at-button>-->
+                        <!--</div>-->
+                    </div>
+                    <hr>
+                    <h3>Kinematic model</h3>
+                    <div class="btn-group">
+                        <at-button v-if="!kinematicModel.kinematicModel" type="primary" size="small" @click="createKinematicModel">Create</at-button>
+                        <at-button v-if="kinematicModel.kinematicModel" type="primary" size="small" @click="removeKinematicModel">Remove</at-button>
+                    </div>
+                    <div v-if="kinematicModel.kinematicModel">
+                        <div>
+                            <at-checkbox v-model="plot.kinematicModel" label="Shenzhen" :disabled="!kinematicModel.isActive">Show</at-checkbox>
+                        </div>
+
+                        <div class="rowFlex">
+                            <div class="row-fix-width" style="width: 80px">
+                                <p>Guide</p>
+                                <at-select v-model="kinematicModel.selectGuide" :placeholder="'Guide'">
+                                    <at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>
+                                </at-select>
+                            </div>
+                            <div class="row-fix-width" style="width: 80px">
+                                <p>Form</p>
+                                <at-select v-model="kinematicModel.selectForm" :placeholder="'Form'">
+                                    <at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>
+                                </at-select>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>Action</p>
+                                <at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <at-button type="primary" size="small" @click="kinematicModelPlotDefault">Plot default</at-button>
+                        </div>
+                    </div>
+                    <hr>
                 </div>
                 <div v-if="tabs.root.status" class="nav-tab">
                     <root-points></root-points>
@@ -82,7 +149,6 @@
                     z: new Model3D()
                 },
 
-                model3D: {},
                 points: {},
                 nav: {
                     moveCenter: {
@@ -112,19 +178,21 @@
                 firstLoad: false,
 
                 plot: {
-                    // fun: false,
-                    // spline: false,
-                    points: true,
-                    // polynom: false
+                    kinematicModel: false,
+                    points: false,
+                    model3D: false
                 },
-                // spline: {
-                //     isActive: false,
-                //     spline: null
-                // },
-                // polynom: {
-                //     isActive: false,
-                //     polynom: null
-                // }
+                model3D: {
+                    isActive: false,
+                    model3D: null,
+                },
+                kinematicModel: {
+                    isActive: false,
+                    kinematicModel: null,
+
+                    selectGuide: null,
+                    selectForm: null,
+                },
             }
         },
         computed: {
@@ -141,7 +209,6 @@
             this.axis3D.y.setVertices(new Matrix([[0,0],[1,0],[0,0],[1,1]]));
             this.axis3D.z.setVertices(new Matrix([[0,0],[0,0],[1,0],[1,1]]));
 
-            this.model3D = new Model3D();
 
 
             //this.points = new Points([1,2,3,4], [1,0,1,0], [0,0,0,0]);
@@ -221,46 +288,88 @@
                     //     this.points.AT2D_RotationDeg(Math.PI / 18); break;
                     // }
                     case 87: {
-                        this.points.AT3D_Scaling(1.1, 1.1, 1.1); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Scaling(1.1, 1.1, 1.1),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 81: {
-                        this.points.AT3D_Scaling(0.9, 0.9, 0.9); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Scaling(0.9, 0.9, 0.9),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 33: {
-                        this.points.AT3D_Translation(0, 0, -0.5); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Translation(0, 0, -0.5),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 34: {
-                        this.points.AT3D_Translation(0, 0, 0.5); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Translation(0, 0, 0.5),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 37: {
-                        this.points.AT3D_Translation(-0.5, 0, 0); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Translation(-0.5, 0, 0),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 38: {
-                        this.points.AT3D_Translation(0, 0.5, 0); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Translation(0, 0.5, 0),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 39: {
-                        this.points.AT3D_Translation(0.5, 0, 0); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Translation(0.5, 0, 0),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 40: {
-                        this.points.AT3D_Translation(0, -0.5, 0); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_Translation(0, -0.5, 0),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 98: {
-                        this.points.AT3D_RotationXDeg(Math.PI / 18); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_RotationXDeg(Math.PI / 18),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 104: {
-                        this.points.AT3D_RotationXDeg(-Math.PI / 18); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_RotationXDeg(-Math.PI / 18),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 100: {
-                        this.points.AT3D_RotationYDeg(Math.PI / 18); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_RotationYDeg(Math.PI / 18),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 102: {
-                        this.points.AT3D_RotationYDeg(-Math.PI / 18); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_RotationYDeg(-Math.PI / 18),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 103: {
-                        this.points.AT3D_RotationZDeg(Math.PI / 18); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_RotationZDeg(Math.PI / 18),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     case 105: {
-                        this.points.AT3D_RotationZDeg(-Math.PI / 18); break;
+                        this.model3D.model3D.applyProject(
+                            AT3D_RotationZDeg(-Math.PI / 18),
+                            this.camera3D.worldToProjectF(true)
+                        ); break;
                     }
                     // case 106: {
                     //     this.camera3D.vN.cells[0]+=1;
@@ -290,11 +399,13 @@
              */
             reBuild: function () {
                 this.camera3D.clear();
-                this.axisPlot3D();
+                // this.axisPlot3D();
 
                 // this.plotFun();
                 // this.plotSpline();
-                this.plotPoints();
+                this.plotModel3D();
+                this.kinematicModelPlotDefault();
+                // this.plotPoints();
                 // this.plotPNewton();
             },
 
@@ -422,86 +533,6 @@
                 ctx.stroke();
             },
 
-            // /**
-            //  * Combo-adding points (start method)
-            //  *
-            //  * Status: Done *
-            //  */
-            // addComboPointsStart: function (e) {
-            //     this.points.clear();
-            //
-            //     this.points.combo = true;
-            //
-            //     this.spline.isActive = false;
-            //     this.polynom.isActive = false;
-            //     this.plot.spline = false;
-            //     this.plot.polynom = false;
-            //
-            //     this.points.addPoint(
-            //         this.camera2D.ScreenToWorldX(e.clientX),
-            //         this.camera2D.ScreenToWorldY(e.clientY)
-            //     );
-            // },
-            //
-            // /**
-            //  * Combo-adding points (drag method)
-            //  *
-            //  * Status: Done *
-            //  */
-            // addComboPointsDrag: function (e) {
-            //     if (!this.points.combo) {
-            //         return;
-            //     }
-            //     if (this.points.x[this.points.x.length-1] + this.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
-            //         return;
-            //     }
-            //
-            //     this.points.addPoint(
-            //         this.camera2D.ScreenToWorldX(e.clientX),
-            //         this.camera2D.ScreenToWorldY(e.clientY)
-            //     );
-            // },
-            //
-            // /**
-            //  * Combo-adding points (stop method)
-            //  *
-            //  * Status: Done *
-            //  */
-            // addComboPointsStop: function () {
-            //     this.points.combo = false;
-            //
-            //     if ((this.spline.isActive)&&(this.plot.spline)) {
-            //         this.setSpline();
-            //     }
-            //
-            //     if ((this.polynom.isActive)&&(this.plot.polynom)) {
-            //         this.setPNewton();
-            //     }
-            // },
-            //
-            // /**
-            //  * Add point for nav
-            //  *
-            //  * Status: Optional
-            //  */
-            // addPoint: function (e) {
-            //     if (this.points.x[this.points.x.length-1] + this.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
-            //         return;
-            //     }
-            //
-            //     this.points.addPoint(
-            //         this.camera2D.ScreenToWorldX(e.clientX),
-            //         this.camera2D.ScreenToWorldY(e.clientY)
-            //     );
-            //
-            //     if ((this.spline.isActive)&&(this.plot.spline)) {
-            //         this.setSpline();
-            //     }
-            //
-            //     if ((this.polynom.isActive)&&(this.plot.polynom)) {
-            //         this.setPNewton();
-            //     }
-            // },
 
 
 
@@ -514,11 +545,58 @@
 
 
 
+            createKinematicModel: function () {
+                this.kinematicModel.kinematicModel = new KinematicModel();
+            },
+            removeKinematicModel: function () {
+                this.kinematicModel.kinematicModel = null;
+            },
+            setKitematicGuideForm: function () {
+                this.kinematicModel.kinematicModel.setGuide(this.$root.points[this.kinematicModel.selectGuide]);
+                this.kinematicModel.kinematicModel.setForm(this.$root.points[this.kinematicModel.selectForm]);
+
+                this.kinematicModel.kinematicModel.setPointsDefault();
+            },
+            kinematicModelPlotDefault: function () {
+
+                if (!this.plot.kinematicModel) {
+                    return;
+                }
+
+                var ctx = this.canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.strokeStyle = '#7e0700';
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 3;
 
 
+                this.kinematicModel.kinematicModel.project(this.camera3D.worldToProjectF(true));
 
+                for (var i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
+                    for (var j = 1; j < this.kinematicModel.kinematicModel.guide.x.length; j++) {
+                        this.camera3D.moveTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
+                        );
+                        this.camera3D.lineTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
+                        );
 
+                        this.camera3D.moveTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
+                        );
+                        this.camera3D.lineTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(i),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(i)
+                        );
+                    }
+                }
 
+                ctx.stroke();
+            },
 
 
 
@@ -552,34 +630,53 @@
                     this.points.identity.cells
                 ]));
 
-                // console.log(this.camera3D.worldToProjectF(true));
-                this.model3D.project(this.camera3D.worldToProjectF(true), true);
+                // this.model3D.project(this.camera3D.worldToProjectF(true));
 
                 for (var i = 1; i < this.points.x.length; i++) {
                     this.camera3D.moveTo(this.model3D.getProjectX(i-1), this.model3D.getProjectY(i-1));
                     this.camera3D.lineTo(this.model3D.getProjectX(i), this.model3D.getProjectY(i));
                 }
 
+                ctx.stroke();
+            },
 
-                // var s = Math.abs(
-                //     this.camera2D.ScreenToWorldY(0) -
-                //     this.camera2D.ScreenToWorldY(this.camera2D.grid.serifsSize)
-                // );
-                //
-                // for (var i = 0; i < this.points.x.length; i++) {
-                //
-                //     this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.y[i]-(s/2));
-                //     this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.y[i]+(s/2));
-                //
-                //
-                //     this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.y[i]+(s/2));
-                //     this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.y[i]-(s/2));
-                //
-                // }
+            plotModel3D: function () {
+                if (!this.plot.model3D) {
+                    return;
+                }
+
+                var ctx = this.canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.strokeStyle = '#107e00';
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 3;
+
+
+                for (var i = 1; i < this.model3D.model3D.getVerticesLength(); i++) {
+                    this.camera3D.moveTo(this.model3D.model3D.getProjectX(i-1), this.model3D.model3D.getProjectY(i-1));
+                    this.camera3D.lineTo(this.model3D.model3D.getProjectX(i), this.model3D.model3D.getProjectY(i));
+                }
 
                 ctx.stroke();
             },
 
+            createModel3D: function () {
+                this.model3D.model3D = new Model3D();
+                this.model3D.model3D.setVertices(new Matrix([
+                    this.points.x,
+                    this.points.y,
+                    this.points.z,
+                    this.points.identity.cells
+                ]));
+                this.plot.model3D = true;
+                this.model3D.model3D.project(this.camera3D.worldToProjectF(true));
+            },
+            removeModel3D: function () {
+                this.plot.model3D = false;
+                this.model3D.isActive = false;
+                this.model3D.model3D = null;
+            },
 
 
             plotPointsFromRoot: function () {
@@ -605,6 +702,18 @@
             points: {
                 handler: function () {
                     this.points.setH();
+                    this.reBuild();
+                },
+                deep: true
+            },
+            model3D: {
+                handler: function () {
+                    this.reBuild();
+                },
+                deep: true
+            },
+            kinematicModel: {
+                handler: function () {
                     this.reBuild();
                 },
                 deep: true

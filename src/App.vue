@@ -62,6 +62,8 @@ export default {
         padding: 10px;
         transition: 0.3s;
 
+        display: flex;
+        flex-direction: column;
         & .nav-head {
             & h4 {
 
@@ -79,19 +81,20 @@ export default {
             }
         }
 
-        /*& .tab-pad {*/
-            /*padding: 0 10px;*/
-            /*& h3 {*/
-                /*margin-top: 10px;*/
-            /*}*/
+        & .nav-tabs-body {
+            flex: 1;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
 
-            /*& .row {*/
-                /*& .row-fix-width {*/
-                    /*width: 50px;*/
-                    /*overflow: hidden;*/
-                    /*margin-right: 20px;*/
-                /*}*/
-            /*}*/
-        /*}*/
+    }
+
+    .rowFlex {
+        display: flex;
+    }
+
+    .row-fix-width {
+        width: 50px;
+        margin-right: 10px;
     }
 </style>

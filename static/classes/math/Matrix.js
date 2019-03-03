@@ -192,6 +192,14 @@ class Matrix {
     }
 
 
+    getProjectX(t) {
+        return this.cells[0][t] / this.cells[2][t];
+    }
+
+    getProjectY(t) {
+        return this.cells[1][t] / this.cells[2][t];
+    }
+
     getStrFirst() {
         return this.cells[0];
     }
