@@ -71,10 +71,10 @@
                 </div>
                 <div v-if="tabs.plot.status" class="nav-tab">
                     <h3>Function</h3>
-                    <at-checkbox v-model="plot.fun" label="Shenzhen">Show</at-checkbox>
+                    <at-checkbox v-model="show.fun" label="Shenzhen">Show</at-checkbox>
                     <hr>
                     <h3>Spline</h3>
-                    <at-checkbox v-model="plot.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
+                    <at-checkbox v-model="show.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
 
                     <div class="btn-group">
                         <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
@@ -82,16 +82,15 @@
                     </div>
                     <hr>
                     <h3>Newton</h3>
-                    <at-checkbox v-model="plot.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
+                    <at-checkbox v-model="show.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
                     <div class="btn-group">
                         <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
                     </div>
                     <hr>
                     <h3>Points</h3>
-                    <at-checkbox v-model="plot.points" label="Shenzhen">Show</at-checkbox>
+                    <at-checkbox v-model="show.points" label="Shenzhen">Show</at-checkbox>
                     <p>Step points: {{ points.minStep }}</p>
                     <input-float-type v-model="points.minStep"></input-float-type>
-                    <at-slider v-model="points.minStep" :step="0.5" :min="1" :max="100"></at-slider>
                     <div class="btn-group">
                         <at-button type="primary" size="small" @click="clearPoints">Remove points</at-button>
                         <at-button type="primary" size="small" @click="clearPointsRoot">Remove points ROOT</at-button>
@@ -129,32 +128,29 @@
         components: {RootPoints, InputFloatType},
         data () {
             return {
+                /**
+                 * First load scene
+                 */
+                firstLoad: false,
+
+                /**
+                 * Camera
+                 */
                 camera2D: {
                     field: {
                         width: 0,
                         height: 0
                     },
                 },
-                points: {},
-                pointsToRoot: {},
-                hToRoot: 0.1,
-                nav: {
-                    moveCenter: {
-                        status: true,
-                        title: 'moveCenter',
-                        icon: 'icon-move'
-                    },
-                    addPoint: {
-                        status: false,
-                        title: 'addPoint',
-                        icon: 'icon-plus-circle'
-                    },
-                    addComboPoints: {
-                        status: false,
-                        title: 'addComboPoints',
-                        icon: 'icon-trending-up'
-                    },
-                },
+
+                /**
+                 * Menu
+                 */
+                openNav: false,
+
+                /**
+                 * Menu tabs
+                 */
                 tabs: {
                     nav: {
                         status: true,
@@ -177,14 +173,40 @@
                         icon: 'icon-home'
                     },
                 },
-                openNav: false,
-                firstLoad: false,
 
-                plot: {
+                /**
+                 * Navigation
+                 * Nav actions
+                 */
+                nav: {
+                    moveCenter: {
+                        status: true,
+                        title: 'moveCenter',
+                        icon: 'icon-move'
+                    },
+                    addPoint: {
+                        status: false,
+                        title: 'addPoint',
+                        icon: 'icon-plus-circle'
+                    },
+                    addComboPoints: {
+                        status: false,
+                        title: 'addComboPoints',
+                        icon: 'icon-trending-up'
+                    },
+                },
+
+
+                show: {
                     fun: false,
                     spline: false,
                     points: true,
                     polynom: false
+                },
+
+                hToRoot: 0.1,
+                points: {
+
                 },
                 spline: {
                     isActive: false,
@@ -386,8 +408,8 @@
 
                 this.spline.isActive = false;
                 this.polynom.isActive = false;
-                this.plot.spline = false;
-                this.plot.polynom = false;
+                this.show.spline = false;
+                this.show.polynom = false;
 
                 this.points.addPoint(
                     this.camera2D.ScreenToWorldX(e.clientX),
@@ -422,11 +444,11 @@
             addComboPointsStop: function () {
                 this.points.combo = false;
 
-                if ((this.spline.isActive)&&(this.plot.spline)) {
+                if ((this.spline.isActive)&&(this.show.spline)) {
                     this.setSpline();
                 }
 
-                if ((this.polynom.isActive)&&(this.plot.polynom)) {
+                if ((this.polynom.isActive)&&(this.show.polynom)) {
                     this.setPNewton();
                 }
             },
@@ -446,11 +468,11 @@
                     this.camera2D.ScreenToWorldY(e.clientY)
                 );
 
-                if ((this.spline.isActive)&&(this.plot.spline)) {
+                if ((this.spline.isActive)&&(this.show.spline)) {
                     this.setSpline();
                 }
 
-                if ((this.polynom.isActive)&&(this.plot.polynom)) {
+                if ((this.polynom.isActive)&&(this.show.polynom)) {
                     this.setPNewton();
                 }
             },
@@ -488,15 +510,15 @@
              * Add points to root from this.points (adding scene)
              */
             setPointsToRootFromSpline: function () {
-                this.pointsToRoot = new Points();
+                var pointsToRoot = new Points();
 
                 var stepSpline = (this.points.x[this.points.x.length-1] - this.points.x[0])/this.points.x.length;
 
                 for (var i = this.points.x[0]; i < this.points.x[this.points.x.length-1]; i += 0.33) {
-                    this.pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
+                    pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
                 }
 
-                this.$root.points.push(this.pointsToRoot);
+                this.$root.points.push(pointsToRoot);
             },
 
 
@@ -506,7 +528,7 @@
              * Plot function on scene
              */
             plotFun: function () {
-                if (this.plot.fun) {
+                if (this.show.fun) {
                     var ctx = this.canvas.getContext("2d");
                     ctx.beginPath();
                     ctx.strokeStyle = '#2600ff';
@@ -573,7 +595,7 @@
                 if (!this.spline.isActive) {
                     return;
                 }
-                if (this.plot.spline) {
+                if (this.show.spline) {
                     var ctx = this.canvas.getContext("2d");
                     ctx.beginPath();
                     ctx.strokeStyle = '#ff0012';
@@ -606,7 +628,7 @@
 
 
             clearPoints: function () {
-                this.plot.spline = false;
+                this.show.spline = false;
                 this.spline.isActive = false;
                 this.spline.spline = null;
 
@@ -614,7 +636,7 @@
 
             },
             plotPoints: function () {
-                if (!this.plot.points) {
+                if (!this.show.points) {
                     return;
                 }
 
@@ -664,7 +686,7 @@
                     return;
                 }
 
-                if (!this.plot.polynom) {
+                if (!this.show.polynom) {
                     return
                 }
                 var ctx = this.canvas.getContext("2d");
@@ -707,7 +729,7 @@
                 },
                 deep: true
             },
-            plot: {
+            show: {
                 handler: function () {
                     this.reBuild();
                 },

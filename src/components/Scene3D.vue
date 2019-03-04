@@ -58,7 +58,7 @@
                     </div>
                     <div v-if="model3D.model3D">
                         <div>
-                            <at-checkbox v-model="plot.model3D" label="Shenzhen" :disabled="model3D.isActive">Show</at-checkbox>
+                            <at-checkbox v-model="show.model3D" label="Shenzhen" :disabled="!model3D.isActive">Show</at-checkbox>
                         </div>
 
                         <!--<div class="rowFlex">-->
@@ -91,7 +91,7 @@
                     </div>
                     <div v-if="kinematicModel.kinematicModel">
                         <div>
-                            <at-checkbox v-model="plot.kinematicModel" label="Shenzhen" :disabled="!kinematicModel.isActive">Show</at-checkbox>
+                            <at-checkbox v-model="show.kinematicModel" label="Shenzhen" :disabled="!kinematicModel.isActive">Show</at-checkbox>
                         </div>
 
                         <div class="rowFlex">
@@ -177,7 +177,7 @@
                 openNav: false,
                 firstLoad: false,
 
-                plot: {
+                show: {
                     kinematicModel: false,
                     points: false,
                     model3D: false
@@ -288,136 +288,127 @@
                     //     this.points.AT2D_RotationDeg(Math.PI / 18); break;
                     // }
                     case 87: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Scaling(1.1, 1.1, 1.1),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.apply(
+                                AT3D_Scaling(1.1, 1.1, 1.1)
+                            );
+                            break;
+                        }
                     }
                     case 81: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Scaling(0.9, 0.9, 0.9),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.apply(
+                                AT3D_Scaling(0.9, 0.9, 0.9)
+                            );
+                            break;
+                        }
                     }
                     case 33: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_Translation(0, 0, -0.5),
-                                this.camera3D.worldToProjectF(true)
-                            ); break;
+                            this.model3D.model3D.apply(
+                                AT3D_Translation(0, 0, -0.5)
+                            );
+                            break;
                         }
                     }
                     case 34: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_Translation(0, 0, 0.5),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_Translation(0, 0, 0.5)
                             );
                             break;
                         }
                     }
                     case 37: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_Translation(-0.5, 0, 0),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_Translation(-0.5, 0, 0)
                             );
                             break;
                         }
                     }
                     case 38: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_Translation(0, 0.5, 0),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_Translation(0, 0.5, 0)
                             );
                             break;
                         }
                     }
                     case 39: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_Translation(0.5, 0, 0),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_Translation(0.5, 0, 0)
                             );
                             break;
                         }
                     }
                     case 40: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_Translation(0, -0.5, 0),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_Translation(0, -0.5, 0)
                             );
                             break;
                         }
                     }
                     case 98: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_RotationXDeg(Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_RotationXDeg(Math.PI / 18)
                             );
                             break;
                         }
                     }
                     case 104: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_RotationXDeg(-Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_RotationXDeg(-Math.PI / 18)
                             );
                             break;
                         }
                     }
                     case 100: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_RotationYDeg(Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_RotationYDeg(Math.PI / 18)
                             );
                             break;
                         }
 
                         if (this.kinematicModel.isActive) {
-                            this.kinematicModel.kinematicModel.applyProject(
-                                AT3D_RotationYDeg(Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.kinematicModel.kinematicModel.apply(
+                                AT3D_RotationYDeg(Math.PI / 18)
                             );
                             break;
                         }
                     }
                     case 102: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_RotationYDeg(-Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_RotationYDeg(-Math.PI / 18)
                             );
                             break;
                         }
 
                         if (this.kinematicModel.isActive) {
-                            this.kinematicModel.kinematicModel.applyProject(
-                                AT3D_RotationYDeg(-Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.kinematicModel.kinematicModel.apply(
+                                AT3D_RotationYDeg(-Math.PI / 18)
                             );
                             break;
                         }
                     }
                     case 103: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_RotationZDeg(Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_RotationZDeg(Math.PI / 18)
                             );
                             break;
                         }
                     }
                     case 105: {
                         if (this.model3D.isActive) {
-                            this.model3D.model3D.applyProject(
-                                AT3D_RotationZDeg(-Math.PI / 18),
-                                this.camera3D.worldToProjectF(true)
+                            this.model3D.model3D.apply(
+                                AT3D_RotationZDeg(-Math.PI / 18)
                             );
                             break;
                         }
@@ -441,6 +432,7 @@
                     //     break;
                     // }
                 }
+                this.reBuild();
             },
 
             /**
@@ -607,10 +599,11 @@
                 this.kinematicModel.kinematicModel.setForm(this.$root.points[this.kinematicModel.selectForm]);
 
                 this.kinematicModel.kinematicModel.setPointsDefault();
+                this.kinematicModel.isActive = true;
             },
             kinematicModelPlotDefault: function () {
 
-                if (!this.plot.kinematicModel) {
+                if (!this.show.kinematicModel) {
                     return;
                 }
 
@@ -624,8 +617,8 @@
 
                 this.kinematicModel.kinematicModel.project(this.camera3D.worldToProjectF(true));
 
-                for (var i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
-                    for (var j = 1; j < this.kinematicModel.kinematicModel.guide.x.length; j++) {
+                for (let i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
+                    for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
                         this.camera3D.moveTo(
                             this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
                             this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
@@ -640,10 +633,33 @@
                             this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
                         );
                         this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(i),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(i)
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
                         );
                     }
+
+                    let j = this.kinematicModel.kinematicModel.form.x.length - 1;
+
+                    this.camera3D.moveTo(
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
+                    );
+                    this.camera3D.lineTo(
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
+                    );
+                }
+
+                let i = this.kinematicModel.kinematicModel.matrixPointsProject.length - 1;
+                for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
+                    this.camera3D.moveTo(
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
+                    );
+                    this.camera3D.lineTo(
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
+                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
+                    );
                 }
 
                 ctx.stroke();
@@ -663,7 +679,7 @@
             },
 
             plotPoints: function () {
-                if (!this.plot.points) {
+                if (!this.show.points) {
                     return;
                 }
 
@@ -692,7 +708,7 @@
             },
 
             plotModel3D: function () {
-                if (!this.plot.model3D) {
+                if (!this.show.model3D) {
                     return;
                 }
 
@@ -703,6 +719,7 @@
                 ctx.setLineDash([]);
                 ctx.lineWidth = 3;
 
+                this.model3D.model3D.project(this.camera3D.worldToProjectF(true));
 
                 for (var i = 1; i < this.model3D.model3D.getVerticesLength(); i++) {
                     this.camera3D.moveTo(this.model3D.model3D.getProjectX(i-1), this.model3D.model3D.getProjectY(i-1));
@@ -720,11 +737,10 @@
                     this.points.z,
                     this.points.identity.cells
                 ]));
-                this.plot.model3D = true;
-                this.model3D.model3D.project(this.camera3D.worldToProjectF(true));
+                this.model3D.isActive = true;
             },
             removeModel3D: function () {
-                this.plot.model3D = false;
+                this.show.model3D = false;
                 this.model3D.isActive = false;
                 this.model3D.model3D = null;
             },
@@ -744,7 +760,7 @@
                 },
                 deep: true
             },
-            plot: {
+            show: {
                 handler: function () {
                     this.reBuild();
                 },
@@ -757,13 +773,13 @@
                 },
                 deep: true
             },
-            model3D: {
+            'model3D.isActive': {
                 handler: function () {
                     this.reBuild();
                 },
                 deep: true
             },
-            kinematicModel: {
+            'kinematicModel.isActive': {
                 handler: function () {
                     this.reBuild();
                 },
