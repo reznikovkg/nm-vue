@@ -300,76 +300,127 @@
                         ); break;
                     }
                     case 33: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Translation(0, 0, -0.5),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_Translation(0, 0, -0.5),
+                                this.camera3D.worldToProjectF(true)
+                            ); break;
+                        }
                     }
                     case 34: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Translation(0, 0, 0.5),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_Translation(0, 0, 0.5),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 37: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Translation(-0.5, 0, 0),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_Translation(-0.5, 0, 0),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 38: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Translation(0, 0.5, 0),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_Translation(0, 0.5, 0),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 39: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Translation(0.5, 0, 0),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_Translation(0.5, 0, 0),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 40: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_Translation(0, -0.5, 0),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_Translation(0, -0.5, 0),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 98: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_RotationXDeg(Math.PI / 18),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_RotationXDeg(Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 104: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_RotationXDeg(-Math.PI / 18),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_RotationXDeg(-Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 100: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_RotationYDeg(Math.PI / 18),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_RotationYDeg(Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
+
+                        if (this.kinematicModel.isActive) {
+                            this.kinematicModel.kinematicModel.applyProject(
+                                AT3D_RotationYDeg(Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 102: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_RotationYDeg(-Math.PI / 18),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_RotationYDeg(-Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
+
+                        if (this.kinematicModel.isActive) {
+                            this.kinematicModel.kinematicModel.applyProject(
+                                AT3D_RotationYDeg(-Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 103: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_RotationZDeg(Math.PI / 18),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_RotationZDeg(Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     case 105: {
-                        this.model3D.model3D.applyProject(
-                            AT3D_RotationZDeg(-Math.PI / 18),
-                            this.camera3D.worldToProjectF(true)
-                        ); break;
+                        if (this.model3D.isActive) {
+                            this.model3D.model3D.applyProject(
+                                AT3D_RotationZDeg(-Math.PI / 18),
+                                this.camera3D.worldToProjectF(true)
+                            );
+                            break;
+                        }
                     }
                     // case 106: {
                     //     this.camera3D.vN.cells[0]+=1;
@@ -399,7 +450,7 @@
              */
             reBuild: function () {
                 this.camera3D.clear();
-                // this.axisPlot3D();
+                this.axisPlot3D();
 
                 // this.plotFun();
                 // this.plotSpline();

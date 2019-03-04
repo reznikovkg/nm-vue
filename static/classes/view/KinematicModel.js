@@ -72,10 +72,20 @@ class KinematicModel {
 
     project(pr) {
         for (let i = 0; i < this.matrixPoints.length; i++) {
-            this.matrixPointsProject[i] = pr.compWith(this.matrixPoints[i], true);
+            this.matrixPointsProject[i] = new Matrix();
+            this.matrixPointsProject[i].setArray( pr.compWith(this.matrixPoints[i], true).cells );
         }
     }
 
+    applyProject(at,pr) {
+        for (let i = 0; i < this.matrixPoints.length; i++) {
+            console.log(at);
+            this.matrixPoints[i] = at.compWith(this.matrixPoints[i], true);
+            this.matrixPoints[i] = pr.compWith(this.matrixPoints[i], true);
+            this.matrixPointsProject[i] = new Matrix();
+            this.matrixPointsProject[i].setArray( this.matrixPoints[i].cells );
+        }
+    }
 
 
     /**
