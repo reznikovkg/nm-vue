@@ -12,6 +12,8 @@ class Points {
 
         this.combo = false;
         this.minH = 1;
+
+        this.setH();
     }
 
     /**

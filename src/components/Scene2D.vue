@@ -69,7 +69,38 @@
                     </p>
                     <input-float-type v-model="camera2D.grid.serifsSize"></input-float-type>
                 </div>
-                <div v-if="tabs.plot.status" class="nav-tab">
+                <div v-if="tabs.plot.status" class="nav-tab"><hr>
+                    <h3>Points</h3>
+                    <div class="btn-group">
+                        <at-button v-if="!points.points" type="primary" size="small" @click="createPoints">Create</at-button>
+                        <at-button v-if="points.points" type="primary" size="small" @click="removePoints">Remove</at-button>
+                    </div>
+                    <div v-if="points.points">
+                        <at-checkbox v-model="show.points" label="Shenzhen">Show</at-checkbox>
+                        <at-checkbox v-model="points.minHConsider" label="Shenzhen">Min h</at-checkbox>
+                        <p>Step points: {{ points.points.minStep }}</p>
+                        <input-float-type v-model="points.points.minStep"></input-float-type>
+                        <div class="btn-group">
+                            <at-button type="primary" size="small" @click="clearPoints">Remove points</at-button>
+                            <at-button type="primary" size="small" @click="clearPointsRoot">Remove points ROOT</at-button>
+                            <at-button type="primary" size="small" @click="addPointsToRoot">Add points to root</at-button>
+                        </div>
+                        <div class="row">
+                            <div class="row-fix-width">
+                                <p>x</p>
+                                <p v-for="item in points.points.x">{{ item }}</p>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>y</p>
+                                <p v-for="item in points.points.y">{{ item }}</p>
+                            </div>
+                            <div class="row-fix-width">
+                                <p>h</p>
+                                <p v-for="item in points.points.h">{{ item }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
                     <h3>Function</h3>
                     <at-checkbox v-model="show.fun" label="Shenzhen">Show</at-checkbox>
                     <hr>
@@ -86,30 +117,7 @@
                     <div class="btn-group">
                         <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
                     </div>
-                    <hr>
-                    <h3>Points</h3>
-                    <at-checkbox v-model="show.points" label="Shenzhen">Show</at-checkbox>
-                    <p>Step points: {{ points.minStep }}</p>
-                    <input-float-type v-model="points.minStep"></input-float-type>
-                    <div class="btn-group">
-                        <at-button type="primary" size="small" @click="clearPoints">Remove points</at-button>
-                        <at-button type="primary" size="small" @click="clearPointsRoot">Remove points ROOT</at-button>
-                        <at-button type="primary" size="small" @click="addPointsToRoot">Add points to root</at-button>
-                    </div>
-                    <div class="row">
-                        <div class="row-fix-width">
-                            <p>x</p>
-                            <p v-for="item in points.x">{{ item }}</p>
-                        </div>
-                        <div class="row-fix-width">
-                            <p>y</p>
-                            <p v-for="item in points.y">{{ item }}</p>
-                        </div>
-                        <div class="row-fix-width">
-                            <p>h</p>
-                            <p v-for="item in points.h">{{ item }}</p>
-                        </div>
-                    </div>
+
                 </div>
                 <div v-if="tabs.root.status" class="nav-tab">
                     <root-points></root-points>
@@ -200,13 +208,16 @@
                 show: {
                     fun: false,
                     spline: false,
-                    points: true,
+                    points: false,
                     polynom: false
                 },
 
                 hToRoot: 0.1,
                 points: {
+                    isActive: false,
+                    points: null,
 
+                    minHConsider: false,
                 },
                 spline: {
                     isActive: false,
@@ -225,11 +236,6 @@
         },
         mounted: function () {
             this.camera2D = new Camera2D(this.canvas);
-
-            this.points = new Points([1,2,3,4], [1,0,1,0],[0,0,0,0]);
-
-            this.reBuild();
-
         },
         created: function() {
             document.addEventListener('keydown', this.keyPress, false);
@@ -241,7 +247,7 @@
         },
         methods: {
             /**
-             * Open/Close nav by clic
+             * Open/Close nav by click
              *
              * Status: Done
              */
@@ -249,6 +255,11 @@
                 this.openNav = !this.openNav;
             },
 
+            /**
+             * Route to scene 3D
+             *
+             * Status: Done
+             */
             clickScene3D: function () {
                 this.$router.push({ name: 'scene3d' });
             },
@@ -285,6 +296,11 @@
                 }
             },
 
+            /**
+             * Load
+             *
+             * Status: Done
+             */
             firstLoadScene: function () {
                 this.reBuild();
                 this.firstLoad = true;
@@ -298,27 +314,27 @@
              */
             keyPress: function(evt) {
                 switch (evt.keyCode) {
-                    case 82: {
-                        this.points.AT2D_RotationDeg(Math.PI / 18); break;
-                    }
-                    case 87: {
-                        this.points.AT2D_Scaling(1.1, 1.1); break;
-                    }
-                    case 81: {
-                        this.points.AT2D_Scaling(0.9, 0.9); break;
-                    }
-                    case 37: {
-                        this.points.AT2D_Translation(-0.5,0); break;
-                    }
-                    case 38: {
-                        this.points.AT2D_Translation(0,0.5); break;
-                    }
-                    case 39: {
-                        this.points.AT2D_Translation(0.5,0); break;
-                    }
-                    case 40: {
-                        this.points.AT2D_Translation(0,-0.5); break;
-                    }
+                    // case 82: {
+                    //     this.points.AT2D_RotationDeg(Math.PI / 18); break;
+                    // }
+                    // case 87: {
+                    //     this.points.AT2D_Scaling(1.1, 1.1); break;
+                    // }
+                    // case 81: {
+                    //     this.points.AT2D_Scaling(0.9, 0.9); break;
+                    // }
+                    // case 37: {
+                    //     this.points.AT2D_Translation(-0.5,0); break;
+                    // }
+                    // case 38: {
+                    //     this.points.AT2D_Translation(0,0.5); break;
+                    // }
+                    // case 39: {
+                    //     this.points.AT2D_Translation(0.5,0); break;
+                    // }
+                    // case 40: {
+                    //     this.points.AT2D_Translation(0,-0.5); break;
+                    // }
                 }
             },
 
@@ -332,8 +348,8 @@
                 this.camera2D.axisPlot();
 
                 this.plotFun();
-                this.plotSpline();
                 this.plotPoints();
+                this.plotSpline();
                 this.plotPNewton();
             },
 
@@ -402,16 +418,16 @@
              * Status: Done *
              */
             addComboPointsStart: function (e) {
-                this.points.clear();
+                this.points.points.clear();
 
-                this.points.combo = true;
+                this.points.points.combo = true;
 
                 this.spline.isActive = false;
                 this.polynom.isActive = false;
                 this.show.spline = false;
                 this.show.polynom = false;
 
-                this.points.addPoint(
+                this.points.points.addPoint(
                     this.camera2D.ScreenToWorldX(e.clientX),
                     this.camera2D.ScreenToWorldY(e.clientY)
                 );
@@ -423,14 +439,16 @@
              * Status: Done *
              */
             addComboPointsDrag: function (e) {
-                if (!this.points.combo) {
+                if (!this.points.points.combo) {
                     return;
                 }
-                if (this.points.x[this.points.x.length-1] + this.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
-                    return;
+                if (this.points.minHConsider) {
+                    if (this.points.points.x[this.points.points.x.length-1] + this.points.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
+                        return;
+                    }
                 }
 
-                this.points.addPoint(
+                this.points.points.addPoint(
                     this.camera2D.ScreenToWorldX(e.clientX),
                     this.camera2D.ScreenToWorldY(e.clientY)
                 );
@@ -442,7 +460,7 @@
              * Status: Done *
              */
             addComboPointsStop: function () {
-                this.points.combo = false;
+                this.points.points.combo = false;
 
                 if ((this.spline.isActive)&&(this.show.spline)) {
                     this.setSpline();
@@ -459,11 +477,13 @@
              * Status: Optional
              */
             addPoint: function (e) {
-                if (this.points.x[this.points.x.length-1] + this.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
-                    return;
+                if (this.points.minHConsider) {
+                    if (this.points.points.x[this.points.points.x.length-1] + this.points.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
+                        return;
+                    }
                 }
 
-                this.points.addPoint(
+                this.points.points.addPoint(
                     this.camera2D.ScreenToWorldX(e.clientX),
                     this.camera2D.ScreenToWorldY(e.clientY)
                 );
@@ -481,9 +501,31 @@
 
 
 
+            createPoints: function () {
+                this.points.points = new Points(
+                    [1,2,3,4],
+                    [1,0,1,0],
+                    [0,0,0,0]
+                );
+            },
+
+            removePoints: function () {
+                this.show.points = false;
+                this.points.isActive = false;
+                this.points.points = null;
+            },
 
 
+            clearPoints: function () {
+                this.show.spline = false;
+                this.show.points = false;
 
+                this.spline.isActive = false;
+                this.spline.spline = null;
+
+                this.points.points.clear();
+
+            },
 
 
             clearPointsRoot: function () {
@@ -500,7 +542,7 @@
              */
             addPointsToRoot: function () {
                 var points = new Points();
-                points.copy(this.points);
+                points.copy(this.points.points);
                 this.$root.points.push(points);
             },
 
@@ -512,9 +554,9 @@
             setPointsToRootFromSpline: function () {
                 var pointsToRoot = new Points();
 
-                var stepSpline = (this.points.x[this.points.x.length-1] - this.points.x[0])/this.points.x.length;
+                var stepSpline = (this.points.points.x[this.points.points.x.length-1] - this.points.points.x[0])/this.points.points.x.length;
 
-                for (var i = this.points.x[0]; i < this.points.x[this.points.x.length-1]; i += 0.33) {
+                for (var i = this.points.points.x[0]; i < this.points.points.x[this.points.points.x.length-1]; i += 0.33) {
                     pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
                 }
 
@@ -568,16 +610,16 @@
 
 
             setSpline: function () {
-                if (this.points.x.length < 3) {
+                if (this.points.points.x.length < 3) {
                     return;
                 }
 
                 this.spline.spline = new Spline();
 
                 this.spline.spline.setXFX({
-                    x: this.points.x,
-                    fx: this.points.y,
-                    h: this.points.h
+                    x: this.points.points.x,
+                    fx: this.points.points.y,
+                    h: this.points.points.h
                 });
 
                 this.spline.spline.setCoeffC();
@@ -627,14 +669,6 @@
             },
 
 
-            clearPoints: function () {
-                this.show.spline = false;
-                this.spline.isActive = false;
-                this.spline.spline = null;
-
-                this.points.clear();
-
-            },
             plotPoints: function () {
                 if (!this.show.points) {
                     return;
@@ -653,14 +687,14 @@
                     this.camera2D.ScreenToWorldY(this.camera2D.grid.serifsSize)
                 );
 
-                for (var i = 0; i < this.points.x.length; i++) {
+                for (var i = 0; i < this.points.points.x.length; i++) {
 
-                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.y[i]-(s/2));
-                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.y[i]+(s/2));
+                    this.camera2D.moveTo(this.points.points.x[i]+(s/2), this.points.points.y[i]-(s/2));
+                    this.camera2D.lineTo(this.points.points.x[i]-(s/2), this.points.points.y[i]+(s/2));
 
 
-                    this.camera2D.moveTo(this.points.x[i]+(s/2), this.points.y[i]+(s/2));
-                    this.camera2D.lineTo(this.points.x[i]-(s/2), this.points.y[i]-(s/2));
+                    this.camera2D.moveTo(this.points.points.x[i]+(s/2), this.points.points.y[i]+(s/2));
+                    this.camera2D.lineTo(this.points.points.x[i]-(s/2), this.points.points.y[i]-(s/2));
 
                 }
 
@@ -672,11 +706,11 @@
 
 
             setPNewton: function () {
-                if (this.points.x.length < 3) {
+                if (this.points.points.x.length < 3) {
                     return;
                 }
 
-                this.polynom.polynom = new pNewton([this.points.x, this.points.y]);
+                this.polynom.polynom = new pNewton([this.points.points.x, this.points.points.y]);
                 this.polynom.isActive = true;
 
             },
@@ -696,8 +730,8 @@
                 ctx.setLineDash([]);
                 ctx.lineWidth = 2;
 
-                var start = this.points.x[0];
-                var finish = this.points.x[this.points.x.length-1];
+                var start = this.points.points.x[0];
+                var finish = this.points.points.x[this.points.points.x.length-1];
 
                 if (this.camera2D.ScreenToWorldX(0) > start) {
                     start = this.camera2D.ScreenToWorldX(0);
@@ -737,7 +771,6 @@
             },
             points: {
                 handler: function () {
-                    this.points.setH();
                     this.reBuild();
                 },
                 deep: true
