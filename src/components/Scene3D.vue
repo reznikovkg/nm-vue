@@ -293,210 +293,210 @@
                             this.model3D.model3D.apply(
                                 AT3D_Scaling(1.1, 1.1, 1.1)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Scaling(1.1, 1.1, 1.1)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 81: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Scaling(0.9, 0.9, 0.9)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Scaling(0.9, 0.9, 0.9)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 33: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Translation(0, 0, -0.5)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Translation(0, 0, -0.5)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 34: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Translation(0, 0, 0.5)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Translation(0, 0, 0.5)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 37: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Translation(-0.5, 0, 0)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Translation(-0.5, 0, 0)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 38: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Translation(0, 0.5, 0)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Translation(0, 0.5, 0)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 39: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Translation(0.5, 0, 0)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Translation(0.5, 0, 0)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 40: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_Translation(0, -0.5, 0)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_Translation(0, -0.5, 0)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 98: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_RotationXDeg(Math.PI / 18)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_RotationXDeg(Math.PI / 18)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 104: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_RotationXDeg(-Math.PI / 18)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_RotationXDeg(-Math.PI / 18)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 100: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_RotationYDeg(Math.PI / 18)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_RotationYDeg(Math.PI / 18)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 102: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_RotationYDeg(-Math.PI / 18)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_RotationYDeg(-Math.PI / 18)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 103: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_RotationZDeg(Math.PI / 18)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_RotationZDeg(Math.PI / 18)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     case 105: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
                                 AT3D_RotationZDeg(-Math.PI / 18)
                             );
-                            break;
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
                                 AT3D_RotationZDeg(-Math.PI / 18)
                             );
-                            break;
                         }
+
+                        break;
                     }
                     // case 106: {
                     //     this.camera3D.vN.cells[0]+=1;
