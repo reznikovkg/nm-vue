@@ -47,6 +47,15 @@
                             @click="choiseNav(item.title)"
                             circle></at-button>
                 </div>
+                <div v-if="tabs.camera.status" class="nav-tab">
+
+                    <p>Long:
+                        <i @click="camera3D.d--" class="icon icon-minus"></i>
+                        {{ camera3D.d }}
+                        <i @click="camera3D.d++" class="icon icon-plus"></i>
+                    </p>
+                    <input-float-type v-model="camera3D.d"></input-float-type>
+                </div>
                 <div v-if="tabs.plot.status" class="nav-tab">
 
                     <at-button type="primary" @click="plotPointsFromRoot">From root points</at-button>
@@ -157,6 +166,11 @@
                         title: 'moveCenter',
                         icon: 'icon-move'
                     },
+                    moveCamera: {
+                        status: false,
+                        title: 'moveCamera',
+                        icon: 'icon-video'
+                    },
                 },
                 tabs: {
                     nav: {
@@ -168,6 +182,11 @@
                         status: false,
                         title: 'Plot',
                         icon: 'icon-map'
+                    },
+                    camera: {
+                        status: false,
+                        title: 'Camera',
+                        icon: 'icon-video'
                     },
                     root: {
                         status: false,
@@ -529,12 +548,9 @@
                 this.camera3D.clear();
                 this.axisPlot3D();
 
-                // this.plotFun();
-                // this.plotSpline();
                 this.plotModel3D();
                 this.kinematicModelPlotDefault();
                 // this.plotPoints();
-                // this.plotPNewton();
             },
 
             /**
@@ -547,13 +563,9 @@
                     this.camera3D.dragToStart(e);
                 }
 
-                // if (this.nav.addPoint.status) {
-                //     this.addPoint(e);
-                // }
-                //
-                // if (this.nav.addComboPoints.status) {
-                //     this.addComboPointsStart(e);
-                // }
+                if (this.nav.moveCamera.status) {
+                    this.camera3D.moveCameraStart(e);
+                }
             },
 
             /**
@@ -566,9 +578,9 @@
                     this.camera3D.dragTo(e);
                 }
 
-                // if (this.nav.addComboPoints.status) {
-                //     this.addComboPointsDrag(e);
-                // }
+                if (this.nav.moveCamera.status) {
+                    this.camera3D.moveCameraGo(e);
+                }
             },
 
             /**
@@ -581,9 +593,9 @@
                     this.camera3D.dragToStop();
                 }
 
-                // if (this.nav.addComboPoints.status) {
-                //     this.addComboPointsStop();
-                // }
+                if (this.nav.moveCamera.status) {
+                    this.camera3D.moveCameraStop();
+                }
             },
 
             /**
@@ -869,6 +881,11 @@
                     this.reBuild();
                 },
                 deep: true
+            },
+            'camera3D.d': {
+                handler: function () {
+                    this.camera3D.updateCamera();
+                }
             }
         }
     }

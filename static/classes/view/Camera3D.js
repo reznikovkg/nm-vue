@@ -11,6 +11,13 @@ class Camera3D extends Camera2D {
         this.d = 10;
 
         this.updateCamera();
+
+        this.moveCamera = {
+            move: false,
+            x: this.drag.x,
+            y: this.drag.y
+
+        }
     }
 
 
@@ -71,4 +78,32 @@ class Camera3D extends Camera2D {
         this.worldToProjectF();
     }
 
+    moveCameraStart(e) {
+        this.moveCamera.move = true;
+    }
+
+    moveCameraGo(e) {
+        if (this.moveCamera.move) {
+            let x = e.clientX;
+            let y = e.clientY;
+
+            let n = this.vN.cells;
+
+            let t1 = (this.moveCamera.x - x)/100;
+            n[2] += t1;
+
+            let t2 = (this.moveCamera.y - y)/100;
+            n[1] += t2;
+
+            this.moveCamera.y = y;
+            this.moveCamera.x = x;
+
+            this.vN.cells = n;
+        }
+    }
+
+    moveCameraStop() {
+        this.moveCamera.move = false;
+        this.updateCamera();
+    }
 }

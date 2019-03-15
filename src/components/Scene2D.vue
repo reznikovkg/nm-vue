@@ -507,6 +507,7 @@
                     [1,0,1,0],
                     [0,0,0,0]
                 );
+                this.show.points = true;
             },
 
             removePoints: function () {
@@ -517,14 +518,7 @@
 
 
             clearPoints: function () {
-                this.show.spline = false;
-                this.show.points = false;
-
-                this.spline.isActive = false;
-                this.spline.spline = null;
-
                 this.points.points.clear();
-
             },
 
 
