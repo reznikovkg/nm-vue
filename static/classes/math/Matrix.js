@@ -165,29 +165,30 @@ class Matrix {
      * Status: Done
      */
     compWith(matrix, isReturn = false) {
-        if (this.getColNum() === matrix.getStrNum()) {
-            var m = new Matrix();
-            m.AllocateCells(this.getStrNum(), matrix.getColNum());
-
-            for (var i = 0; i < this.getStrNum(); i++) {
-                for (var j = 0; j < matrix.getColNum(); j++)
-                {
-                    var cell = 0;
-
-                    for (var k = 0; k < this.getColNum(); k++) {
-                        cell += this.cells[i][k]*matrix.cells[k][j];
-                    }
-
-                    m.cells[i][j] = cell;
-                }
-            }
-            if (isReturn) {
-                return m;
-            } else {
-                this.setMaxrix(m);
-            }
-        } else {
+        if (this.getColNum() !== matrix.getStrNum()) {
             return false;
+        }
+
+        var m = new Matrix();
+        m.AllocateCells(this.getStrNum(), matrix.getColNum());
+
+        for (var i = 0; i < this.getStrNum(); i++) {
+            for (var j = 0; j < matrix.getColNum(); j++)
+            {
+                var cell = 0;
+
+                for (var k = 0; k < this.getColNum(); k++) {
+                    cell += this.cells[i][k]*matrix.cells[k][j];
+                }
+
+                m.cells[i][j] = cell;
+            }
+        }
+
+        if (isReturn) {
+            return m;
+        } else {
+            this.setMaxrix(m);
         }
     }
 
@@ -210,5 +211,22 @@ class Matrix {
 
     getStrThird(){
         return this.cells[2];
+    }
+
+
+    getColFirst() {
+        return [
+            this.cells[0][0],
+            this.cells[1][0],
+            this.cells[2][0],
+        ];
+    }
+
+    getColSecond() {
+        return [
+            this.cells[0][1],
+            this.cells[1][1],
+            this.cells[2][1],
+        ];
     }
 }

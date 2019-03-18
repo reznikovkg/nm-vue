@@ -80,25 +80,63 @@ class Camera3D extends Camera2D {
 
     moveCameraStart(e) {
         this.moveCamera.move = true;
+
+        let x = e.clientX;
+        let y = e.clientY;
+        this.moveCamera.y = y;
+        this.moveCamera.x = x;
     }
 
     moveCameraGo(e) {
         if (this.moveCamera.move) {
+
+            let n = this.vN.cells;
+            let t = this.vT.cells;
+            let mat = new Matrix([
+                [ n[0], t[0] ],
+                [ n[1], t[1] ],
+                [ n[2], t[2] ],
+                [ 1, 1 ]
+            ]);
+
             let x = e.clientX;
             let y = e.clientY;
 
-            let n = this.vN.cells;
+            let ch = 10;
+            let deg = Math.PI / 24;
 
-            let t1 = (this.moveCamera.x - x)/100;
-            n[2] += t1;
+            if ( y - ch > this.moveCamera.y || y + ch < this.moveCamera.y) {
 
-            let t2 = (this.moveCamera.y - y)/100;
-            n[1] += t2;
+                if (y > this.moveCamera.y) {
+                    mat = AT3D_RotationXDeg( -deg ).compWith(mat, true);
+                } else {
+                    mat = AT3D_RotationXDeg( deg ).compWith(mat, true);
+                }
 
-            this.moveCamera.y = y;
-            this.moveCamera.x = x;
+                this.moveCamera.y = y;
+            }
 
-            this.vN.cells = n;
+            if ( x - ch > this.moveCamera.x || x + ch < this.moveCamera.x) {
+
+                if ( x > this.moveCamera.x ) {
+                    mat = AT3D_RotationYDeg( -deg ).compWith(mat, true);
+                } else {
+                    mat = AT3D_RotationYDeg( deg ).compWith(mat, true);
+                }
+
+                this.moveCamera.x = x;
+            }
+
+
+            /**
+             * Get updated camera vectors
+             * @type {boolean|*|*}
+             */
+            this.vN.cells = mat.getColFirst();
+            this.vT.cells = mat.getColSecond();
+
+
+            this.updateCamera();
         }
     }
 

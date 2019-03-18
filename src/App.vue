@@ -3,9 +3,9 @@
         <router-view/>
 
         <div class="openGit">
-          <a href="https://github.com/reznikovkg/nm-vue" target="_blank">
-            <at-button type="primary" icon="icon-github" circle></at-button>
-          </a>
+            <a href="https://github.com/reznikovkg/nm-vue" target="_blank">
+                <at-button type="primary" icon="icon-github" circle></at-button>
+            </a>
         </div>
     </div>
 </template>
