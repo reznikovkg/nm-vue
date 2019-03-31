@@ -125,6 +125,12 @@
                         <div class="btn-group">
                             <at-button type="primary" size="small" @click="kinematicModelPlotDefault">Plot default</at-button>
                         </div>
+                        <div>
+                            <at-checkbox v-model="kinematicModel.kinematicModel.formAT3D" label="Shenzhen" :disabled="!kinematicModel.isActive">Form TRANSFORM</at-checkbox>
+                        </div>
+                        <div>
+                            <at-checkbox v-model="kinematicModel.kinematicModel.guideAT3D" label="Shenzhen" :disabled="!kinematicModel.isActive">Guide TRANSFORM</at-checkbox>
+                        </div>
                     </div>
                     <hr>
                 </div>
@@ -210,6 +216,9 @@
                     isActive: false,
                     kinematicModel: null,
 
+                    showFormGuide: true,
+                    showModel: true,
+
                     selectGuide: null,
                     selectForm: null,
                 },
@@ -228,7 +237,6 @@
             this.axis3D.x.setVertices(new Matrix([[1,0],[0,0],[0,0],[1,1]]));
             this.axis3D.y.setVertices(new Matrix([[0,0],[1,0],[0,0],[1,1]]));
             this.axis3D.z.setVertices(new Matrix([[0,0],[0,0],[1,0],[1,1]]));
-
 
 
             //this.points = new Points([1,2,3,4], [1,0,1,0], [0,0,0,0]);
@@ -692,8 +700,8 @@
                 this.kinematicModel.kinematicModel = null;
             },
             setKitematicGuideForm: function () {
-                this.kinematicModel.kinematicModel.setGuide(this.$root.points[this.kinematicModel.selectGuide]);
                 this.kinematicModel.kinematicModel.setForm(this.$root.points[this.kinematicModel.selectForm]);
+                this.kinematicModel.kinematicModel.setGuide(this.$root.points[this.kinematicModel.selectGuide]);
 
                 this.kinematicModel.kinematicModel.setPointsDefault();
                 this.kinematicModel.isActive = true;
@@ -706,7 +714,7 @@
 
                 var ctx = this.canvas.getContext("2d");
                 ctx.beginPath();
-                ctx.strokeStyle = '#7e0700';
+                ctx.strokeStyle = 'rgba(0,0,0,0.7)';
 
                 ctx.setLineDash([]);
                 ctx.lineWidth = 3;
@@ -714,49 +722,93 @@
 
                 this.kinematicModel.kinematicModel.project(this.camera3D.worldToProjectF(true));
 
-                for (let i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
-                    for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
-                        this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
-                        );
-                        this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
-                        );
+                if (this.kinematicModel.showModel) {
+                    for (let i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
+                        for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
+                            this.camera3D.moveTo(
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
+                            );
+                            this.camera3D.lineTo(
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
+                            );
+
+                            this.camera3D.moveTo(
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
+                            );
+                            this.camera3D.lineTo(
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
+                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
+                            );
+                        }
+
+                        let j = this.kinematicModel.kinematicModel.form.x.length - 1;
 
                         this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
-                        );
-                        this.camera3D.lineTo(
                             this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
                             this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
                         );
+                        this.camera3D.lineTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
+                        );
                     }
 
-                    let j = this.kinematicModel.kinematicModel.form.x.length - 1;
-
-                    this.camera3D.moveTo(
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
-                    );
-                    this.camera3D.lineTo(
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
-                    );
+                    let i = this.kinematicModel.kinematicModel.matrixPointsProject.length - 1;
+                    for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
+                        this.camera3D.moveTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
+                        );
+                        this.camera3D.lineTo(
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
+                        );
+                    }
                 }
 
-                let i = this.kinematicModel.kinematicModel.matrixPointsProject.length - 1;
-                for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
-                    this.camera3D.moveTo(
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
-                    );
-                    this.camera3D.lineTo(
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
-                        this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
-                    );
+                ctx.stroke();
+
+                ctx.beginPath();
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#3bef34';
+
+                if (this.kinematicModel.showFormGuide) {
+                    for (let j = 0; j < this.kinematicModel.kinematicModel.form.x.length - 1; j++) {
+                        this.camera3D.moveTo(
+                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectX(j),
+                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectY(j)
+                        );
+                        this.camera3D.lineTo(
+                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectX(j+1),
+                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectY(j+1)
+                        );
+                    }
+                }
+
+                ctx.stroke();
+
+                ctx.beginPath();
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#ef8700';
+
+                if (this.kinematicModel.showFormGuide) {
+                    for (let j = 0; j < this.kinematicModel.kinematicModel.guide.x.length - 1; j++) {
+                        this.camera3D.moveTo(
+                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectX(j),
+                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectY(j)
+                        );
+                        this.camera3D.lineTo(
+                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectX(j+1),
+                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectY(j+1)
+                        );
+                    }
                 }
 
                 ctx.stroke();

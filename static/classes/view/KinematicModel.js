@@ -5,10 +5,17 @@ class KinematicModel {
          * Main direction, line of motion
          */
         this.guide = guide;
+        this.guideAT3D = false;
+        this.matrixGuide = [];
+        this.matrixGuideProject = [];
+
         /**
          * Forming, moveable form
          */
         this.form = form;
+        this.formAT3D = false;
+        this.matrixForm = [];
+        this.matrixFormProject = [];
 
         this.matrixPoints = [];
         this.matrixPointsProject = [];
@@ -17,22 +24,44 @@ class KinematicModel {
     setGuide(guide) {
         this.guide = new Points();
         this.guide.copy(guide);
+        this.guideAT3D = true;
+
+        this.guide.AT3D_Translation(-this.guide.x[0],-this.guide.y[0],-this.guide.z[0]);
+        this.guide.AT3D_Translation(this.form.x[0],this.form.y[0],this.form.z[0]);
     }
 
     setForm(form) {
         this.form = new Points();
         this.form.copy(form);
+        this.formAT3D = true;
+
+        this.form.AT3D_RotationYDeg(Math.PI/2);
     }
 
     setPointsDefault () {
-        this.form.AT3D_RotationYDeg(Math.PI/2);
+        this.matrixGuide = new Matrix([
+            this.guide.x,
+            this.guide.y,
+            this.guide.z,
+            this.guide.identity.cells
+        ]);
 
-        var pointsStep = new Matrix([
+        this.matrixForm = new Matrix([
             this.form.x,
             this.form.y,
             this.form.z,
             this.form.identity.cells
         ]);
+
+        this.matrixPoints = [];
+
+        let pointsStep = new Matrix([
+            this.form.x,
+            this.form.y,
+            this.form.z,
+            this.form.identity.cells
+        ]);
+
         this.matrixPoints.push(pointsStep);
 
         for (let i = 0; i < this.guide.x.length - 1; i++) {
@@ -69,6 +98,20 @@ class KinematicModel {
 
 
     apply(at) {
+        if (this.formAT3D || this.guideAT3D) {
+            if (this.formAT3D) {
+                this.form.applyAT3D(at);
+            }
+
+            if (this.guideAT3D) {
+                this.guide.applyAT3D(at);
+            }
+
+            this.setPointsDefault();
+            return;
+        }
+
+
         for (let i = 0; i < this.matrixPoints.length; i++) {
             this.matrixPoints[i] = at.compWith(this.matrixPoints[i], true);
         }
@@ -76,6 +119,12 @@ class KinematicModel {
 
 
     project(pr) {
+        this.matrixGuideProject = new Matrix();
+        this.matrixGuideProject.setArray( pr.compWith(this.matrixGuide, true).cells );
+
+        this.matrixFormProject = new Matrix();
+        this.matrixFormProject.setArray( pr.compWith(this.matrixForm, true).cells );
+
         for (let i = 0; i < this.matrixPoints.length; i++) {
             this.matrixPointsProject[i] = new Matrix();
             this.matrixPointsProject[i].setArray( pr.compWith(this.matrixPoints[i], true).cells );
@@ -86,115 +135,5 @@ class KinematicModel {
         for (let i = 0; i < this.matrixPoints.length; i++) {
             console.log(at);
         }
-    }
-
-
-    /**
-     * Affine transform translation of points 3D
-     *
-     * @param x
-     * @param y
-     * @param z
-     * @constructor
-     *
-     * Status: done
-     */
-    AT3D_Translation(x,y,z) {
-        var matr = AT3D_Translation(x,y,z).compWith(new Matrix([
-            this.x,
-            this.y,
-            this.z,
-            this.identity.cells
-        ]), true);
-
-        this.x = matr.getStrFirst();
-        this.y = matr.getStrSecond();
-        this.z = matr.getStrThird();
-    }
-
-    /**
-     * Affine transform scaling of points 3D
-     *
-     * @param kx
-     * @param ky
-     * @param kz
-     * @constructor
-     *
-     * Status: done
-     */
-    AT3D_Scaling(kx,ky,kz) {
-        var matr = AT3D_Scaling(kx,ky,kz).compWith(new Matrix([
-            this.x,
-            this.y,
-            this.z,
-            this.identity.cells
-        ]), true);
-
-        this.x = matr.getStrFirst();
-        this.y = matr.getStrSecond();
-        this.z = matr.getStrThird();
-    }
-
-    /**
-     * Affine transform rotation by X asis of points 3D
-     *
-     * @param phi
-     * @constructor
-     *
-     * Status: done
-     */
-    AT3D_RotationXDeg(phi) {
-        var matr = AT3D_RotationXDeg(phi).compWith(new Matrix([
-            this.x,
-            this.y,
-            this.z,
-            this.identity.cells
-        ]), true);
-
-        this.x = matr.getStrFirst();
-        this.y = matr.getStrSecond();
-        this.z = matr.getStrThird();
-    }
-
-    /**
-     * Affine transform rotation by X asis of points 3D
-     *
-     * @param phi
-     * @constructor
-     *
-     * Status: done
-     */
-    AT3D_RotationYDeg(phi) {
-        var matr = AT3D_RotationYDeg(phi).compWith(new Matrix([
-            this.x,
-            this.y,
-            this.z,
-            this.identity.cells
-        ]), true);
-
-        this.x = matr.getStrFirst();
-        this.y = matr.getStrSecond();
-        this.z = matr.getStrThird();
-    }
-
-    /**
-     * Affine transform rotation by X asis of points 3D
-     *
-     * @param phi
-     * @constructor
-     *
-     * Status: done
-     */
-    AT3D_RotationZDeg(phi) {
-        var matr = AT3D_RotationZDeg(phi).compWith(new Matrix([
-            this.x,
-            this.y,
-            this.z,
-            this.identity.cells
-        ]), true);
-
-        this.x = matr.getStrFirst();
-        this.y = matr.getStrSecond();
-        this.z = matr.getStrThird();
     }
 }

@@ -78,6 +78,20 @@ class Points {
         }
     }
 
+
+    applyAT3D(at) {
+        var matr = at.compWith(new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity.cells
+        ]), true);
+
+        this.x = matr.getStrFirst();
+        this.y = matr.getStrSecond();
+        this.z = matr.getStrThird();
+    }
+
     /**
      * Affine transform rotation of points 2D
      *
