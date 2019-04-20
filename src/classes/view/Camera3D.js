@@ -1,5 +1,10 @@
+import Vector from './../math/Vector';
+import Matrix from './../math/Matrix';
 
-class Camera3D extends Camera2D {
+import Camera2D from './Camera2D';
+import * as AT3D from './../../consts/view/AffineTransform3D';
+
+export default class Camera3D extends Camera2D {
 
     constructor(canvas) {
         super(canvas);
@@ -108,9 +113,9 @@ class Camera3D extends Camera2D {
             if ( y - ch > this.moveCamera.y || y + ch < this.moveCamera.y) {
 
                 if (y > this.moveCamera.y) {
-                    mat = AT3D_RotationXDeg( -deg ).compWith(mat, true);
+                    mat = AT3D.rotationXDeg( -deg ).compWith(mat, true);
                 } else {
-                    mat = AT3D_RotationXDeg( deg ).compWith(mat, true);
+                    mat = AT3D.rotationXDeg( deg ).compWith(mat, true);
                 }
 
                 this.moveCamera.y = y;
@@ -119,9 +124,9 @@ class Camera3D extends Camera2D {
             if ( x - ch > this.moveCamera.x || x + ch < this.moveCamera.x) {
 
                 if ( x > this.moveCamera.x ) {
-                    mat = AT3D_RotationYDeg( -deg ).compWith(mat, true);
+                    mat = AT3D.rotationYDeg( -deg ).compWith(mat, true);
                 } else {
-                    mat = AT3D_RotationYDeg( deg ).compWith(mat, true);
+                    mat = AT3D.rotationYDeg( deg ).compWith(mat, true);
                 }
 
                 this.moveCamera.x = x;

@@ -108,6 +108,7 @@
                     <at-checkbox v-model="show.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
 
                     <div class="btn-group">
+                        <at-button type="primary" size="small" @click="setSplineCircle">Update spline</at-button>
                         <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
                         <at-button type="primary" size="small" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
                     </div>
@@ -131,6 +132,16 @@
 
     import InputFloatType from "./Elements/input-float-type";
     import RootPoints from "./RootPoints";
+
+    import * as AT2D from './../consts/view/AffineTransform2D';
+
+    import tMatrix from './../classes/nm/tMatrix';
+
+    import Points from './../classes/view/Points';
+    import Spline from './../classes/nm/Spline';
+
+    import Camera2D from './../classes/view/Camera2D';
+
     export default {
         name: "Scena2D",
         components: {RootPoints, InputFloatType},
@@ -221,7 +232,11 @@
                 },
                 spline: {
                     isActive: false,
-                    spline: null
+                    spline: null,
+                    splineSecond: null,
+
+                    xLeft: null,
+                    xRight: null
                 },
                 polynom: {
                     isActive: false,
@@ -314,27 +329,27 @@
              */
             keyPress: function(evt) {
                 switch (evt.keyCode) {
-                    // case 82: {
-                    //     this.points.AT2D_RotationDeg(Math.PI / 18); break;
-                    // }
-                    // case 87: {
-                    //     this.points.AT2D_Scaling(1.1, 1.1); break;
-                    // }
-                    // case 81: {
-                    //     this.points.AT2D_Scaling(0.9, 0.9); break;
-                    // }
-                    // case 37: {
-                    //     this.points.AT2D_Translation(-0.5,0); break;
-                    // }
-                    // case 38: {
-                    //     this.points.AT2D_Translation(0,0.5); break;
-                    // }
-                    // case 39: {
-                    //     this.points.AT2D_Translation(0.5,0); break;
-                    // }
-                    // case 40: {
-                    //     this.points.AT2D_Translation(0,-0.5); break;
-                    // }
+                    case 82: {
+                        this.points.points.applyAT2D( AT2D.rotationDeg(Math.PI / 18) ); break;
+                    }
+                    case 87: {
+                        this.points.points.applyAT2D( AT2D.scaling(1.1, 1.1) ); break;
+                    }
+                    case 81: {
+                        this.points.points.applyAT2D( AT2D.scaling(0.9, 0.9) ); break;
+                    }
+                    case 37: {
+                        this.points.points.applyAT2D( AT2D.translation(-0.5,0) ); break;
+                    }
+                    case 38: {
+                        this.points.points.applyAT2D( AT2D.translation(0,0.5) ); break;
+                    }
+                    case 39: {
+                        this.points.points.applyAT2D( AT2D.translation(0.5, 0) ); break;
+                    }
+                    case 40: {
+                        this.points.points.applyAT2D( AT2D.translation(0, -0.5) ); break;
+                    }
                 }
             },
 
@@ -546,12 +561,18 @@
              * Add points to root from this.points (adding scene)
              */
             setPointsToRootFromSpline: function () {
-                var pointsToRoot = new Points();
+                let pointsToRoot = new Points();
 
-                var stepSpline = (this.points.points.x[this.points.points.x.length-1] - this.points.points.x[0])/this.points.points.x.length;
+                let stepSpline = (this.points.points.x[this.points.points.x.length-1] - this.points.points.x[0])/this.points.points.x.length;
 
-                for (var i = this.points.points.x[0]; i < this.points.points.x[this.points.points.x.length-1]; i += 0.33) {
+                for (let i = this.spline.xLeft; i < this.spline.xRight; i += 0.33) {
                     pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
+                }
+
+                if (this.spline.splineSecond) {
+                    for (let i = this.spline.xRight; i > this.spline.xLeft; i -= 0.33) {
+                        pointsToRoot.addPoint(i, this.spline.splineSecond.pointSpline(i));
+                    }
                 }
 
                 this.$root.points.push(pointsToRoot);
@@ -627,6 +648,129 @@
                 this.spline.isActive = true;
 
             },
+
+            setSplineCircle: function () {
+                if (this.points.points.x.length < 3) {
+                    return;
+                }
+
+                let points1 = new Points();
+                let points2 = new Points();
+
+                let tBack = false;
+
+                points1.addPoint(
+                    this.points.points.x[0],
+                    this.points.points.y[0]
+                );
+
+                this.spline.xLeft = this.points.points.x[0];
+
+                for (let i = 1; i < this.points.points.x.length; i++) {
+
+                    if (this.points.points.x[i] < this.spline.xLeft) {
+                        break;
+                    }
+
+
+                    if (!tBack) {
+                        points1.addPoint(
+                            this.points.points.x[i],
+                            this.points.points.y[i]
+                        );
+                    } else {
+                        points2.unshiftPoint(
+                            this.points.points.x[i],
+                            this.points.points.y[i]
+                        );
+                    }
+
+
+                    if (this.points.points.x[i+1] && !tBack) {
+                        if (this.points.points.x[i+1] < this.points.points.x[i]) {
+                            tBack = true;
+                            this.spline.xRight = this.points.points.x[i];
+                            points2.unshiftPoint(
+                                this.points.points.x[i],
+                                this.points.points.y[i]
+                            );
+                        }
+                    }
+                }
+
+                if (tBack) {
+                    points2.unshiftPoint(
+                        this.points.points.x[0],
+                        this.points.points.y[0]
+                    );
+                }
+
+                console.log(points1, points2);
+
+
+                this.spline.spline = new Spline();
+                this.spline.spline.degStart = 0;
+                this.spline.spline.degFinish = - Math.PI/2;
+
+                this.spline.splineSecond = new Spline();
+                this.spline.splineSecond.degStart = 0;
+                this.spline.splineSecond.degFinish = Math.PI/2;
+
+                this.spline.spline.setXFX({
+                    x: points1.x,
+                    fx: points1.y,
+                    h: points1.h
+                });
+
+                this.spline.spline.setCoeffC();
+
+                var matr = new tMatrix();
+                matr.setABCF(this.spline.spline.getCoeffC());
+                matr.solveX();
+
+
+                this.spline.spline.setCoeffSpline(matr.getX());
+
+
+                /**
+                 * second spline
+                 */
+                if (tBack)  {
+                    this.spline.splineSecond.setXFX({
+                        x: points2.x,
+                        fx: points2.y,
+                        h: points2.h
+                    });
+
+                    this.spline.splineSecond.setCoeffC();
+
+                    matr = new tMatrix();
+                    matr.setABCF(this.spline.splineSecond.getCoeffC());
+                    matr.solveX();
+
+
+                    this.spline.splineSecond.setCoeffSpline(matr.getX());
+                    this.spline.isActive = true;
+                }
+
+
+                // this.spline.spline.setXFX({
+                //     x: this.points.points.x,
+                //     fx: this.points.points.y,
+                //     h: this.points.points.h
+                // });
+                //
+                // this.spline.spline.setCoeffC();
+                //
+                // var matr = new tMatrix();
+                // matr.setABCF(this.spline.spline.getCoeffC());
+                // matr.solveX();
+                //
+                //
+                // this.spline.spline.setCoeffSpline(matr.getX());
+                // this.spline.isActive = true;
+
+            },
             plotSpline: function (x) {
                 if (!this.spline.isActive) {
                     return;
@@ -655,11 +799,34 @@
                         this.camera2D.lineTo(i, this.mainSpline(i));
                     }
 
+                    if (this.spline.splineSecond) {
+                        let start = this.spline.splineSecond.getStart();
+                        let finish = this.spline.splineSecond.getFinish();
+
+                        if (this.camera2D.ScreenToWorldX(0) > start) {
+                            start = this.camera2D.ScreenToWorldX(0);
+                        }
+                        if (this.camera2D.ScreenToWorldX(this.canvasWidth) < finish) {
+                            finish = this.camera2D.ScreenToWorldX(this.canvasWidth);
+                        }
+
+                        this.camera2D.moveTo(start,this.secSpline(start));
+                        for (var i = start; i < finish; i += 0.01)
+                        {
+                            this.camera2D.lineTo(i, this.secSpline(i));
+                        }
+                    }
+
+
+
                     ctx.stroke();
                 }
             },
             mainSpline: function (x) {
                 return this.spline.spline.pointSpline(x);
+            },
+            secSpline: function (x) {
+                return this.spline.splineSecond.pointSpline(x);
             },
 
 

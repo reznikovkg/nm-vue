@@ -1,4 +1,6 @@
-function AT3D_Identity() {
+import Matrix from './../../classes/math/Matrix';
+
+function identity() {
     return new Matrix([
         [1, 0, 0, 0],
         [0, 1, 0, 0],
@@ -7,7 +9,7 @@ function AT3D_Identity() {
     ]);
 }
 
-function AT3D_Translation(x, y, z) {
+function translation(x, y, z) {
     return new Matrix([
         [1, 0, 0, x],
         [0, 1, 0, y],
@@ -16,7 +18,7 @@ function AT3D_Translation(x, y, z) {
     ]);
 }
 
-function AT3D_RotationXDeg(phi) {
+function rotationXDeg(phi) {
     return new Matrix([
         [1, 0, 0, 0],
         [0, Math.cos(phi), -Math.sin(phi), 0],
@@ -25,7 +27,7 @@ function AT3D_RotationXDeg(phi) {
     ]);
 }
 
-function AT3D_RotationYDeg(phi) {
+function rotationYDeg(phi) {
     return new Matrix([
         [Math.cos(phi), 0, Math.sin(phi), 0],
         [0, 1, 0, 0],
@@ -34,7 +36,7 @@ function AT3D_RotationYDeg(phi) {
     ]);
 }
 
-function AT3D_RotationZDeg(phi) {
+function rotationZDeg(phi) {
     return new Matrix([
         [Math.cos(phi), -Math.sin(phi), 0, 0],
         [Math.sin(phi), Math.cos(phi), 0, 0],
@@ -44,7 +46,7 @@ function AT3D_RotationZDeg(phi) {
 }
 
 
-function AT3D_Scaling(kx, ky, kz) {
+function scaling(kx, ky, kz) {
     return new Matrix([
         [kx, 0, 0, 0],
         [0, ky, 0, 0],
@@ -53,7 +55,7 @@ function AT3D_Scaling(kx, ky, kz) {
     ]);
 }
 
-function AT3D_Mapping(x = 1, y = 1, z = 1) {
+function mapping(x = 1, y = 1, z = 1) {
     return new Matrix([
         [x, 0, 0, 0],
         [0, y, 0, 0],
@@ -61,3 +63,12 @@ function AT3D_Mapping(x = 1, y = 1, z = 1) {
         [0, 0, 0, 1]
     ]);
 }
+export {
+    identity,
+    translation,
+    rotationXDeg,
+    rotationYDeg,
+    rotationZDeg,
+    scaling,
+    mapping
+};

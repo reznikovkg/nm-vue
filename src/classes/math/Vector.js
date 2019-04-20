@@ -1,5 +1,4 @@
-
-class Vector {
+export default class Vector {
 
     constructor(cells = []) {
         this.cells = cells;

@@ -2,7 +2,7 @@
  * Class Matrix
  * Algebra
  */
-class Matrix {
+export default class Matrix {
 
     /**
      * Constructor

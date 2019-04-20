@@ -1,4 +1,7 @@
-class Model3D {
+import Matrix from './../math/Matrix';
+
+export default class Model3D {
+
     constructor() {
         this.vertices = new Matrix();
         this.initialVertices = new Matrix();

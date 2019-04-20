@@ -144,9 +144,19 @@
 </template>
 
 <script>
-
     import RootPoints from "./RootPoints";
     import InputFloatType from "./Elements/input-float-type";
+
+    import * as AT3D from './../consts/view/AffineTransform3D';
+
+    import Points from './../classes/view/Points';
+
+    import Matrix from './../classes/math/Matrix';
+    import Camera3D from './../classes/view/Camera3D';
+    import Model3D from './../classes/view/Model3D';
+
+    import KinematicModel from './../classes/view/KinematicModel';
+
     export default {
         name: "Scena3D",
         components: {InputFloatType, RootPoints},
@@ -318,13 +328,13 @@
                     case 87: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Scaling(1.1, 1.1, 1.1)
+                                AT3D.scaling(1.1, 1.1, 1.1)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Scaling(1.1, 1.1, 1.1)
+                                AT3D.scaling(1.1, 1.1, 1.1)
                             );
                         }
 
@@ -333,13 +343,13 @@
                     case 81: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Scaling(0.9, 0.9, 0.9)
+                                AT3D.scaling(0.9, 0.9, 0.9)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Scaling(0.9, 0.9, 0.9)
+                                AT3D.scaling(0.9, 0.9, 0.9)
                             );
                         }
 
@@ -348,13 +358,13 @@
                     case 33: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Translation(0, 0, -0.5)
+                                AT3D.translation(0, 0, -0.5)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Translation(0, 0, -0.5)
+                                AT3D.translation(0, 0, -0.5)
                             );
                         }
 
@@ -363,13 +373,13 @@
                     case 34: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Translation(0, 0, 0.5)
+                                AT3D.translation(0, 0, 0.5)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Translation(0, 0, 0.5)
+                                AT3D.translation(0, 0, 0.5)
                             );
                         }
 
@@ -378,13 +388,13 @@
                     case 37: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Translation(-0.5, 0, 0)
+                                AT3D.translation(-0.5, 0, 0)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Translation(-0.5, 0, 0)
+                                AT3D.translation(-0.5, 0, 0)
                             );
                         }
 
@@ -393,13 +403,13 @@
                     case 38: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Translation(0, 0.5, 0)
+                                AT3D.translation(0, 0.5, 0)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Translation(0, 0.5, 0)
+                                AT3D.translation(0, 0.5, 0)
                             );
                         }
 
@@ -408,13 +418,13 @@
                     case 39: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Translation(0.5, 0, 0)
+                                AT3D.translation(0.5, 0, 0)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Translation(0.5, 0, 0)
+                                AT3D.translation(0.5, 0, 0)
                             );
                         }
 
@@ -423,13 +433,13 @@
                     case 40: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_Translation(0, -0.5, 0)
+                                AT3D.translation(0, -0.5, 0)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_Translation(0, -0.5, 0)
+                                AT3D.translation(0, -0.5, 0)
                             );
                         }
 
@@ -438,13 +448,13 @@
                     case 98: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_RotationXDeg(Math.PI / 18)
+                                AT3D.rotationXDeg(Math.PI / 18)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_RotationXDeg(Math.PI / 18)
+                                AT3D.rotationXDeg(Math.PI / 18)
                             );
                         }
 
@@ -453,13 +463,13 @@
                     case 104: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_RotationXDeg(-Math.PI / 18)
+                                AT3D.rotationXDeg(-Math.PI / 18)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_RotationXDeg(-Math.PI / 18)
+                                AT3D.rotationXDeg(-Math.PI / 18)
                             );
                         }
 
@@ -468,13 +478,13 @@
                     case 100: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_RotationYDeg(Math.PI / 18)
+                                AT3D.rotationYDeg(Math.PI / 18)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_RotationYDeg(Math.PI / 18)
+                                AT3D.rotationYDeg(Math.PI / 18)
                             );
                         }
 
@@ -483,13 +493,13 @@
                     case 102: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_RotationYDeg(-Math.PI / 18)
+                                AT3D.rotationYDeg(-Math.PI / 18)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_RotationYDeg(-Math.PI / 18)
+                                AT3D.rotationYDeg(-Math.PI / 18)
                             );
                         }
 
@@ -498,13 +508,13 @@
                     case 103: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_RotationZDeg(Math.PI / 18)
+                                AT3D.rotationZDeg(Math.PI / 18)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_RotationZDeg(Math.PI / 18)
+                                AT3D.rotationZDeg(Math.PI / 18)
                             );
                         }
 
@@ -513,13 +523,13 @@
                     case 105: {
                         if (this.model3D.isActive) {
                             this.model3D.model3D.apply(
-                                AT3D_RotationZDeg(-Math.PI / 18)
+                                AT3D.rotationZDeg(-Math.PI / 18)
                             );
                         }
 
                         if (this.kinematicModel.isActive) {
                             this.kinematicModel.kinematicModel.apply(
-                                AT3D_RotationZDeg(-Math.PI / 18)
+                                AT3D.rotationZDeg(-Math.PI / 18)
                             );
                         }
 

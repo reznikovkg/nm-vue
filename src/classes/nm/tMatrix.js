@@ -4,7 +4,7 @@
  * A * X = F
  * A = (a,b,c)
  */
-class tMatrix {
+export default class tMatrix {
 
     constructor() {
         this.a = [];

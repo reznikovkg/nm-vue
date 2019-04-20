@@ -1,4 +1,8 @@
-class KinematicModel {
+import Points from './../view/Points';
+import Matrix from './../math/Matrix';
+import * as AT3D from './../../consts/view/AffineTransform3D';
+
+export default class KinematicModel {
 
     constructor(guide = null, form = null) {
         /**
@@ -26,8 +30,12 @@ class KinematicModel {
         this.guide.copy(guide);
         this.guideAT3D = true;
 
-        this.guide.AT3D_Translation(-this.guide.x[0],-this.guide.y[0],-this.guide.z[0]);
-        this.guide.AT3D_Translation(this.form.x[0],this.form.y[0],this.form.z[0]);
+        this.guide.applyAT3D(
+            AT3D.translation(-this.guide.x[0],-this.guide.y[0],-this.guide.z[0])
+        );
+        this.guide.applyAT3D(
+            AT3D.translation(this.form.x[0],this.form.y[0],this.form.z[0])
+        );
     }
 
     setForm(form) {
@@ -35,7 +43,9 @@ class KinematicModel {
         this.form.copy(form);
         this.formAT3D = true;
 
-        this.form.AT3D_RotationYDeg(Math.PI/2);
+        this.form.applyAT3D(
+            AT3D.rotationYDeg(Math.PI/2)
+        );
     }
 
     setPointsDefault () {
@@ -65,7 +75,7 @@ class KinematicModel {
         this.matrixPoints.push(pointsStep);
 
         for (let i = 0; i < this.guide.x.length - 1; i++) {
-            pointsStep = AT3D_Translation(
+            pointsStep = AT3D.translation(
                 this.guide.x[i+1] - this.guide.x[i],
                 this.guide.y[i+1] - this.guide.y[i],
                 this.guide.z[i+1] - this.guide.z[i],

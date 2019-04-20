@@ -10,7 +10,6 @@ Vue.config.productionTip = false;
 Vue.use(Vuex);
 Vue.use(AtComponents);
 
-
 const store = new Vuex.Store({
     modules: {
 

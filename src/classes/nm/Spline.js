@@ -1,5 +1,5 @@
 
-class Spline {
+export default class Spline {
 
     constructor() {
         this.x = [];
@@ -14,6 +14,10 @@ class Spline {
         this.b = [];
         this.c = [];
         this.d = [];
+
+
+        this.degStart = 0;
+        this.degFinish = 0;
     }
 
     setXFX(params)
@@ -74,8 +78,8 @@ class Spline {
 
         this.a = this.fx;
 
-        this.d.push(0 / 6);
-        this.c.push(0 / 2);
+        this.d.push(this.degStart / 6);
+        this.c.push(this.degFinish / 2);
         //this.D.Add((this.C[1] - this.C[0]) / (3 * this.H[0]));
 
         this.b.push((this.fx[1] - this.fx[0]) / this.h[0] - this.h[0] * (2 * this.c[0] + this.c[1]) / 3);

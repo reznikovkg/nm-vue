@@ -1,5 +1,4 @@
-
-class Camera2D {
+export default class Camera2D {
 
     constructor(canvas) {
         this.canvas = canvas;
