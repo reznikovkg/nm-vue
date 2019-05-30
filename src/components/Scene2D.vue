@@ -73,7 +73,8 @@
                     <h3>Points</h3>
                     <div class="btn-group">
                         <at-button v-if="!points.points" type="primary" size="small" @click="createPoints">Create</at-button>
-                        <at-button v-if="points.points" type="primary" size="small" @click="removePoints">Remove</at-button>
+                        <at-button v-if="points.points" type="success" size="small" @click="createCirclePoints">Circle points</at-button>
+                        <at-button v-if="points.points" type="error" size="small" @click="removePoints">Remove object</at-button>
                     </div>
                     <div v-if="points.points">
                         <at-checkbox v-model="show.points" label="Shenzhen">Show</at-checkbox>
@@ -81,22 +82,21 @@
                         <p>Step points: {{ points.points.minStep }}</p>
                         <input-float-type v-model="points.points.minStep"></input-float-type>
                         <div class="btn-group">
-                            <at-button type="primary" size="small" @click="clearPoints">Remove points</at-button>
-                            <at-button type="primary" size="small" @click="clearPointsRoot">Remove points ROOT</at-button>
                             <at-button type="primary" size="small" @click="addPointsToRoot">Add points to root</at-button>
+                            <at-button type="error" size="small" @click="clearPoints">Clear points</at-button>
                         </div>
-                        <div class="row">
+                        <div class="rowFlex">
                             <div class="row-fix-width">
                                 <p>x</p>
-                                <p v-for="item in points.points.x">{{ item }}</p>
+                                <p v-for="item in points.points.x">{{ item.toFixed(2) }}</p>
                             </div>
                             <div class="row-fix-width">
                                 <p>y</p>
-                                <p v-for="item in points.points.y">{{ item }}</p>
+                                <p v-for="item in points.points.y">{{ item.toFixed(2) }}</p>
                             </div>
                             <div class="row-fix-width">
                                 <p>h</p>
-                                <p v-for="item in points.points.h">{{ item }}</p>
+                                <p v-for="item in points.points.h">{{ item.toFixed(2) }}</p>
                             </div>
                         </div>
                     </div>
@@ -105,13 +105,16 @@
                     <at-checkbox v-model="show.fun" label="Shenzhen">Show</at-checkbox>
                     <hr>
                     <h3>Spline</h3>
-                    <at-checkbox v-model="show.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
+                    <at-checkbox v-model="show.spline" v-if="spline.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
 
-                    <div class="btn-group">
+                    <div v-if="spline.spline" class="btn-group">
                         <at-button type="primary" size="small" @click="setSplineCircle">Update spline</at-button>
-                        <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
-                        <at-button type="primary" size="small" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
-                        <at-button type="primary" size="small" @click="addSplineToRoot">Add spline to root</at-button>
+                        <at-button type="primary" size="small" @click="setPointsToRootFromSpline" :disabled="!spline.isActive">Add points to root from spline</at-button>
+                        <at-button type="primary" size="small" @click="addSplineToRoot" :disabled="!spline.isActive">Add spline to root</at-button>
+                        <at-button type="error" size="small" @click="removeSpline">Remove spline</at-button>
+                    </div>
+                    <div v-if="!spline.spline" class="btn-group">
+                        <at-button type="primary" size="small" @click="createSpline">Create spline</at-button>
                     </div>
                     <hr>
                     <h3>Newton</h3>
@@ -119,7 +122,20 @@
                     <div class="btn-group">
                         <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
                     </div>
+                    <h3>Default</h3>
+                    <p>h:
+                        <i @click="hToRoot--" class="icon icon-minus"></i>
+                        {{ hToRoot }}
+                        <i @click="hToRoot++" class="icon icon-plus"></i>
+                    </p>
+                    <input-float-type v-model="hToRoot"></input-float-type>
 
+                    <p>n:
+                        <i @click="nToRoot--" class="icon icon-minus"></i>
+                        {{ nToRoot }}
+                        <i @click="nToRoot++" class="icon icon-plus"></i>
+                    </p>
+                    <input-float-type v-model="nToRoot"></input-float-type>
                 </div>
                 <div v-if="tabs.root.status" class="nav-tab">
                     <root-points></root-points>
@@ -227,6 +243,7 @@
                 },
 
                 hToRoot: 0.1,
+                nToRoot: 30,
                 points: {
                     isActive: false,
                     points: null,
@@ -288,7 +305,7 @@
              * Status: Done
              */
             choiseNav: function(title){
-                var nav = this.nav;
+                let nav = this.nav;
                 for (let item in nav) {
                     if (this.nav[`${item}`].title === title) {
                         this.nav[`${item}`].status = true;
@@ -304,7 +321,7 @@
              * Status: Done
              */
             choiseTab: function(title){
-                var tabs = this.tabs;
+                let tabs = this.tabs;
                 for (let item in tabs) {
                     if (this.tabs[`${item}`].title === title) {
                         this.tabs[`${item}`].status = true;
@@ -480,13 +497,13 @@
             addComboPointsStop: function () {
                 this.points.points.combo = false;
 
-                if ((this.spline.isActive)&&(this.show.spline)) {
-                    this.setSpline();
-                }
+                // if ((this.spline.isActive)&&(this.show.spline)) {
+                //     this.setSpline();
+                // }
 
-                if ((this.polynom.isActive)&&(this.show.polynom)) {
-                    this.setPNewton();
-                }
+                // if ((this.polynom.isActive)&&(this.show.polynom)) {
+                //     this.setPNewton();
+                // }
             },
 
             /**
@@ -506,13 +523,13 @@
                     this.camera2D.ScreenToWorldY(e.clientY)
                 );
 
-                if ((this.spline.isActive)&&(this.show.spline)) {
-                    this.setSpline();
-                }
+                // if ((this.spline.isActive)&&(this.show.spline)) {
+                //     this.setSpline();
+                // }
 
-                if ((this.polynom.isActive)&&(this.show.polynom)) {
-                    this.setPNewton();
-                }
+                // if ((this.polynom.isActive)&&(this.show.polynom)) {
+                //     this.setPNewton();
+                // }
             },
 
 
@@ -528,6 +545,28 @@
                 this.show.points = true;
             },
 
+            createCirclePoints: function () {
+                let p = new Points(
+                    [this.hToRoot],
+                    [0],
+                    [0]
+                );
+
+                this.points.points = new Points(
+                    [this.hToRoot],
+                    [0],
+                    [0]
+                );
+
+                for (let i = 0; i < this.nToRoot; i++) {
+                    setTimeout(()=>{
+                        p.applyAT2D( AT2D.rotationDeg(- Math.PI * 2 / this.nToRoot) );
+                        this.points.points.addPoint(p.x[0], p.y[0]);
+                    }, 2000*i/this.nToRoot);
+
+                }
+            },
+
             removePoints: function () {
                 this.show.points = false;
                 this.points.isActive = false;
@@ -540,10 +579,38 @@
             },
 
 
-            clearPointsRoot: function () {
-                this.$root.points = [];
-            },
 
+            plotPoints: function () {
+                if (!this.show.points) {
+                    return;
+                }
+
+                let ctx = this.canvas.getContext("2d");
+                ctx.beginPath();
+                ctx.strokeStyle = '#107e00';
+
+                ctx.setLineDash([]);
+                ctx.lineWidth = 3;
+
+
+                var s = Math.abs(
+                    this.camera2D.ScreenToWorldY(0) -
+                    this.camera2D.ScreenToWorldY(this.camera2D.grid.serifsSize)
+                );
+
+                for (var i = 0; i < this.points.points.x.length; i++) {
+
+                    this.camera2D.moveTo(this.points.points.x[i]+(s/2), this.points.points.y[i]-(s/2));
+                    this.camera2D.lineTo(this.points.points.x[i]-(s/2), this.points.points.y[i]+(s/2));
+
+
+                    this.camera2D.moveTo(this.points.points.x[i]+(s/2), this.points.points.y[i]+(s/2));
+                    this.camera2D.lineTo(this.points.points.x[i]-(s/2), this.points.points.y[i]-(s/2));
+
+                }
+
+                ctx.stroke();
+            },
 
 
 
@@ -573,29 +640,6 @@
                     xRight: null
                 };
             },
-
-
-            /**
-             * Add points to root from this.points (adding scene)
-             */
-            setPointsToRootFromSpline: function () {
-                let pointsToRoot = new Points();
-
-                let stepSpline = (this.points.points.x[this.points.points.x.length-1] - this.points.points.x[0])/this.points.points.x.length;
-
-                for (let i = this.spline.xLeft; i < this.spline.xRight; i += 0.33) {
-                    pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
-                }
-
-                if (this.spline.splineSecond) {
-                    for (let i = this.spline.xRight; i > this.spline.xLeft; i -= 0.33) {
-                        pointsToRoot.addPoint(i, this.spline.splineSecond.pointSpline(i));
-                    }
-                }
-
-                this.$root.points.push(pointsToRoot);
-            },
-
 
 
 
@@ -642,6 +686,30 @@
             },
 
 
+
+
+
+
+
+
+
+
+
+
+
+            /**
+             * SPLINE
+             */
+            createSpline: function () {
+                this.spline.spline = new Spline();
+            },
+
+            removeSpline: function () {
+                this.spline.spline = null;
+                this.show.spline = false;
+                this.spline.isActive = false;
+            },
+
             setSpline: function () {
                 if (this.points.points.x.length < 3) {
                     return;
@@ -667,6 +735,37 @@
 
             },
 
+            /**
+             * Add points to root from this.points (adding scene)
+             */
+            setPointsToRootFromSpline: function (step = false) {
+                let pointsToRoot = new Points();
+
+                let splineRight = this.spline.spline.x[this.spline.spline.x.length-1];
+
+                let stepS = this.hToRoot;
+
+                if (step) {
+                    stepS = (splineRight - this.spline.xLeft)/this.nToRoot;
+
+                    if (this.spline.splineSecond) {
+                        stepS *= 2;
+                    }
+                }
+
+                for (let i = this.spline.xLeft; i < splineRight; i += stepS) {
+                    pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
+                }
+
+                if (this.spline.splineSecond) {
+                    for (let i = this.spline.xRight; i >= this.spline.xLeft; i -= stepS) {
+                        pointsToRoot.addPoint(i, this.spline.splineSecond.pointSpline(i));
+                    }
+                }
+
+                this.$root.points.push(pointsToRoot);
+            },
+
             setSplineCircle: function () {
                 if (this.points.points.x.length < 3) {
                     return;
@@ -690,7 +789,6 @@
                         break;
                     }
 
-
                     if (!tBack) {
                         points1.addPoint(
                             this.points.points.x[i],
@@ -702,7 +800,6 @@
                             this.points.points.y[i]
                         );
                     }
-
 
                     if (this.points.points.x[i+1] && !tBack) {
                         if (this.points.points.x[i+1] < this.points.points.x[i]) {
@@ -716,23 +813,16 @@
                     }
                 }
 
-                if (tBack) {
-                    points2.unshiftPoint(
-                        this.points.points.x[0],
-                        this.points.points.y[0]
-                    );
-                }
 
                 console.log(points1, points2);
 
 
                 this.spline.spline = new Spline();
-                this.spline.spline.degStart = 0;
-                this.spline.spline.degFinish = - Math.PI/2;
 
-                this.spline.splineSecond = new Spline();
-                this.spline.splineSecond.degStart = 0;
-                this.spline.splineSecond.degFinish = Math.PI/2;
+                if (tBack) {
+                    this.spline.spline.degStart = 0;
+                    this.spline.spline.degFinish = - Math.PI/2;
+                }
 
                 this.spline.spline.setXFX({
                     x: points1.x,
@@ -742,10 +832,9 @@
 
                 this.spline.spline.setCoeffC();
 
-                var matr = new tMatrix();
+                let matr = new tMatrix();
                 matr.setABCF(this.spline.spline.getCoeffC());
                 matr.solveX();
-
 
                 this.spline.spline.setCoeffSpline(matr.getX());
 
@@ -753,7 +842,17 @@
                 /**
                  * second spline
                  */
-                if (tBack)  {
+
+                if (tBack) {
+                    points2.unshiftPoint(
+                        this.points.points.x[0],
+                        this.points.points.y[0]
+                    );
+
+                    this.spline.splineSecond = new Spline();
+                    this.spline.splineSecond.degStart = 0;
+                    this.spline.splineSecond.degFinish = Math.PI/2;
+
                     this.spline.splineSecond.setXFX({
                         x: points2.x,
                         fx: points2.y,
@@ -768,26 +867,9 @@
 
 
                     this.spline.splineSecond.setCoeffSpline(matr.getX());
-                    this.spline.isActive = true;
                 }
 
-
-                // this.spline.spline.setXFX({
-                //     x: this.points.points.x,
-                //     fx: this.points.points.y,
-                //     h: this.points.points.h
-                // });
-                //
-                // this.spline.spline.setCoeffC();
-                //
-                // var matr = new tMatrix();
-                // matr.setABCF(this.spline.spline.getCoeffC());
-                // matr.solveX();
-                //
-                //
-                // this.spline.spline.setCoeffSpline(matr.getX());
-                // this.spline.isActive = true;
-
+                this.spline.isActive = true;
             },
             plotSpline: function (x) {
                 if (!this.spline.isActive) {
@@ -840,6 +922,7 @@
                     ctx.stroke();
                 }
             },
+
             mainSpline: function (x) {
                 return this.spline.spline.pointSpline(x);
             },
@@ -848,42 +931,24 @@
             },
 
 
-            plotPoints: function () {
-                if (!this.show.points) {
-                    return;
-                }
-
-                var ctx = this.canvas.getContext("2d");
-                ctx.beginPath();
-                ctx.strokeStyle = '#107e00';
-
-                ctx.setLineDash([]);
-                ctx.lineWidth = 3;
-
-
-                var s = Math.abs(
-                    this.camera2D.ScreenToWorldY(0) -
-                    this.camera2D.ScreenToWorldY(this.camera2D.grid.serifsSize)
-                );
-
-                for (var i = 0; i < this.points.points.x.length; i++) {
-
-                    this.camera2D.moveTo(this.points.points.x[i]+(s/2), this.points.points.y[i]-(s/2));
-                    this.camera2D.lineTo(this.points.points.x[i]-(s/2), this.points.points.y[i]+(s/2));
-
-
-                    this.camera2D.moveTo(this.points.points.x[i]+(s/2), this.points.points.y[i]+(s/2));
-                    this.camera2D.lineTo(this.points.points.x[i]-(s/2), this.points.points.y[i]-(s/2));
-
-                }
-
-                ctx.stroke();
-            },
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+            /**
+             * POLYNOM NEWTON
+             */
             setPNewton: function () {
                 if (this.points.points.x.length < 3) {
                     return;
@@ -902,15 +967,15 @@
                 if (!this.show.polynom) {
                     return
                 }
-                var ctx = this.canvas.getContext("2d");
+                let ctx = this.canvas.getContext("2d");
                 ctx.beginPath();
                 ctx.strokeStyle = '#aa7000';
 
                 ctx.setLineDash([]);
                 ctx.lineWidth = 2;
 
-                var start = this.points.points.x[0];
-                var finish = this.points.points.x[this.points.points.x.length-1];
+                let start = this.points.points.x[0];
+                let finish = this.points.points.x[this.points.points.x.length-1];
 
                 if (this.camera2D.ScreenToWorldX(0) > start) {
                     start = this.camera2D.ScreenToWorldX(0);
@@ -920,7 +985,7 @@
                 }
 
                 this.camera2D.moveTo(start,this.polynom.polynom.pointPolynom(start));
-                for (var i = start; i < finish; i += 0.01)
+                for (let i = start; i < finish; i += 0.01)
                 {
                     this.camera2D.lineTo(i, this.polynom.polynom.pointPolynom(i));
                 }
@@ -928,11 +993,6 @@
                 ctx.stroke();
 
             },
-
-
-
-
-
 
         },
         watch: {
