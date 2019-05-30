@@ -20,7 +20,9 @@ new Vue({
     el: '#app',
         data () {
             return {
-                points:[]
+                points: [],
+                spline: [],
+                pNewton: []
             }
         },
     router,

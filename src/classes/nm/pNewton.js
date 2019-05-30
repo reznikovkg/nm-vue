@@ -1,4 +1,5 @@
-class pNewton {
+export default class pNewton {
+
     constructor(points = null) {
         this.points = points;
         this.n = this.points[0].length;

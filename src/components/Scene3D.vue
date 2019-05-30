@@ -144,7 +144,7 @@
 </template>
 
 <script>
-    import RootPoints from "./RootPoints";
+    import RootPoints from "./RootData";
     import InputFloatType from "./Elements/input-float-type";
 
     import * as AT3D from './../consts/view/AffineTransform3D';

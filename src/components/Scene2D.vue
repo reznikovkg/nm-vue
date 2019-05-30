@@ -111,6 +111,7 @@
                         <at-button type="primary" size="small" @click="setSplineCircle">Update spline</at-button>
                         <at-button type="primary" size="small" @click="setSpline">Update spline</at-button>
                         <at-button type="primary" size="small" @click="setPointsToRootFromSpline">Add points to root from spline</at-button>
+                        <at-button type="primary" size="small" @click="addSplineToRoot">Add spline to root</at-button>
                     </div>
                     <hr>
                     <h3>Newton</h3>
@@ -131,7 +132,7 @@
 <script>
 
     import InputFloatType from "./Elements/input-float-type";
-    import RootPoints from "./RootPoints";
+    import RootPoints from "./RootData";
 
     import * as AT2D from './../consts/view/AffineTransform2D';
 
@@ -139,6 +140,8 @@
 
     import Points from './../classes/view/Points';
     import Spline from './../classes/nm/Spline';
+    import pNewton from './../classes/nm/pNewton';
+
 
     import Camera2D from './../classes/view/Camera2D';
 
@@ -550,11 +553,26 @@
              * Add points to root from this.points (adding scene)
              */
             addPointsToRoot: function () {
-                var points = new Points();
+                let points = new Points();
                 points.copy(this.points.points);
                 this.$root.points.push(points);
             },
 
+            addSplineToRoot: function () {
+
+                this.$root.spline.push(this.spline.spline);
+
+                this.show.spline = false;
+
+                this.spline = {
+                    isActive: false,
+                    spline: null,
+                    splineSecond: null,
+
+                    xLeft: null,
+                    xRight: null
+                };
+            },
 
 
             /**

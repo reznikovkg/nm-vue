@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p>Root points</p>
+        <p>Points</p>
         <div v-for="(rPoints, index) in $root.points">
 
             <at-button type="primary" size="small" @click="removePoints(index)">Remove points {{index}}</at-button>
@@ -21,6 +21,29 @@
             </div>
             <hr>
         </div>
+        <p>Spline</p>
+        <div v-for="(spline, index) in $root.spline">
+
+            <at-button type="primary" size="small" @click="removePoints(index)">Remove points {{index}}</at-button>
+
+<!--            <div class="rowFlex">-->
+<!--                <div class="row-fix-width">-->
+<!--                    <p>x</p>-->
+<!--                    <p v-for="item in rPoints.x">{{ item.toFixed(2) }}</p>-->
+<!--                </div>-->
+<!--                <div class="row-fix-width">-->
+<!--                    <p>y</p>-->
+<!--                    <p v-for="item in rPoints.y">{{ item.toFixed(2) }}</p>-->
+<!--                </div>-->
+<!--                <div class="row-fix-width">-->
+<!--                    <p>z</p>-->
+<!--                    <p v-for="item in rPoints.z">{{ item.toFixed(2) }}</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <hr>-->
+        </div>
+
+        <p>pNewton</p>
     </div>
 </template>
 

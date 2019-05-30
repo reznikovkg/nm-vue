@@ -20,6 +20,8 @@ export default class Spline {
         this.degFinish = 0;
     }
 
+
+
     setXFX(params)
     {
         this.x = params.x;
