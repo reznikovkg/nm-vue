@@ -73,14 +73,12 @@
                     <h3>Points</h3>
                     <div class="btn-group">
                         <at-button v-if="!points.points" type="primary" size="small" @click="createPoints">Create</at-button>
-                        <at-button v-if="points.points" type="success" size="small" @click="createCirclePoints">Circle points</at-button>
+                        <at-button v-if="points.points" type="success" size="small" @click="createCirclePoints(false)">Circle points</at-button>
+                        <at-button v-if="points.points" type="success" size="small" @click="createCirclePoints">Circle/2 points</at-button>
                         <at-button v-if="points.points" type="error" size="small" @click="removePoints">Remove object</at-button>
                     </div>
                     <div v-if="points.points">
                         <at-checkbox v-model="show.points" label="Shenzhen">Show</at-checkbox>
-                        <at-checkbox v-model="points.minHConsider" label="Shenzhen">Min h</at-checkbox>
-                        <p>Step points: {{ points.points.minStep }}</p>
-                        <input-float-type v-model="points.points.minStep"></input-float-type>
                         <div class="btn-group">
                             <at-button type="primary" size="small" @click="addPointsToRoot">Add points to root</at-button>
                             <at-button type="error" size="small" @click="clearPoints">Clear points</at-button>
@@ -99,43 +97,66 @@
                                 <p v-for="item in points.points.h">{{ item.toFixed(2) }}</p>
                             </div>
                         </div>
+                        <div class="rowFlex">
+                            <input-float-type v-model="p.x"></input-float-type>
+                            <input-float-type v-model="p.y"></input-float-type>
+                            <at-button type="primary" size="small" @click="addPointFromInput">Add</at-button>
+                        </div>
                     </div>
                     <hr>
                     <h3>Function</h3>
                     <at-checkbox v-model="show.fun" label="Shenzhen">Show</at-checkbox>
+
+                    <at-select v-model="funcs.select" :placeholder="'Function'">
+                        <at-option v-for="(val, key) in funcs.list" :value="key" :key="key">{{ key }}</at-option>
+                    </at-select>
+
                     <hr>
                     <h3>Spline</h3>
+                    <div v-if="!spline.spline" class="btn-group">
+                        <at-button type="primary" size="small" @click="createSpline">Create spline</at-button>
+                    </div>
+
                     <at-checkbox v-model="show.spline" v-if="spline.spline" label="Shenzhen" :disabled="!spline.isActive">Show</at-checkbox>
 
                     <div v-if="spline.spline" class="btn-group">
                         <at-button type="primary" size="small" @click="setSplineCircle">Update spline</at-button>
-                        <at-button type="primary" size="small" @click="setPointsToRootFromSpline" :disabled="!spline.isActive">Add points to root from spline</at-button>
-                        <at-button type="primary" size="small" @click="addSplineToRoot" :disabled="!spline.isActive">Add spline to root</at-button>
                         <at-button type="error" size="small" @click="removeSpline">Remove spline</at-button>
-                    </div>
-                    <div v-if="!spline.spline" class="btn-group">
-                        <at-button type="primary" size="small" @click="createSpline">Create spline</at-button>
+
+                        <at-button type="primary" size="small" @click="setPointsToRootFromSpline(true)" :disabled="!spline.isActive">Add points to root from spline (by h)</at-button>
+                        <at-button type="primary" size="small" @click="setPointsToRootFromSpline()" :disabled="!spline.isActive">Add points to root from spline (by n)</at-button>
+                        <at-button type="primary" size="small" @click="addSplineToRoot" :disabled="!spline.isActive">Add spline to root</at-button>
                     </div>
                     <hr>
                     <h3>Newton</h3>
-                    <at-checkbox v-model="show.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
-                    <div class="btn-group">
-                        <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
+                    <div v-if="!polynom.polynom" class="btn-group">
+                        <at-button type="primary" size="small" @click="createPNewton">Create Newton</at-button>
                     </div>
+
+                    <at-checkbox v-model="show.polynom" v-if="polynom.polynom" label="Shenzhen" :disabled="!polynom.isActive">Show</at-checkbox>
+                    <div v-if="polynom.polynom" class="btn-group">
+                        <at-button type="primary" size="small" @click="setPNewton">Update polynom</at-button>
+                        <at-button type="error" size="small" @click="removePNewton">Remove polynom</at-button>
+
+                        <at-button type="primary" size="small" @click="setPointsToRootFromPNewton(true)" :disabled="!polynom.isActive">Add points to root from polynom (by h)</at-button>
+                        <at-button type="primary" size="small" @click="setPointsToRootFromPNewton()" :disabled="!polynom.isActive">Add points to root from polynom (by n)</at-button>
+                        <at-button type="primary" size="small" @click="addPNewtonToRoot" :disabled="!polynom.isActive">Add polynom to root</at-button>
+                    </div>
+
                     <h3>Default</h3>
                     <p>h:
-                        <i @click="hToRoot--" class="icon icon-minus"></i>
-                        {{ hToRoot }}
-                        <i @click="hToRoot++" class="icon icon-plus"></i>
+                        <i @click="hDefault--" class="icon icon-minus"></i>
+                        {{ hDefault }}
+                        <i @click="hDefault++" class="icon icon-plus"></i>
                     </p>
-                    <input-float-type v-model="hToRoot"></input-float-type>
+                    <input-float-type v-model="hDefault"></input-float-type>
 
                     <p>n:
-                        <i @click="nToRoot--" class="icon icon-minus"></i>
-                        {{ nToRoot }}
-                        <i @click="nToRoot++" class="icon icon-plus"></i>
+                        <i @click="nv--" class="icon icon-minus"></i>
+                        {{ nDefault }}
+                        <i @click="nDefault++" class="icon icon-plus"></i>
                     </p>
-                    <input-float-type v-model="nToRoot"></input-float-type>
+                    <input-float-type v-model="nDefault"></input-float-type>
                 </div>
                 <div v-if="tabs.root.status" class="nav-tab">
                     <root-points></root-points>
@@ -242,14 +263,19 @@
                     polynom: false
                 },
 
-                hToRoot: 0.1,
-                nToRoot: 30,
+                hDefault: 0.1,
+                nDefault: 30,
+
                 points: {
                     isActive: false,
-                    points: null,
-
-                    minHConsider: false,
+                    points: null
                 },
+
+                p: {
+                    x: 0,
+                    y: 0
+                },
+
                 spline: {
                     isActive: false,
                     spline: null,
@@ -261,7 +287,23 @@
                 polynom: {
                     isActive: false,
                     polynom: null
-                }
+                },
+
+                funcs: {
+                    select: "sin(x)",
+                    list: {
+                        "sin(x)" : function (x) {
+                            return Math.sin(x);
+                        },
+                        "cos(x)" : function (x) {
+                            return Math.cos(x);
+                        },
+                        "x^2" : function (x) {
+                            return x*x;
+                        },
+                    }
+
+                },
             }
         },
         computed: {
@@ -477,8 +519,8 @@
                 if (!this.points.points.combo) {
                     return;
                 }
-                if (this.points.minHConsider) {
-                    if (this.points.points.x[this.points.points.x.length-1] + this.points.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
+                if (this.hDefault) {
+                    if (this.points.points.x[this.points.points.x.length-1] + this.hDefault > this.camera2D.ScreenToWorldX(e.clientX) ) {
                         return;
                     }
                 }
@@ -512,27 +554,18 @@
              * Status: Optional
              */
             addPoint: function (e) {
-                if (this.points.minHConsider) {
-                    if (this.points.points.x[this.points.points.x.length-1] + this.points.points.minH > this.camera2D.ScreenToWorldX(e.clientX) ) {
-                        return;
-                    }
-                }
-
                 this.points.points.addPoint(
                     this.camera2D.ScreenToWorldX(e.clientX),
                     this.camera2D.ScreenToWorldY(e.clientY)
                 );
-
-                // if ((this.spline.isActive)&&(this.show.spline)) {
-                //     this.setSpline();
-                // }
-
-                // if ((this.polynom.isActive)&&(this.show.polynom)) {
-                //     this.setPNewton();
-                // }
             },
 
-
+            addPointFromInput: function (){
+                this.points.points.addPoint(
+                    this.p.x,
+                    this.p.y
+                );
+            },
 
 
 
@@ -545,24 +578,30 @@
                 this.show.points = true;
             },
 
-            createCirclePoints: function () {
+            createCirclePoints: function (t = true) {
                 let p = new Points(
-                    [this.hToRoot],
+                    [this.hDefault],
                     [0],
                     [0]
                 );
 
                 this.points.points = new Points(
-                    [this.hToRoot],
+                    [this.hDefault],
                     [0],
                     [0]
                 );
 
-                for (let i = 0; i < this.nToRoot; i++) {
+                let s = Math.PI*2;
+
+                if (t) {
+                    s = Math.PI;
+                }
+
+                for (let i = 0; i < this.nDefault; i++) {
                     setTimeout(()=>{
-                        p.applyAT2D( AT2D.rotationDeg(- Math.PI * 2 / this.nToRoot) );
+                        p.applyAT2D( AT2D.rotationDeg(- s / this.nDefault) );
                         this.points.points.addPoint(p.x[0], p.y[0]);
-                    }, 2000*i/this.nToRoot);
+                    }, 2000*i/this.nDefault);
 
                 }
             },
@@ -648,15 +687,15 @@
              */
             plotFun: function () {
                 if (this.show.fun) {
-                    var ctx = this.canvas.getContext("2d");
+                    let ctx = this.canvas.getContext("2d");
                     ctx.beginPath();
                     ctx.strokeStyle = '#2600ff';
 
                     ctx.setLineDash([]);
                     ctx.lineWidth = 2;
 
-                    var start = 0;
-                    var finish = 30;
+                    let start = 0;
+                    let finish = 30;
 
                     if (this.camera2D.ScreenToWorldX(0) > start) {
                         start = this.camera2D.ScreenToWorldX(0);
@@ -666,7 +705,7 @@
                     }
 
                     this.camera2D.moveTo(start,this.mainFunction(start));
-                    for (var i = start; i < finish; i += 0.01)
+                    for (let i = start; i < finish; i += 0.01)
                     {
 
                         this.camera2D.lineTo(i, this.mainFunction(i));
@@ -682,7 +721,7 @@
              * @returns {number}
              */
             mainFunction: function (x) {
-                return Math.sin(x);
+                return this.funcs.list[this.funcs.select](x);
             },
 
 
@@ -741,18 +780,21 @@
             setPointsToRootFromSpline: function (step = false) {
                 let pointsToRoot = new Points();
 
+                console.log(step)
+
                 let splineRight = this.spline.spline.x[this.spline.spline.x.length-1];
 
-                let stepS = this.hToRoot;
+                let stepS = this.hDefault;
 
-                if (step) {
-                    stepS = (splineRight - this.spline.xLeft)/this.nToRoot;
+                if (!step) {
+                    stepS = (splineRight - this.spline.xLeft)/(this.nDefault-1);
 
                     if (this.spline.splineSecond) {
                         stepS *= 2;
                     }
                 }
 
+                console.log(stepS)
                 for (let i = this.spline.xLeft; i < splineRight; i += stepS) {
                     pointsToRoot.addPoint(i, this.spline.spline.pointSpline(i));
                 }
@@ -949,16 +991,61 @@
             /**
              * POLYNOM NEWTON
              */
+            createPNewton: function () {
+                this.polynom.polynom = new pNewton();
+            },
+
+            removePNewton: function () {
+                this.polynom.polynom = null;
+                this.show.polynom = false;
+                this.polynom.isActive = false;
+            },
+
             setPNewton: function () {
                 if (this.points.points.x.length < 3) {
                     return;
                 }
 
-                this.polynom.polynom = new pNewton([this.points.points.x, this.points.points.y]);
+                this.polynom.polynom.setPoints([this.points.points.x, this.points.points.y]);
+                this.polynom.polynom.setStartFinish(this.points.points.x[0], this.points.points.x[this.points.points.x.length-1]);
                 this.polynom.isActive = true;
 
             },
 
+            /**
+             *
+             */
+            setPointsToRootFromPNewton: function (step = false) {
+                let pointsToRoot = new Points();
+
+                let start = this.polynom.polynom.start;
+                let finish = this.polynom.polynom.finish;
+
+                let stepS = (finish - start)/(this.nDefault-1);
+
+                if (step) {
+                    stepS = this.hDefault;
+                }
+
+                for (let i = start; i < finish; i += stepS) {
+                    pointsToRoot.addPoint(i, this.polynom.polynom.pointPolynom(i));
+                }
+
+                this.$root.points.push(pointsToRoot);
+            },
+
+
+            addPNewtonToRoot: function () {
+
+                this.$root.pNewton.push(this.polynom.polynom);
+
+                this.show.polynom = false;
+
+                this.polynom = {
+                    isActive: false,
+                    polynom: null
+                };
+            },
             plotPNewton: function () {
                 if (!this.polynom.isActive) {
                     return;
@@ -974,8 +1061,8 @@
                 ctx.setLineDash([]);
                 ctx.lineWidth = 2;
 
-                let start = this.points.points.x[0];
-                let finish = this.points.points.x[this.points.points.x.length-1];
+                let start = this.polynom.polynom.start;
+                let finish = this.polynom.polynom.finish;
 
                 if (this.camera2D.ScreenToWorldX(0) > start) {
                     start = this.camera2D.ScreenToWorldX(0);

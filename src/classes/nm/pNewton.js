@@ -1,6 +1,15 @@
 export default class pNewton {
 
     constructor(points = null) {
+        this.points = null;
+        this.n = null;
+        this.diff = null;
+
+
+    }
+
+
+    setPoints(points) {
         this.points = points;
         this.n = this.points[0].length;
         this.diff = [];
@@ -10,7 +19,6 @@ export default class pNewton {
          */
         this.setDiff();
     }
-
 
     /**
      * Set diff matrix
@@ -22,7 +30,7 @@ export default class pNewton {
     setDiff() {
         this.diff.push([]);
 
-        for (var i = 1; i < this.n; i++) {
+        for (let i = 1; i < this.n; i++) {
             this.diff[0].push(this.getDiffSum({ii: 0, jj: i}));
         }
     }
@@ -36,11 +44,11 @@ export default class pNewton {
      * @returns {number}
      */
     getDiffSum(params) {
-        var ii = params.ii;
-        var jj = params.jj;
-        var sum = 0;
+        let ii = params.ii;
+        let jj = params.jj;
+        let sum = 0;
 
-        for (var i = ii; i <= jj; i++)
+        for (let i = ii; i <= jj; i++)
         {
             sum += (
                 this.points[1][i] /
@@ -61,12 +69,12 @@ export default class pNewton {
      */
     getDiffProd (params)
     {
-        var ii = params.ii;
-        var iii = params.iii;
-        var jjj = params.jjj;
+        let ii = params.ii;
+        let iii = params.iii;
+        let jjj = params.jjj;
 
-        var prod = 1;
-        for (var jj = iii; jj <= jjj; jj++)
+        let prod = 1;
+        for (let jj = iii; jj <= jjj; jj++)
         {
             if (jj !== ii)
             {
@@ -102,11 +110,11 @@ export default class pNewton {
      */
     pRec(params)
     {
-        var x = params.x;
-        var k = params.k;
-        var ipnN = params.ipnN;
+        let x = params.x;
+        let k = params.k;
+        let ipnN = params.ipnN;
 
-        var result = 0;
+        let result = 0;
         if (k < ipnN)
         {
             result = this.diff[0][k-1];
@@ -127,13 +135,18 @@ export default class pNewton {
      */
     pRecProd(params)
     {
-        var x = params.x;
-        var k = params.k;
-        var result = 1;
-        for (var i = 0; i < k; i++)
+        let x = params.x;
+        let k = params.k;
+        let result = 1;
+        for (let i = 0; i < k; i++)
         {
             result *= (x - this.points[0][i]);
         }
         return result;
+    }
+
+    setStartFinish(start, finish) {
+        this.start = start;
+        this.finish = finish;
     }
 }

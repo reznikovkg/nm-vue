@@ -47,7 +47,7 @@ export default class Spline {
             f: []
         };
 
-        for (var i = 1; i < this.n; i++)
+        for (let i = 1; i < this.n; i++)
         {
             // addCoeffC(state, {
             //     a: state.h[i - 1],
@@ -64,7 +64,7 @@ export default class Spline {
 
     setCoeffSpline(X)
     {
-        var CC = X;
+        let CC = X;
 
         this.a = [];
         this.b = [];
@@ -73,7 +73,7 @@ export default class Spline {
 
         this.c.push(CC[0] - 0 / 3);
 
-        for (var i = 0; i < this.n - 1; i++)
+        for (let i = 0; i < this.n - 1; i++)
         {
             this.c.push(CC[i]);
         }
@@ -86,7 +86,7 @@ export default class Spline {
 
         this.b.push((this.fx[1] - this.fx[0]) / this.h[0] - this.h[0] * (2 * this.c[0] + this.c[1]) / 3);
 
-        for (var i = 1; i < this.n; i++)
+        for (let i = 1; i < this.n; i++)
         {
             this.b.push((this.fx[i + 1] - this.fx[i]) / this.h[i] - this.h[i] * (2 * this.c[i] + this.c[i + 1]) / 3);
             this.d.push((this.c[i + 1] - this.c[i]) / (3 * this.h[i]));
@@ -120,8 +120,8 @@ export default class Spline {
 
     pointSpline(x)
     {
-        var i = 0;
-        var ost = true;
+        let i = 0;
+        let ost = true;
 
         while ((ost)&&(i>=0)&& (i < this.x.length - 1))
         {
@@ -133,7 +133,7 @@ export default class Spline {
             }
         }
 
-        var xt = x - this.x[i];
+        let xt = x - this.x[i];
         if (i < this.b.length)
         {
             return this.a[i] + this.b[i] * xt + this.c[i] * xt * xt + this.d[i] * xt * xt * xt;

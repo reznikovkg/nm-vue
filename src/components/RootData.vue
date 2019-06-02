@@ -3,7 +3,7 @@
         <p>Points</p>
 
         <div v-if="$root.points.length" class="btn-group">
-            <at-button type="primary" size="small" @click="clearPointsRoot">Remove points ROOT</at-button>
+            <at-button type="error" size="small" @click="clearPointsRoot">Remove ALL points ROOT</at-button>
         </div>
         <div v-for="(rPoints, index) in $root.points">
 
@@ -26,34 +26,33 @@
             <hr>
         </div>
         <hr>
+
         <p>Spline</p>
-
         <div v-if="$root.spline.length" class="btn-group">
-            <at-button type="primary" size="small" @click="clearSplineRoot">Remove spline ROOT</at-button>
-        </div>
+            <at-button type="error" size="small" @click="clearSplineRoot">Remove ALL spline ROOT</at-button>
 
-        <div v-for="(spline, index) in $root.spline">
-
-            <at-button type="primary" size="small" @click="removeSpline(index)">Remove spline {{index}}</at-button>
-
-<!--            <div class="rowFlex">-->
-<!--                <div class="row-fix-width">-->
-<!--                    <p>x</p>-->
-<!--                    <p v-for="item in rPoints.x">{{ item.toFixed(2) }}</p>-->
-<!--                </div>-->
-<!--                <div class="row-fix-width">-->
-<!--                    <p>y</p>-->
-<!--                    <p v-for="item in rPoints.y">{{ item.toFixed(2) }}</p>-->
-<!--                </div>-->
-<!--                <div class="row-fix-width">-->
-<!--                    <p>z</p>-->
-<!--                    <p v-for="item in rPoints.z">{{ item.toFixed(2) }}</p>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <hr>-->
+            <at-button v-for="(spline, index) in $root.spline"
+                       type="primary"
+                       size="small"
+                       :key="index"
+                       @click="removeSpline(index)">
+                Remove spline {{index}}
+            </at-button>
         </div>
         <hr>
+
         <p>pNewton</p>
+        <div v-if="$root.pNewton.length" class="btn-group">
+            <at-button type="error" size="small" @click="clearSplineRoot">Remove ALL spline ROOT</at-button>
+
+            <at-button v-for="(pNewton, index) in $root.pNewton"
+                       type="primary"
+                       size="small"
+                       :key="index"
+                       @click="removePNewton(index)">
+                Remove spline {{index}}
+            </at-button>
+        </div>
     </div>
 </template>
 
@@ -71,6 +70,10 @@
 
             removeSpline: function (splineIndex) {
                 this.$root.spline.splice(splineIndex, 1);
+            },
+
+            removePNewton: function (pNewtonIndex) {
+                this.$root.pNewton.splice(pNewtonIndex, 1);
             },
 
             clearSplineRoot: function () {

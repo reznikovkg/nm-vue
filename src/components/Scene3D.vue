@@ -105,25 +105,37 @@
                         </div>
 
                         <div class="rowFlex">
-                            <div class="row-fix-width" style="width: 80px">
+                            <div class="row-fix-width" style="width: 100px">
                                 <p>Guide</p>
                                 <at-select v-model="kinematicModel.selectGuide" :placeholder="'Guide'">
-                                    <at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>
+                                    <at-option  :value="'rotation'" :key="'rotation'">Rotation</at-option>
+                                    <at-option v-for="(val, index) in $root.points" :value="'points'+index" :key="'points'+index">Points {{ index }}</at-option>
+                                    <at-option v-for="(val, index) in $root.spline" :value="'spline'+index" :key="'spline'+index">Spline {{ index }}</at-option>
+                                    <at-option v-for="(val, index) in $root.pNewton" :value="'pNewton'+index" :key="'pNewton'+index">PNewton {{ index }}</at-option>
                                 </at-select>
                             </div>
-                            <div class="row-fix-width" style="width: 80px">
+                            <div class="row-fix-width" style="width: 100px">
                                 <p>Form</p>
                                 <at-select v-model="kinematicModel.selectForm" :placeholder="'Form'">
-                                    <at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>
+                                    <at-option v-for="(val, index) in $root.points" :value="'points'+index" :key="'points'+index">Points {{ index }}</at-option>
+                                    <at-option v-for="(val, index) in $root.spline" :value="'spline'+index" :key="'spline'+index">Spline {{ index }}</at-option>
+                                    <at-option v-for="(val, index) in $root.pNewton" :value="'pNewton'+index" :key="'pNewton'+index">PNewton {{ index }}</at-option>
                                 </at-select>
                             </div>
-                            <div class="row-fix-width">
-                                <p>Action</p>
-                                <at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>
+                            <div class="row-fix-width" style="width: 100px">
+                                <p>AT</p>
+                                <at-select v-model="kinematicModel.selectAT" :placeholder="'Form'">
+                                    <at-option :value="'identity'">Identity</at-option>
+                                    <at-option :value="'rotationXDeg'">Rotation X</at-option>
+                                    <at-option :value="'rotationYDeg'">Rotation Y</at-option>
+                                    <at-option :value="'rotationZDeg'">Rotation Z</at-option>
+                                </at-select>
                             </div>
                         </div>
+                        <at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>
+
                         <div class="btn-group">
-                            <at-button type="primary" size="small" @click="kinematicModelPlotDefault">Plot default</at-button>
+                            <at-button type="primary" size="small" @click="plotDefaulttKitematic">Plot default</at-button>
                         </div>
                         <div>
                             <at-checkbox v-model="kinematicModel.kinematicModel.formAT3D" label="Shenzhen" :disabled="!kinematicModel.isActive">Form TRANSFORM</at-checkbox>
@@ -131,6 +143,21 @@
                         <div>
                             <at-checkbox v-model="kinematicModel.kinematicModel.guideAT3D" label="Shenzhen" :disabled="!kinematicModel.isActive">Guide TRANSFORM</at-checkbox>
                         </div>
+
+
+                        <p>Points guide:
+                            <i @click="kinematicModel.kinematicModel.guideNumberPoints--" class="icon icon-minus"></i>
+                            {{ kinematicModel.kinematicModel.guideNumberPoints }}
+                            <i @click="kinematicModel.kinematicModel.guideNumberPoints++" class="icon icon-plus"></i>
+                        </p>
+                        <input-float-type v-model="kinematicModel.kinematicModel.guideNumberPoints"></input-float-type>
+
+                        <p>Points form:
+                            <i @click="kinematicModel.kinematicModel.formNumberPoints--" class="icon icon-minus"></i>
+                            {{ kinematicModel.kinematicModel.formNumberPoints }}
+                            <i @click="kinematicModel.kinematicModel.formNumberPoints++" class="icon icon-plus"></i>
+                        </p>
+                        <input-float-type v-model="kinematicModel.kinematicModel.formNumberPoints"></input-float-type>
                     </div>
                     <hr>
                 </div>
@@ -231,7 +258,8 @@
 
                     selectGuide: null,
                     selectForm: null,
-                },
+                    selectAT: null
+                }
             }
         },
         computed: {
@@ -708,13 +736,76 @@
             },
             removeKinematicModel: function () {
                 this.kinematicModel.kinematicModel = null;
+                this.kinematicModel.isActive = false;
             },
             setKitematicGuideForm: function () {
-                this.kinematicModel.kinematicModel.setForm(this.$root.points[this.kinematicModel.selectForm]);
-                this.kinematicModel.kinematicModel.setGuide(this.$root.points[this.kinematicModel.selectGuide]);
+                if (this.kinematicModel.selectForm.indexOf("points") >= 0) {
+                    this.kinematicModel.kinematicModel.setForm(
+                        this.$root.points[
+                            Number(this.kinematicModel.selectForm.substring(6))
+                            ]
+                    );
+                }
 
-                this.kinematicModel.kinematicModel.setPointsDefault();
+                if (this.kinematicModel.selectGuide.indexOf("points") >= 0) {
+                    this.kinematicModel.kinematicModel.setGuide(
+                        this.$root.points[
+                            Number(this.kinematicModel.selectGuide.substring(6))
+                            ]
+                    );
+                }
+
+                if (this.kinematicModel.selectForm.indexOf("spline") >= 0) {
+                    this.kinematicModel.kinematicModel.setForm(
+                        this.$root.spline[
+                            Number(this.kinematicModel.selectForm.substring(6))
+                            ]
+                    );
+                }
+
+                if (this.kinematicModel.selectGuide.indexOf("spline") >= 0) {
+                    this.kinematicModel.kinematicModel.setGuide(
+                        this.$root.spline[
+                            Number(this.kinematicModel.selectGuide.substring(6))
+                            ]
+                    );
+                }
+
+
+                if (this.kinematicModel.selectForm.indexOf("pNewton") >= 0) {
+                    this.kinematicModel.kinematicModel.setForm(
+                        this.$root.pNewton[
+                            Number(this.kinematicModel.selectForm.substring(7))
+                            ]
+                    );
+                }
+
+                if (this.kinematicModel.selectGuide.indexOf("pNewton") >= 0) {
+                    this.kinematicModel.kinematicModel.setGuide(
+                        this.$root.pNewton[
+                            Number(this.kinematicModel.selectGuide.substring(7))
+                            ]
+                    );
+                }
+
+                if (this.kinematicModel.selectGuide === "rotation") {
+                    this.kinematicModel.kinematicModel.setGuide(
+                        "rotation"
+                    );
+                }
+
+                this.kinematicModel.kinematicModel.setAT(
+                    this.kinematicModel.selectAT
+                );
+
+                this.kinematicModel.kinematicModel.setPoints();
+            },
+
+            plotDefaulttKitematic: function () {
+                this.kinematicModel.kinematicModel.plotDefault();
                 this.kinematicModel.isActive = true;
+
+                this.kinematicModelPlotDefault();
             },
             kinematicModelPlotDefault: function () {
 
@@ -722,9 +813,9 @@
                     return;
                 }
 
-                var ctx = this.canvas.getContext("2d");
+                let ctx = this.canvas.getContext("2d");
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+                ctx.strokeStyle = 'rgba(57,57,57,0.7)';
 
                 ctx.setLineDash([]);
                 ctx.lineWidth = 3;
@@ -734,7 +825,7 @@
 
                 if (this.kinematicModel.showModel) {
                     for (let i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
-                        for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
+                        for (let j = 1; j <= this.kinematicModel.kinematicModel.formPoints.x.length; j++) {
                             this.camera3D.moveTo(
                                 this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
                                 this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
@@ -754,7 +845,7 @@
                             );
                         }
 
-                        let j = this.kinematicModel.kinematicModel.form.x.length - 1;
+                        let j = this.kinematicModel.kinematicModel.formPoints.x.length - 1;
 
                         this.camera3D.moveTo(
                             this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
@@ -767,7 +858,7 @@
                     }
 
                     let i = this.kinematicModel.kinematicModel.matrixPointsProject.length - 1;
-                    for (let j = 1; j <= this.kinematicModel.kinematicModel.form.x.length; j++) {
+                    for (let j = 1; j <= this.kinematicModel.kinematicModel.formPoints.x.length; j++) {
                         this.camera3D.moveTo(
                             this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
                             this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
@@ -785,10 +876,10 @@
 
                 ctx.setLineDash([]);
                 ctx.lineWidth = 3;
-                ctx.strokeStyle = '#3bef34';
+                ctx.strokeStyle = '#1700a4';
 
                 if (this.kinematicModel.showFormGuide) {
-                    for (let j = 0; j < this.kinematicModel.kinematicModel.form.x.length - 1; j++) {
+                    for (let j = 0; j < this.kinematicModel.kinematicModel.formPoints.x.length - 1; j++) {
                         this.camera3D.moveTo(
                             this.kinematicModel.kinematicModel.matrixFormProject.getProjectX(j),
                             this.kinematicModel.kinematicModel.matrixFormProject.getProjectY(j)
@@ -806,10 +897,10 @@
 
                 ctx.setLineDash([]);
                 ctx.lineWidth = 3;
-                ctx.strokeStyle = '#ef8700';
+                ctx.strokeStyle = '#9c0011';
 
                 if (this.kinematicModel.showFormGuide) {
-                    for (let j = 0; j < this.kinematicModel.kinematicModel.guide.x.length - 1; j++) {
+                    for (let j = 0; j < this.kinematicModel.kinematicModel.formPoints.x.length - 1; j++) {
                         this.camera3D.moveTo(
                             this.kinematicModel.kinematicModel.matrixGuideProject.getProjectX(j),
                             this.kinematicModel.kinematicModel.matrixGuideProject.getProjectY(j)

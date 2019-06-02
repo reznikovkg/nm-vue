@@ -124,4 +124,12 @@ export default class Points {
         this.y = matr.getStrSecond();
         this.z = matr.getStrThird();
     }
+
+    addAll( x = 0, y = 0, z = 0 ){
+        for (let i = 0; i < this.x.length; i++) {
+            this.x[i] +=x;
+            this.y[i] +=y;
+            this.z[i] +=z;
+        }
+    }
 }
