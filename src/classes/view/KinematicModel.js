@@ -23,7 +23,8 @@ export default class KinematicModel {
         this.matrixPoints = [];
         this.matrixPointsProject = [];
 
-        this.at = AT3D.identity();
+        this.at = 'identity';
+        this.atCustom = AT3D.identity();
 
         this.guideAT3D = true;
         this.formAT3D = true;
@@ -199,6 +200,10 @@ export default class KinematicModel {
             return AT3D.identity();
         }
 
+        if (this.at === "custom") {
+            return this.atCustom;
+        }
+
         if (this.at === "rotationXDeg") {
             return AT3D.rotationXDeg(y*p);
         }
@@ -294,20 +299,24 @@ export default class KinematicModel {
             this.guidePoints.applyAT3D(at);
         }
 
-        // for (let i = 0; i < this.matrixPoints.length; i++) {
-        //     this.matrixPoints[i] = at.compWith(this.matrixPoints[i], true);
-        // }
+        if ( !this.formAT3D && !this.guideAT3D ) {
+            for (let i = 0; i < this.matrixPoints.length; i++) {
+                this.matrixPoints[i] = at.compWith(this.matrixPoints[i], true);
+            }
+        }
     }
 
 
     project(pr) {
-        this.plotDefault();
+        if ( this.formAT3D || this.guideAT3D ) {
+            this.plotDefault();
+        }
 
-        this.matrixGuideProject = new Matrix();
-        this.matrixGuideProject.setArray( pr.compWith(this.matrixGuide, true).cells );
-
-        this.matrixFormProject = new Matrix();
-        this.matrixFormProject.setArray( pr.compWith(this.matrixForm, true).cells );
+        // this.matrixGuideProject = new Matrix();
+        // this.matrixGuideProject.setArray( pr.compWith(this.matrixGuide, true).cells );
+        //
+        // this.matrixFormProject = new Matrix();
+        // this.matrixFormProject.setArray( pr.compWith(this.matrixForm, true).cells );
 
         for (let i = 0; i < this.matrixPoints.length; i++) {
             this.matrixPointsProject[i] = new Matrix();

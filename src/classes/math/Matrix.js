@@ -229,4 +229,6 @@ export default class Matrix {
             this.cells[2][1],
         ];
     }
+
+
 }

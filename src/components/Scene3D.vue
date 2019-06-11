@@ -129,6 +129,7 @@
                                     <at-option :value="'rotationXDeg'">Rotation X</at-option>
                                     <at-option :value="'rotationYDeg'">Rotation Y</at-option>
                                     <at-option :value="'rotationZDeg'">Rotation Z</at-option>
+                                    <at-option :value="'custom'">Custom</at-option>
                                 </at-select>
                             </div>
                         </div>
@@ -158,6 +159,15 @@
                             <i @click="kinematicModel.kinematicModel.formNumberPoints++" class="icon icon-plus"></i>
                         </p>
                         <input-float-type v-model="kinematicModel.kinematicModel.formNumberPoints"></input-float-type>
+
+
+                        <div v-if="kinematicModel.selectAT === 'custom'">AT
+                            <div class="rowFlex" v-for="i in 4">
+                                <div class="row-fix-width" style="width: 80px" v-for="j in 4">
+                                    <input-float-type v-model="kinematicModel.kinematicModel.atCustom.cells[i-1][j-1]"></input-float-type>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <hr>
                 </div>
@@ -879,14 +889,14 @@
                 ctx.strokeStyle = '#1700a4';
 
                 if (this.kinematicModel.showFormGuide) {
-                    for (let j = 0; j < this.kinematicModel.kinematicModel.formPoints.x.length - 1; j++) {
+                    for (let i = 0; i < this.kinematicModel.kinematicModel.matrixPointsProject[0].getColNum() - 1; i++) {
                         this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectX(j),
-                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectY(j)
+                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectX(i),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectY(i)
                         );
                         this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectX(j+1),
-                            this.kinematicModel.kinematicModel.matrixFormProject.getProjectY(j+1)
+                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectX(i+1),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectY(i+1)
                         );
                     }
                 }
@@ -900,14 +910,14 @@
                 ctx.strokeStyle = '#9c0011';
 
                 if (this.kinematicModel.showFormGuide) {
-                    for (let j = 0; j < this.kinematicModel.kinematicModel.formPoints.x.length - 1; j++) {
+                    for (let i = 0; i < this.kinematicModel.kinematicModel.matrixPointsProject.length - 1; i++) {
                         this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectX(j),
-                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectY(j)
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(0),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(0)
                         );
                         this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectX(j+1),
-                            this.kinematicModel.kinematicModel.matrixGuideProject.getProjectY(j+1)
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i+1].getProjectX(0),
+                            this.kinematicModel.kinematicModel.matrixPointsProject[i+1].getProjectY(0)
                         );
                     }
                 }
