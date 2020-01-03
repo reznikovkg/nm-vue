@@ -72,8 +72,8 @@ export default class Vector {
      */
     compWith(vector) {
         if (this.getNum() === vector.getNum()) {
-            var b = 0;
-            for (var i = 0; i < this.getNum(); i++) {
+            let b = 0;
+            for (let i = 0; i < this.getNum(); i++) {
                 b += this.cells[i]*vector.cells[i];
             }
 

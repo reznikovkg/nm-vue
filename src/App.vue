@@ -13,9 +13,7 @@
 <script>
 
 export default {
-    name: 'App',
-    methods: {
-    }
+    name: 'App'
 }
 </script>
 

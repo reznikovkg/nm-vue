@@ -6,7 +6,7 @@ import * as AT3D from './../../consts/view/AffineTransform3D';
 
 export default class Camera3D extends Camera2D {
 
-    constructor(canvas) {
+    constructor(canvas = null) {
         super(canvas);
 
         this.vOv = new Vector([0,0,0]);
@@ -149,4 +149,5 @@ export default class Camera3D extends Camera2D {
         this.moveCamera.move = false;
         this.updateCamera();
     }
+
 }

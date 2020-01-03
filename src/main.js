@@ -10,16 +10,8 @@ import store from './store';
 
 Vue.use(AtComponents);
 
-
 new Vue({
     el: '#app',
-        data () {
-            return {
-                points: [],
-                spline: [],
-                pNewton: []
-            }
-        },
     router,
     store,
     components: { App },

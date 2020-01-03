@@ -1,20 +1,20 @@
 <template>
     <div class="component-scene-3d">
         <div class="scena-3d">
-            <canvas id="canvas-scene" :width="camera3D.field.width" :height="camera3D.field.height"
-                @wheel="canvasWheel"
-                @mousedown="canvasMouseDown"
-                @mousemove="canvasMouseDrag"
-                @mouseup="canvasMouseUp"
-            ></canvas>
+            <canvas ref="canvas"/>
+<!--                @wheel="canvasWheel"-->
+<!--                @mousedown="canvasMouseDown"-->
+<!--                @mousemove="canvasMouseDrag"-->
+<!--                @mouseup="canvasMouseUp"-->
+<!--            />-->
         </div>
 
-        <div
-                v-if="!firstLoad"
-                class="loadscene"
-                @click="firstLoadScene">
-            <p><b>Load</b></p>
-        </div>
+<!--        <div-->
+<!--            v-if="!firstLoad"-->
+<!--            class="loadscene"-->
+<!--            @click="firstLoadScene">-->
+<!--            <p><b>Load</b></p>-->
+<!--        </div>-->
 
         <div class="openScene2D">
             <at-button type="primary" size="large" icon="icon-square" circle @click="clickScene2D"></at-button>
@@ -57,119 +57,20 @@
                     <input-float-type v-model="camera3D.d"></input-float-type>
                 </div>
                 <div v-if="tabs.plot.status" class="nav-tab">
+                    <at-button type="primary" @click="createNewModel" v-if="!choiseTypePlot">Create new model</at-button>
+                    <at-button type="error" @click="cancelCreateNewModel" v-if="choiseTypePlot">Cancel</at-button>
 
-                    <at-button type="primary" @click="plotPointsFromRoot">From root points</at-button>
-                    <hr>
-                    <h3>Model</h3>
-                    <div class="btn-group">
-                        <at-button v-if="!model3D.model3D" type="primary" size="small" @click="createModel3D">Create</at-button>
-                        <at-button v-if="model3D.model3D" type="primary" size="small" @click="removeModel3D">Remove</at-button>
-                        <!--<at-button v-if="model3D.model3D" type="primary" size="small" @click="removeKinematicModel">Remove</at-button>-->
+                    <at-select v-if="choiseTypePlot" v-model="typePlotSelect" :placeholder="'Type plot'">
+                        <at-option v-for="(type, index) in typesPlot" :value="index" :key="index">{{ type.name }}</at-option>
+                    </at-select>
+
+                    <component v-if="typePlotSelect" :is="typesPlot[typePlotSelect].componentForm"/>
+
+
+                    <div>Models</div>
+                    <div>
+                        <p v-for="(model,index) in getModels" :key="index">{{ model.name }}</p>
                     </div>
-                    <div v-if="model3D.model3D">
-                        <div>
-                            <at-checkbox v-model="show.model3D" label="Shenzhen" :disabled="!model3D.isActive">Show</at-checkbox>
-                        </div>
-
-                        <!--<div class="rowFlex">-->
-                            <!--<div class="row-fix-width" style="width: 80px">-->
-                                <!--<p>Guide</p>-->
-                                <!--<at-select v-model="kinematicModel.selectGuide" :placeholder="'Guide'">-->
-                                    <!--<at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>-->
-                                <!--</at-select>-->
-                            <!--</div>-->
-                            <!--<div class="row-fix-width" style="width: 80px">-->
-                                <!--<p>Form</p>-->
-                                <!--<at-select v-model="kinematicModel.selectForm" :placeholder="'Form'">-->
-                                    <!--<at-option v-for="(val, index) in $root.points" :value="index" :key="index">{{ index }}</at-option>-->
-                                <!--</at-select>-->
-                            <!--</div>-->
-                            <!--<div class="row-fix-width">-->
-                                <!--<p>Action</p>-->
-                                <!--<at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="btn-group">-->
-                            <!--<at-button type="primary" size="small" @click="kinematicModelPlotDefault">Plot default</at-button>-->
-                        <!--</div>-->
-                    </div>
-                    <hr>
-                    <h3>Kinematic model</h3>
-                    <div class="btn-group">
-                        <at-button v-if="!kinematicModel.kinematicModel" type="primary" size="small" @click="createKinematicModel">Create</at-button>
-                        <at-button v-if="kinematicModel.kinematicModel" type="primary" size="small" @click="removeKinematicModel">Remove</at-button>
-                    </div>
-                    <div v-if="kinematicModel.kinematicModel">
-                        <div>
-                            <at-checkbox v-model="show.kinematicModel" label="Shenzhen" :disabled="!kinematicModel.isActive">Show</at-checkbox>
-                        </div>
-
-                        <div class="rowFlex">
-                            <div class="row-fix-width" style="width: 100px">
-                                <p>Guide</p>
-                                <at-select v-model="kinematicModel.selectGuide" :placeholder="'Guide'">
-                                    <at-option  :value="'rotation'" :key="'rotation'">Rotation</at-option>
-                                    <at-option v-for="(val, index) in $root.points" :value="'points'+index" :key="'points'+index">Points {{ index }}</at-option>
-                                    <at-option v-for="(val, index) in $root.spline" :value="'spline'+index" :key="'spline'+index">Spline {{ index }}</at-option>
-                                    <at-option v-for="(val, index) in $root.pNewton" :value="'pNewton'+index" :key="'pNewton'+index">PNewton {{ index }}</at-option>
-                                </at-select>
-                            </div>
-                            <div class="row-fix-width" style="width: 100px">
-                                <p>Form</p>
-                                <at-select v-model="kinematicModel.selectForm" :placeholder="'Form'">
-                                    <at-option v-for="(val, index) in $root.points" :value="'points'+index" :key="'points'+index">Points {{ index }}</at-option>
-                                    <at-option v-for="(val, index) in $root.spline" :value="'spline'+index" :key="'spline'+index">Spline {{ index }}</at-option>
-                                    <at-option v-for="(val, index) in $root.pNewton" :value="'pNewton'+index" :key="'pNewton'+index">PNewton {{ index }}</at-option>
-                                </at-select>
-                            </div>
-                            <div class="row-fix-width" style="width: 100px">
-                                <p>AT</p>
-                                <at-select v-model="kinematicModel.selectAT" :placeholder="'Form'">
-                                    <at-option :value="'identity'">Identity</at-option>
-                                    <at-option :value="'rotationXDeg'">Rotation X</at-option>
-                                    <at-option :value="'rotationYDeg'">Rotation Y</at-option>
-                                    <at-option :value="'rotationZDeg'">Rotation Z</at-option>
-                                    <at-option :value="'custom'">Custom</at-option>
-                                </at-select>
-                            </div>
-                        </div>
-                        <at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>
-
-                        <div class="btn-group">
-                            <at-button type="primary" size="small" @click="plotDefaulttKitematic">Plot default</at-button>
-                        </div>
-                        <div>
-                            <at-checkbox v-model="kinematicModel.kinematicModel.formAT3D" label="Shenzhen" :disabled="!kinematicModel.isActive">Form TRANSFORM</at-checkbox>
-                        </div>
-                        <div>
-                            <at-checkbox v-model="kinematicModel.kinematicModel.guideAT3D" label="Shenzhen" :disabled="!kinematicModel.isActive">Guide TRANSFORM</at-checkbox>
-                        </div>
-
-
-                        <p>Points guide:
-                            <i @click="kinematicModel.kinematicModel.guideNumberPoints--" class="icon icon-minus"></i>
-                            {{ kinematicModel.kinematicModel.guideNumberPoints }}
-                            <i @click="kinematicModel.kinematicModel.guideNumberPoints++" class="icon icon-plus"></i>
-                        </p>
-                        <input-float-type v-model="kinematicModel.kinematicModel.guideNumberPoints"></input-float-type>
-
-                        <p>Points form:
-                            <i @click="kinematicModel.kinematicModel.formNumberPoints--" class="icon icon-minus"></i>
-                            {{ kinematicModel.kinematicModel.formNumberPoints }}
-                            <i @click="kinematicModel.kinematicModel.formNumberPoints++" class="icon icon-plus"></i>
-                        </p>
-                        <input-float-type v-model="kinematicModel.kinematicModel.formNumberPoints"></input-float-type>
-
-
-                        <div v-if="kinematicModel.selectAT === 'custom'">AT
-                            <div class="rowFlex" v-for="i in 4">
-                                <div class="row-fix-width" style="width: 80px" v-for="j in 4">
-                                    <input-float-type v-model="kinematicModel.kinematicModel.atCustom.cells[i-1][j-1]"></input-float-type>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
                 </div>
                 <div v-if="tabs.root.status" class="nav-tab">
                     <root-points></root-points>
@@ -181,38 +82,44 @@
 </template>
 
 <script>
-    import RootPoints from "./RootData";
-    import InputFloatType from "./Elements/input-float-type";
+    import RootPoints from "./../RootData";
+    import InputFloatType from "./../Elements/input-float-type";
 
-    import * as AT3D from './../consts/view/AffineTransform3D';
+    import * as AT3D from './../../consts/view/AffineTransform3D';
 
-    import Points from './../classes/view/Points';
+    import Points from './../../classes/view/Points';
 
-    import Matrix from './../classes/math/Matrix';
-    import Camera3D from './../classes/view/Camera3D';
-    import Model3D from './../classes/view/Model3D';
+    import Matrix from './../../classes/math/Matrix';
+    import Camera3D from './../../classes/view/Camera3D';
+    import Model3D from './../../classes/view/Model3D';
 
-    import KinematicModel from './../classes/view/KinematicModel';
+    import KinematicModel from './../../classes/view/KinematicModel';
+
+    import KinematicForm from './../../components/Forms/Scene3D/Kinematic';
+
+    import { mapGetters, mapActions } from 'vuex';
 
     export default {
         name: "Scena3D",
-        components: {InputFloatType, RootPoints},
+        components: {
+        	InputFloatType,
+            RootPoints,
+			KinematicForm
+        },
         data () {
             return {
-                camera3D: {
-                    field: {
-                        width: 0,
-                        height: 0
-                    },
+                fields: {
+                    width: 0,
+                    height: 0
                 },
 
-                axis3D: {
-                    x: new Model3D(),
-                    y: new Model3D(),
-                    z: new Model3D()
-                },
+                // axis3D: {
+                //     x: new Model3D(),
+                //     y: new Model3D(),
+                //     z: new Model3D()
+                // },
 
-                points: {},
+                // points: {},
                 nav: {
                     moveCenter: {
                         status: true,
@@ -248,60 +155,70 @@
                     },
                 },
                 openNav: false,
-                firstLoad: false,
+                // firstLoad: false,
 
-                show: {
-                    kinematicModel: false,
-                    points: false,
-                    model3D: false
+                // show: {
+                //     kinematicModel: false,
+                //     points: false,
+                //     model3D: false
+                // },
+                // model3D: {
+                //     isActive: false,
+                //     model3D: null,
+                // },
+                // kinematicModel: {
+                //     isActive: false,
+                //     kinematicModel: null,
+                //
+                //     showFormGuide: true,
+                //     showModel: true,
+                //
+                //     selectGuide: null,
+                //     selectForm: null,
+                //     selectAT: null
+                // },
+                typesPlot: {
+                	kinematic: {
+                		componentForm: KinematicForm,
+						name: 'Kinematic'
+                    }
                 },
-                model3D: {
-                    isActive: false,
-                    model3D: null,
-                },
-                kinematicModel: {
-                    isActive: false,
-                    kinematicModel: null,
-
-                    showFormGuide: true,
-                    showModel: true,
-
-                    selectGuide: null,
-                    selectForm: null,
-                    selectAT: null
-                }
+                typePlotSelect: null,
+				choiseTypePlot: false
             }
         },
         computed: {
+        	...mapGetters('scene3d', [
+        		'getCamera',
+				'getModels'
+            ]),
             canvas: function () {
-                return document.getElementById("canvas-scene");
+                return this.$refs.canvas;
             }
         },
         mounted: function () {
-            this.camera3D = new Camera3D(this.canvas);
-            this.camera3D.setCanvas(this.canvas);
-
-
-            this.axis3D.x.setVertices(new Matrix([[1,0],[0,0],[0,0],[1,1]]));
-            this.axis3D.y.setVertices(new Matrix([[0,0],[1,0],[0,0],[1,1]]));
-            this.axis3D.z.setVertices(new Matrix([[0,0],[0,0],[1,0],[1,1]]));
-
-
-            //this.points = new Points([1,2,3,4], [1,0,1,0], [0,0,0,0]);
-            this.points = new Points([0,5,2.5,2.5,5,0,2.5,2.5,0], [0,0,0,3,0,0,0,3,0], [0,0,-2.5,-1.5,0,0,-2.5,-1.5,0]);
-
-            this.reBuild();
-
-        },
-        created: function() {
-            document.addEventListener('keydown', this.keyPress, false);
-            document.addEventListener('keypress', this.keyPress, false);
-        },
-        destroyed: function() {
-            document.removeEventListener('keydown', this.keyPress, false);
-            document.removeEventListener('keypress', this.keyPress, false);
-        },
+			this.$nextTick(() => {
+				this.fields = {
+					width: document.body.clientWidth,
+					height: document.body.clientHeight
+				};
+				this.initCamera(this.$refs.canvas);
+				this.render();
+			})
+		},
+        // created: function() {
+        //     document.addEventListener('keydown', this.keyPress, false);
+        //     document.addEventListener('keypress', this.keyPress, false);
+        // },
+        // destroyed: function() {
+        //     document.removeEventListener('keydown', this.keyPress, false);
+        //     document.removeEventListener('keypress', this.keyPress, false);
+        // },
         methods: {
+        	...mapActions('scene3d', [
+                'initCamera',
+                'render'
+            ]),
             /**
              * Open/Close nav by clic
              *
@@ -348,10 +265,6 @@
                 }
             },
 
-            firstLoadScene: function () {
-                this.reBuild();
-                this.firstLoad = true;
-            },
 
             /**
              * Key press to action
@@ -596,20 +509,6 @@
             },
 
             /**
-             * Rebuild canvas
-             *
-             * Status: Optional
-             */
-            reBuild: function () {
-                this.camera3D.clear();
-                this.axisPlot3D();
-
-                this.plotModel3D();
-                this.kinematicModelPlotDefault();
-                // this.plotPoints();
-            },
-
-            /**
              * Mouse canvas down
              *
              * Status: Optional
@@ -668,73 +567,77 @@
              *
              * Status: Process
              */
-            axisPlot3D: function () {
-                // console.log(this.camera3D.worldToProjectF(true));
+            // axisPlot3D: function () {
+            //
+            //     // for (var i = 1; i < 2; i++) {
+            //     //     this.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
+            //     //     this.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
+            //     // }
+            //
+            //
+            //     var ctx = this.canvas.getContext("2d");
+            //
+            //     /**
+            //      * axis X
+            //      * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+            //      */
+            //     ctx.beginPath();
+            //     ctx.strokeStyle = '#1c137e';
+            //     ctx.setLineDash([]);
+            //     ctx.lineWidth = 2;
+            //     this.axis3D.x.project(this.camera3D.worldToProjectF(true), true);
+            //
+            //     for (var i = 1; i < 2; i++) {
+            //         this.camera3D.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
+            //         this.camera3D.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
+            //     }
+            //     ctx.stroke();
+            //
+            //
+            //     /**
+            //      * axis Y
+            //      * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+            //      */
+            //     ctx.beginPath();
+            //     ctx.strokeStyle = '#0aaa00';
+            //     ctx.setLineDash([]);
+            //     ctx.lineWidth = 2;
+            //     this.axis3D.y.project(this.camera3D.worldToProjectF(true), true);
+            //
+            //     for (var i = 1; i < 2; i++) {
+            //         this.camera3D.moveTo(this.axis3D.y.getProjectX(i-1), this.axis3D.y.getProjectY(i-1));
+            //         this.camera3D.lineTo(this.axis3D.y.getProjectX(i), this.axis3D.y.getProjectY(i));
+            //     }
+            //     ctx.stroke();
+            //
+            //     /**
+            //      * axis Z
+            //      * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+            //      */
+            //     ctx.beginPath();
+            //     ctx.strokeStyle = '#cb0006';
+            //     ctx.setLineDash([]);
+            //     ctx.lineWidth = 2;
+            //     this.axis3D.z.project(this.camera3D.worldToProjectF(true), true);
+            //
+            //     for (var i = 1; i < 2; i++) {
+            //         this.camera3D.moveTo(this.axis3D.z.getProjectX(i-1), this.axis3D.z.getProjectY(i-1));
+            //         this.camera3D.lineTo(this.axis3D.z.getProjectX(i), this.axis3D.z.getProjectY(i));
+            //     }
+            //     ctx.stroke();
+            // },
 
-                // for (var i = 1; i < 2; i++) {
-                //     this.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
-                //     this.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
-                // }
 
 
-                var ctx = this.canvas.getContext("2d");
-
-                /**
-                 * axis X
-                 * @type {CanvasRenderingContext2D | WebGLRenderingContext}
-                 */
-                ctx.beginPath();
-                ctx.strokeStyle = '#1c137e';
-                ctx.setLineDash([]);
-                ctx.lineWidth = 2;
-                this.axis3D.x.project(this.camera3D.worldToProjectF(true), true);
-
-                for (var i = 1; i < 2; i++) {
-                    this.camera3D.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
-                    this.camera3D.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
-                }
-                ctx.stroke();
 
 
-                /**
-                 * axis Y
-                 * @type {CanvasRenderingContext2D | WebGLRenderingContext}
-                 */
-                ctx.beginPath();
-                ctx.strokeStyle = '#0aaa00';
-                ctx.setLineDash([]);
-                ctx.lineWidth = 2;
-                this.axis3D.y.project(this.camera3D.worldToProjectF(true), true);
 
-                for (var i = 1; i < 2; i++) {
-                    this.camera3D.moveTo(this.axis3D.y.getProjectX(i-1), this.axis3D.y.getProjectY(i-1));
-                    this.camera3D.lineTo(this.axis3D.y.getProjectX(i), this.axis3D.y.getProjectY(i));
-                }
-                ctx.stroke();
-
-                /**
-                 * axis Z
-                 * @type {CanvasRenderingContext2D | WebGLRenderingContext}
-                 */
-                ctx.beginPath();
-                ctx.strokeStyle = '#cb0006';
-                ctx.setLineDash([]);
-                ctx.lineWidth = 2;
-                this.axis3D.z.project(this.camera3D.worldToProjectF(true), true);
-
-                for (var i = 1; i < 2; i++) {
-                    this.camera3D.moveTo(this.axis3D.z.getProjectX(i-1), this.axis3D.z.getProjectY(i-1));
-                    this.camera3D.lineTo(this.axis3D.z.getProjectX(i), this.axis3D.z.getProjectY(i));
-                }
-                ctx.stroke();
+			createNewModel: function () {
+                this.choiseTypePlot = true;
             },
-
-
-
-
-
-
-
+			cancelCreateNewModel: function () {
+				this.choiseTypePlot = false;
+			},
 
 
 
@@ -817,113 +720,7 @@
 
                 this.kinematicModelPlotDefault();
             },
-            kinematicModelPlotDefault: function () {
 
-                if (!this.show.kinematicModel) {
-                    return;
-                }
-
-                let ctx = this.canvas.getContext("2d");
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(57,57,57,0.7)';
-
-                ctx.setLineDash([]);
-                ctx.lineWidth = 3;
-
-
-                this.kinematicModel.kinematicModel.project(this.camera3D.worldToProjectF(true));
-
-                if (this.kinematicModel.showModel) {
-                    for (let i = 1; i < this.kinematicModel.kinematicModel.matrixPointsProject.length; i++) {
-                        for (let j = 1; j <= this.kinematicModel.kinematicModel.formPoints.x.length; j++) {
-                            this.camera3D.moveTo(
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
-                            );
-                            this.camera3D.lineTo(
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
-                            );
-
-                            this.camera3D.moveTo(
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j-1),
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j-1)
-                            );
-                            this.camera3D.lineTo(
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
-                                this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
-                            );
-                        }
-
-                        let j = this.kinematicModel.kinematicModel.formPoints.x.length - 1;
-
-                        this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectX(j),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i-1].getProjectY(j)
-                        );
-                        this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
-                        );
-                    }
-
-                    let i = this.kinematicModel.kinematicModel.matrixPointsProject.length - 1;
-                    for (let j = 1; j <= this.kinematicModel.kinematicModel.formPoints.x.length; j++) {
-                        this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j-1),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j-1)
-                        );
-                        this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(j),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(j)
-                        );
-                    }
-                }
-
-                ctx.stroke();
-
-                ctx.beginPath();
-
-                ctx.setLineDash([]);
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#1700a4';
-
-                if (this.kinematicModel.showFormGuide) {
-                    for (let i = 0; i < this.kinematicModel.kinematicModel.matrixPointsProject[0].getColNum() - 1; i++) {
-                        this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectX(i),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectY(i)
-                        );
-                        this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectX(i+1),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[0].getProjectY(i+1)
-                        );
-                    }
-                }
-
-                ctx.stroke();
-
-                ctx.beginPath();
-
-                ctx.setLineDash([]);
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#9c0011';
-
-                if (this.kinematicModel.showFormGuide) {
-                    for (let i = 0; i < this.kinematicModel.kinematicModel.matrixPointsProject.length - 1; i++) {
-                        this.camera3D.moveTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectX(0),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i].getProjectY(0)
-                        );
-                        this.camera3D.lineTo(
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i+1].getProjectX(0),
-                            this.kinematicModel.kinematicModel.matrixPointsProject[i+1].getProjectY(0)
-                        );
-                    }
-                }
-
-                ctx.stroke();
-            },
 
 
 
@@ -1014,42 +811,42 @@
 
         },
         watch: {
-            camera3D: {
-                handler: function () {
-                    this.reBuild();
-                },
-                deep: true
-            },
-            show: {
-                handler: function () {
-                    this.reBuild();
-                },
-                deep: true
-            },
-            points: {
-                handler: function () {
-                    this.points.setH();
-                    this.reBuild();
-                },
-                deep: true
-            },
-            'model3D.isActive': {
-                handler: function () {
-                    this.reBuild();
-                },
-                deep: true
-            },
-            'kinematicModel.isActive': {
-                handler: function () {
-                    this.reBuild();
-                },
-                deep: true
-            },
-            'camera3D.d': {
-                handler: function () {
-                    this.camera3D.updateCamera();
-                }
-            }
+            // camera3D: {
+            //     handler: function () {
+            //         this.reBuild();
+            //     },
+            //     deep: true
+            // },
+            // show: {
+            //     handler: function () {
+            //         this.reBuild();
+            //     },
+            //     deep: true
+            // },
+            // points: {
+            //     handler: function () {
+            //         this.points.setH();
+            //         this.reBuild();
+            //     },
+            //     deep: true
+            // },
+            // 'model3D.isActive': {
+            //     handler: function () {
+            //         this.reBuild();
+            //     },
+            //     deep: true
+            // },
+            // 'kinematicModel.isActive': {
+            //     handler: function () {
+            //         this.reBuild();
+            //     },
+            //     deep: true
+            // },
+            // 'camera3D.d': {
+            //     handler: function () {
+            //         this.camera3D.updateCamera();
+            //     }
+            // }
         }
     }
 </script>

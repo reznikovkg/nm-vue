@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Homepage from '@/components/Homepage'
+import Homepage from '@/components/Pages/Homepage'
 
-import Scene2D from '../components/Scene2D'
-import Scene3D from '../components/Scene3D'
+import Scene2D from '../components/Pages/Scene2D'
+import Scene3D from '../components/Pages/Scene3D'
 
 Vue.use(Router);
 

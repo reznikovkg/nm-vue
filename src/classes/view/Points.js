@@ -8,6 +8,8 @@ export default class Points {
         this.y = y;
         this.z = z;
 
+        this.show = true;
+
         this.identity = new Vector();
         this.identity.IdentityCells(this.x.length);
 

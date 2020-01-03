@@ -2,10 +2,10 @@
     <div>
         <p>Points</p>
 
-        <div v-if="$root.points.length" class="btn-group">
+        <div v-if="getPoints.length" class="btn-group">
             <at-button type="error" size="small" @click="clearPointsRoot">Remove ALL points ROOT</at-button>
         </div>
-        <div v-for="(rPoints, index) in $root.points">
+        <div v-for="(rPoints, index) in getPoints">
 
 
             <div class="rowFlex">
@@ -28,10 +28,10 @@
         <hr>
 
         <p>Spline</p>
-        <div v-if="$root.spline.length" class="btn-group">
+        <div v-if="getSpline.length" class="btn-group">
             <at-button type="error" size="small" @click="clearSplineRoot">Remove ALL spline ROOT</at-button>
 
-            <at-button v-for="(spline, index) in $root.spline"
+            <at-button v-for="(spline, index) in getSpline"
                        type="primary"
                        size="small"
                        :key="index"
@@ -42,10 +42,10 @@
         <hr>
 
         <p>pNewton</p>
-        <div v-if="$root.pNewton.length" class="btn-group">
+        <div v-if="getPNewton.length" class="btn-group">
             <at-button type="error" size="small" @click="clearSplineRoot">Remove ALL spline ROOT</at-button>
 
-            <at-button v-for="(pNewton, index) in $root.pNewton"
+            <at-button v-for="(pNewton, index) in getPNewton"
                        type="primary"
                        size="small"
                        :key="index"
@@ -57,27 +57,36 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
+
     export default {
         name: "RootPoints",
+        computed: {
+        	...mapGetters('cache', [
+        		'getPoints',
+				'getSpline',
+				'getPNewton',
+            ])
+        },
         methods: {
             removePoints: function (pointsIndex) {
-                this.$root.points.splice(pointsIndex, 1);
+                // VUEX splice(pointsIndex, 1);
             },
 
             clearPointsRoot: function () {
-                this.$root.points = [];
+                // VUEX points = [];
             },
 
             removeSpline: function (splineIndex) {
-                this.$root.spline.splice(splineIndex, 1);
+                // VUEX splice(splineIndex, 1);
             },
 
             removePNewton: function (pNewtonIndex) {
-                this.$root.pNewton.splice(pNewtonIndex, 1);
+                // VUEX splice(pNewtonIndex, 1);
             },
 
             clearSplineRoot: function () {
-                this.$root.spline = [];
+                // VUEX spline = [];
             },
 
         }
