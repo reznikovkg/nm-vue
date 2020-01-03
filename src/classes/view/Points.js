@@ -3,10 +3,17 @@ import Matrix from './../math/Matrix';
 
 export default class Points {
 
-    constructor(x = [], y = [], z = []) {
+    constructor(
+        // x = [], y = [], z = []
+
+                   x= [1,2,3,4],
+                y = [1,0,1,0],
+                z= [0,0,0,0]) {
         this.x = x;
         this.y = y;
         this.z = z;
+
+        this.name = "Points";
 
         this.show = true;
 
@@ -133,5 +140,28 @@ export default class Points {
             this.y[i] +=y;
             this.z[i] +=z;
         }
+    }
+
+
+    render(camera) {
+        if (!this.show) {
+            return;
+        }
+        let ctx = camera.canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.strokeStyle = '#107e00';
+        ctx.setLineDash([]);
+        ctx.lineWidth = 3;
+        let s = Math.abs(
+            camera.ScreenToWorldY(0) -
+            camera.ScreenToWorldY(camera.grid.serifsSize)
+        );
+        for (let i = 0; i < this.x.length; i++) {
+            camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));
+            camera.lineTo(this.x[i]-(s/2), this.y[i]+(s/2));
+            camera.moveTo(this.x[i]+(s/2), this.y[i]+(s/2));
+            camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
+        }
+        ctx.stroke();
     }
 }

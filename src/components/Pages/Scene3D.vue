@@ -72,9 +72,6 @@
                         <p v-for="(model,index) in getModels" :key="index">{{ model.name }}</p>
                     </div>
                 </div>
-                <div v-if="tabs.root.status" class="nav-tab">
-                    <root-points></root-points>
-                </div>
             </div>
         </div>
 
@@ -82,7 +79,6 @@
 </template>
 
 <script>
-    import RootPoints from "./../RootData";
     import InputFloatType from "./../Elements/input-float-type";
 
     import * as AT3D from './../../consts/view/AffineTransform3D';
@@ -103,7 +99,6 @@
         name: "Scena3D",
         components: {
         	InputFloatType,
-            RootPoints,
 			KinematicForm
         },
         data () {

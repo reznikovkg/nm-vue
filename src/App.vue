@@ -95,4 +95,14 @@ export default {
         width: 50px;
         margin-right: 10px;
     }
+
+    .nav-tab {
+        margin-right: 5px;
+    }
+
+    .row {
+        & .at-btn {
+            margin-right: 5px;
+        }
+    }
 </style>

@@ -151,18 +151,18 @@
 <!--                    <input-float-type v-model="nDefault"></input-float-type>-->
                 </div>
                 <div v-if="tabs.objects.status" class="nav-tab">
-                    <at-button type="primary" icon="icon-settings" @click="createNewObject">Create new object</at-button>
 
-                    <at-button type="error" @click="cancelNewObject" v-if="choiseType">Cancel</at-button>
+                    <h3>Models:</h3>
+                    <model-preview  v-for="(model,index) in getModels" :model="model" :index="index" :key="index"/>
+                    <hr>
 
-                    <at-select v-if="choiseType" v-model="selectedType" :placeholder="'Type plot'">
-                        <at-option v-for="(type, index) in typesOfObjects" :value="index" :key="index">{{ type.name }}</at-option>
+
+                    <at-select v-model="choiceType" :placeholder="'Type plot'">
+                        <at-option v-for="(type, index) in typesOfModelsShow" :value="index" :key="index">{{ type.name }}</at-option>
                     </at-select>
+                    <at-button type="primary" icon="icon-settings" @click="createModel">Create new model</at-button>
 
-                    <component v-if="selectedType" :is="typesOfObjects[selectedType].componentForm"/>
-                </div>
-                <div v-if="tabs.root.status" class="nav-tab">
-                    <root-data/>
+<!--                    <component v-if="selectedType" :is="typesOfObjects[selectedType].componentForm"/>-->
                 </div>
             </div>
         </div>
@@ -171,20 +171,18 @@
 
 <script>
     import InputFloatType from "./../Elements/input-float-type";
-    import RootData from "./../RootData";
 
-	import PointsForm from './../../components/Forms/Scene2D/Points';
-	import SplineForm from './../../components/Forms/Scene2D/Spline';
-
-    import Camera2D from './../../classes/view/Camera2D';
+    import typesOfModels from "../../consts/typesOfModels";
 
 	import { mapActions, mapGetters } from "vuex";
+
+	import ModelPreview from "../Elements/ModelPreview";
 
     export default {
         name: "Scena2D",
         components: {
-			RootData,
-            InputFloatType
+            InputFloatType,
+			ModelPreview
         },
         data () {
             return {
@@ -266,31 +264,46 @@
                 //     }
                 //
                 // },
-				typesOfObjects: {
-					points: {
-						name: 'Points',
-                        componentForm: PointsForm
-					},
-					spline: {
-						name: 'Spline',
-						componentForm: SplineForm
-					},
-				},
-				selectedType: null,
-				choiseType: false
+				// typesOfObjects: {
+				// 	points: {
+				// 		name: 'Points',
+                //         componentForm: PointsForm
+				// 	},
+				// 	spline: {
+				// 		name: 'Spline',
+				// 		componentForm: SplineForm
+				// 	},
+				// },
+				// selectedType: null,
+				// choiseType: false
             }
         },
         computed: {
+        	...mapGetters('scene2d', [
+        		'getModels',
+                'getChoiceType'
+            ]),
             canvas: function () {
                 return this.$refs.canvas;
-            }
+            },
+            choiceType: {
+        		get() {
+        			return this.getChoiceType
+                },
+                set(t) {
+					this.setChoiceType(t);
+                }
+            },
+			typesOfModelsShow: function () {
+                return typesOfModels;
+			}
         },
         mounted() {
 			this.initCamera(this.$refs.canvas);
-			this.render();
+			this.reRender();
 			window.addEventListener(`resize`, event => {
 				this.setSizeCanvas();
-				this.render();
+				this.reRender();
 			}, false);
 		},
 		// created: function() {
@@ -305,12 +318,16 @@
 			...mapActions('scene2d', [
 				'initCamera',
 				'setSizeCanvas',
-				'render',
+				'reRender',
 
                 'mouseDown',
                 'mouseDrag',
                 'mouseUp',
-                'mouseWheel'
+                'mouseWheel',
+
+
+                'createModel',
+				'setChoiceType'
 			]),
 
 			canvasMouseDown(e) {
@@ -332,11 +349,6 @@
 
 
 
-			/**
-			 * Mouse canvas wheel
-			 *
-			 * Status: Optional
-			 */
 
 
 
@@ -349,21 +361,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-			createNewObject: function () {
-				this.choiseType = true;
-            },
-			cancelNewObject: function () {
-				this.choiseType = false;
-			},
 
 
 

@@ -278,7 +278,7 @@ export default class Camera2D {
 
     render(models = []) {
         for (let i = 0; i < models.length; i++) {
-            models[i].render(this.canvas);
+            models[i].render(this);
         }
     }
 

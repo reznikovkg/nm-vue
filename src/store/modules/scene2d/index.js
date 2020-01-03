@@ -1,10 +1,13 @@
 import Camera from './../../../classes/view/Camera2D'
 import { mutation } from "../../interaction";
 
+import typesOfModels from "../../../consts/typesOfModels";
+
 const state = {
 	camera: null,
 	models: [],
 	activeModel: 0,
+	choiceType: null,
 	navigation: {
 		moveCenter: {
 			status: true,
@@ -31,6 +34,9 @@ const getters = {
 	},
 	getCamera: (state, getters, rootState) => {
 		return state.camera;
+	},
+	getChoiceType: (state, getters, rootState) => {
+		return state.choiceType;
 	},
 };
 
@@ -72,6 +78,12 @@ const mutations = {
 	activeModelAddComboPointsStart(state, e) {
 		state.camera.dragToStart(e);
 	},
+	setChoiceType(state, t) {
+		state.choiceType = t;
+	},
+	createModel(state, classType) {
+		state.activeModel = state.models.length;
+	},
 };
 
 const actions = {
@@ -87,6 +99,9 @@ const actions = {
 	render ({ commit, state }) {
 		commit('clear');
 		commit('render');
+	},
+	reRender ({ commit, state }) {
+		commit('reRender');
 	},
 	mouseDown ({ commit, state }, e) {
 		commit('mouseDown');
@@ -125,9 +140,17 @@ const actions = {
 		}
 		commit('reRender');
 	},
+	setChoiceType({ commit, state }, t) {
+		commit('setChoiceType', t);
+	},
 	mouseWheel ({ commit, state }, e) {
 		commit('mouseWheel');
 		commit('cameraWheelSize', e);
+		commit('reRender');
+	},
+	createModel({ commit, state }, e) {
+		commit('createModel');
+		commit('addModel', new typesOfModels[state.choiceType].class());
 		commit('reRender');
 	},
 };
