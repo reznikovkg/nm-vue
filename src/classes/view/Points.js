@@ -14,6 +14,7 @@ export default class Points {
         this.z = z;
 
         this.name = "Points";
+        this.code = "points";
 
         this.show = true;
 

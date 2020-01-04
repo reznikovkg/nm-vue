@@ -153,7 +153,7 @@
                 <div v-if="tabs.objects.status" class="nav-tab">
 
                     <h3>Models:</h3>
-                    <model-preview  v-for="(model,index) in getModels" :model="model" :index="index" :key="index"/>
+                        <model-preview  v-for="(model,index) in getModels" :model="model" :index="index" :key="index"/>
                     <hr>
 
 

@@ -38,6 +38,9 @@ const getters = {
 	getChoiceType: (state, getters, rootState) => {
 		return state.choiceType;
 	},
+	getActiveModel: (state, getters, rootState) => {
+		return state.activeModel;
+	},
 };
 
 const mutations = {
@@ -84,11 +87,17 @@ const mutations = {
 	createModel(state, classType) {
 		state.activeModel = state.models.length;
 	},
+	setActiveModel(state, index) {
+		state.activeModel = index;
+	},
 };
 
 const actions = {
 	addModel ({ commit, state }, model) {
 		commit('addModel', model)
+	},
+	setActiveModel ({ commit, state }, index) {
+		commit('setActiveModel', index)
 	},
 	initCamera ({ commit, state }, canvas) {
 		commit('initCamera', canvas)

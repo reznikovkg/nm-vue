@@ -7,11 +7,13 @@ import SplineForm from '../components/Forms/Scene2D/Spline'
 
 export default {
 	points: {
+		code: 'points',
 		name: 'Points',
 		class: Points,
 		form: PointsForm
 	},
 	spline: {
+		code: 'spline',
 		name: 'Spline',
 		class: Spline,
 		form: SplineForm
