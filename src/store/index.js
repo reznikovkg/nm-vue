@@ -3,12 +3,14 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-import scene2d from './modules/scene2d';
-import scene3d from './modules/scene3d';
+import navigation from './modules/navigation';
+import models from './modules/models';
+import scene from './modules/scene';
 
 export default new Vuex.Store({
 	modules: {
-		scene2d,
-		scene3d
+		navigation,
+		models,
+		scene
 	}
 });

@@ -7,8 +7,10 @@ import * as AT3D from './../../consts/view/AffineTransform3D';
 export default class KinematicModel {
 
     constructor(guide = null, form = null) {
+        this.show = false;
 
         this.name = "Kinematic";
+        this.code = "kinematic";
 
         this.guide = guide;
         this.form = form;
@@ -332,7 +334,7 @@ export default class KinematicModel {
 
     render(scene) {
 
-        if (this.show) {
+        if (!this.show) {
             return;
         }
 

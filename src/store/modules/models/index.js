@@ -1,106 +1,67 @@
-import Camera from './../../../classes/view/Camera2D'
-import { mutation } from "../../interaction";
-
 import typesOfModels from "../../../consts/typesOfModels";
 
 const state = {
-	camera: null,
 	models: [],
-	activeModel: 0,
-	choiceType: null,
-	navigation: {
-		moveCenter: {
-			status: true,
-			title: 'moveCenter',
-			icon: 'icon-move'
-		},
-		addPoint: {
-			status: false,
-			title: 'addPoint',
-			icon: 'icon-plus-circle'
-		},
-		addComboPoints: {
-			status: false,
-			title: 'addComboPoints',
-			icon: 'icon-trending-up'
-		},
-	}
-
+	indexActiveModel: 0,
+	choiceTypeModel: null,
 };
 
 const getters = {
 	getModels: (state, getters, rootState) => {
 		return state.models;
 	},
-	getCamera: (state, getters, rootState) => {
-		return state.camera;
-	},
-	getChoiceType: (state, getters, rootState) => {
+	getChoiceTypeModel: (state, getters, rootState) => {
 		return state.choiceType;
 	},
+	getIndexActiveModel: (state, getters, rootState) => {
+		return state.choiceTypeModel;
+	},
 	getActiveModel: (state, getters, rootState) => {
-		return state.activeModel;
+		return state.models[state.indexActiveModel];
 	},
 };
 
 const mutations = {
-	...mutation,
 	addModel(state, model) {
 		state.models.push(model);
 	},
-	initCamera(state, canvas) {
-		state.camera = new Camera(canvas);
-	},
-	clear(state) {
-		state.camera.clear();
-	},
-	render(state) {
-		state.camera.render(state.models);
-	},
-	reRender(state) {
-		state.camera.reRender(state.models);
-	},
-	setSizeCanvas(state, size) {
-		state.camera.setSizeCanvas(size);
-	},
-	cameraDragToStart(state, e) {
-		state.camera.dragToStart(e);
-	},
-	cameraDragTo(state, e) {
-		state.camera.dragTo(e);
-	},
-	cameraDragToStop(state, e) {
-		state.camera.dragToStop(e);
-	},
-	cameraWheelSize(state, e) {
-		state.camera.wheelSize(e);
+	removeModel(state, index) {
+		state.models.splice(index, 1);
 	},
 	activeModelAddPoint(state, e) {
-		state.camera.dragToStart(e);
+		state.models[state.activeModel].addPoint(
+			state.camera.ScreenToWorldX(e.clientX),
+			state.camera.ScreenToWorldY(e.clientY)
+		);
 	},
-	activeModelAddComboPointsStart(state, e) {
-		state.camera.dragToStart(e);
-	},
-	setChoiceType(state, t) {
-		state.choiceType = t;
+	setChoiceTypeModel(state, t) {
+		state.choiceTypeModel = t;
 	},
 	createModel(state, classType) {
-		state.activeModel = state.models.length;
+		state.indexActiveModel = state.models.length;
 	},
-	setActiveModel(state, index) {
-		state.activeModel = index;
-	},
+	setIndexActiveModel(state, index) {
+		state.indexActiveModel = index;
+	}
 };
 
 const actions = {
 	addModel ({ commit, state }, model) {
-		commit('addModel', model)
+		commit('addModel', model);
+		commit('reRender');
+	},
+	setChoiceTypeModel({ commit, state }, t) {
+		commit('setChoiceTypeModel', t);
+	},
+	removeModel({ commit, state }, index) {
+		commit('removeModel', index);
+		commit('reRender');
 	},
 	setActiveModel ({ commit, state }, index) {
 		commit('setActiveModel', index)
 	},
-	initCamera ({ commit, state }, canvas) {
-		commit('initCamera', canvas)
+	choiceNavigation ({ commit, state }, title) {
+		commit('choiceNavigation', title)
 	},
 	setSizeCanvas ({ commit, state }, size = null) {
 		commit('setSizeCanvas', size)
@@ -159,8 +120,8 @@ const actions = {
 	},
 	createModel({ commit, state }, e) {
 		commit('createModel');
-		commit('addModel', new typesOfModels[state.choiceType].class());
-		commit('reRender');
+		commit('addModel', new typesOfModels['models' + '2D'][state.choiceTypeModel].class());
+		commit('scene2d/reRender', state.models, { root: true });
 	},
 };
 

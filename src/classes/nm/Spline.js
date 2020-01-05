@@ -2,6 +2,11 @@
 export default class Spline {
 
     constructor() {
+        this.show = false;
+
+        this.name = "Spline";
+        this.code = "spline";
+
         this.x = [];
         this.fx = [];
         this.h = [];
@@ -151,4 +156,45 @@ export default class Spline {
         return this.x[this.x.length-1];
     }
 
+
+    render(camera) {
+        if (!this.show) {
+            return;
+        }
+
+        let ctx = camera.canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff0012';
+        ctx.setLineDash([]);
+        ctx.lineWidth = 2;
+        let start = this.getStart();
+        let finish = this.getFinish();
+        if (camera.ScreenToWorldX(0) > start) {
+            start = camera.ScreenToWorldX(0);
+        }
+        if (camera.ScreenToWorldX(camera.canvas.width) < finish) {
+            finish = camera.ScreenToWorldX(camera.canvas.width);
+        }
+        camera.moveTo(start);
+        for (let i = start; i < finish; i += 0.01)
+        {
+            camera.lineTo(i, this.pointSpline(i));
+        }
+        // if (this.spline.splineSecond) {
+        //     let start = this.spline.splineSecond.getStart();
+        //     let finish = this.spline.splineSecond.getFinish();
+        //     if (camera.ScreenToWorldX(0) > start) {
+        //         start = camera.ScreenToWorldX(0);
+        //     }
+        //     if (camera.ScreenToWorldX(camera.canvas.width) < finish) {
+        //         finish = camera.ScreenToWorldX(camera.canvas.width);
+        //     }
+        //     camera.moveTo(start,this.secSpline(start));
+        //     for (let i = start; i < finish; i += 0.01)
+        //     {
+        //         camera.lineTo(i, this.secSpline(i));
+        //     }
+        // }
+        ctx.stroke();
+    }
 }

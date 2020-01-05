@@ -1,6 +1,8 @@
 import Vector from './../math/Vector';
 import Matrix from './../math/Matrix';
 
+import Model3D from './Model3D';
+
 import Camera2D from './Camera2D';
 import * as AT3D from './../../consts/view/AffineTransform3D';
 
@@ -148,6 +150,76 @@ export default class Camera3D extends Camera2D {
     moveCameraStop() {
         this.moveCamera.move = false;
         this.updateCamera();
+    }
+
+
+    reRender(models = []) {
+        this.clear();
+        this.axisPlot3D();
+        this.render(models);
+    }
+
+    axisPlot3D () {
+        // console.log(this.camera3D.worldToProjectF(true));
+        // for (var i = 1; i < 2; i++) {
+        //     this.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
+        //     this.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
+        // }
+        let ctx = this.canvas.getContext("2d");
+
+
+        let axis3D = {
+            x: new Model3D(),
+            y: new Model3D(),
+            z: new Model3D()
+        };
+
+        axis3D.x.setVertices(new Matrix([[1,0],[0,0],[0,0],[1,1]]));
+        axis3D.y.setVertices(new Matrix([[0,0],[1,0],[0,0],[1,1]]));
+        axis3D.z.setVertices(new Matrix([[0,0],[0,0],[1,0],[1,1]]));
+
+        /**
+         * axis X
+         * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+         */
+        ctx.beginPath();
+        ctx.strokeStyle = '#1c137e';
+        ctx.setLineDash([]);
+        ctx.lineWidth = 2;
+        axis3D.x.project(this.worldToProjectF(true), true);
+        for (var i = 1; i < 2; i++) {
+            this.moveTo(axis3D.x.getProjectX(i-1), axis3D.x.getProjectY(i-1));
+            this.lineTo(axis3D.x.getProjectX(i), axis3D.x.getProjectY(i));
+        }
+        ctx.stroke();
+        /**
+         * axis Y
+         * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+         */
+        ctx.beginPath();
+        ctx.strokeStyle = '#0aaa00';
+        ctx.setLineDash([]);
+        ctx.lineWidth = 2;
+        axis3D.y.project(this.worldToProjectF(true), true);
+        for (let i = 1; i < 2; i++) {
+            this.moveTo(axis3D.y.getProjectX(i-1), axis3D.y.getProjectY(i-1));
+            this.lineTo(axis3D.y.getProjectX(i), axis3D.y.getProjectY(i));
+        }
+        ctx.stroke();
+        /**
+         * axis Z
+         * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+         */
+        ctx.beginPath();
+        ctx.strokeStyle = '#cb0006';
+        ctx.setLineDash([]);
+        ctx.lineWidth = 2;
+        axis3D.z.project(this.worldToProjectF(true), true);
+        for (let i = 1; i < 2; i++) {
+            this.moveTo(axis3D.z.getProjectX(i-1), axis3D.z.getProjectY(i-1));
+            this.lineTo(axis3D.z.getProjectX(i), axis3D.z.getProjectY(i));
+        }
+        ctx.stroke();
     }
 
 }

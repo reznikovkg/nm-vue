@@ -1,22 +1,21 @@
 <template>
-    <div v-if="model" class="model" :class="{ active: index === getActiveModel }" @click="choiseModelActive">
+    <div v-if="model" class="model" :class="{ active: index === getIndexActiveModel }" @click="choiceModelActive">
         <div class="model-nav">
             <div class="model-name">
                 {{ model.name }}
             </div>
-            <div class="row" v-if="index === getActiveModel">
+            <div class="row" v-if="index === getIndexActiveModel">
                 <at-button type="error" icon="icon-eye-off" circle size="smaller" title=""></at-button>
-                <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove"></at-button>
+                <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removeModel(index)"></at-button>
             </div>
         </div>
-        <div class="model-body" v-if="index === getActiveModel">
+        <div class="model-body" v-if="index === getIndexActiveModel">
             <component :is="typesOfModelsShow[model.code].form" :model="model"/>
         </div>
     </div>
 </template>
 
 <script>
-    import SplineForm from './../Forms/Scene2D/Spline';
 	import typesOfModels from "../../consts/typesOfModels";
 
     import { mapGetters, mapActions } from 'vuex';
@@ -31,6 +30,10 @@
             index: {
 				type: Number,
                 default: -1
+            },
+			scene: {
+				type: String,
+                default: '2d'
             }
         },
         data () {
@@ -39,19 +42,21 @@
             }
         },
         computed: {
-			...mapGetters('scene2d', [
-				'getActiveModel'
+			...mapGetters('models', [
+				'getActiveModel',
+				'getIndexActiveModel'
             ]),
 			typesOfModelsShow: function () {
-				return typesOfModels;
-			}
+				return typesOfModels['models' + this.scene];
+			},
         },
         methods: {
 			...mapActions('scene2d', [
-				'setActiveModel'
+				'setActiveModel',
+				'removeModel'
 			]),
-			choiseModelActive: function () {
-				if (this.index !== this.getActiveModel) this.setActiveModel(this.index);
+			choiceModelActive: function () {
+				if (this.index !== this.getIndexActiveModel) this.setActiveModel(this.index);
 			}
         }
 	}
