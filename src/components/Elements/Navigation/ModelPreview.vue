@@ -16,7 +16,7 @@
 </template>
 
 <script>
-	import typesOfModels from "../../consts/typesOfModels";
+	import typesOfModels from "../../../consts/typesOfModels";
 
     import { mapGetters, mapActions } from 'vuex';
 
@@ -43,20 +43,22 @@
         },
         computed: {
 			...mapGetters('models', [
-				'getActiveModel',
 				'getIndexActiveModel'
             ]),
+			...mapGetters('scene', [
+				'getTypeScene',
+			]),
 			typesOfModelsShow: function () {
-				return typesOfModels['models' + this.scene];
+				return typesOfModels[this.getTypeScene];
 			},
         },
         methods: {
-			...mapActions('scene2d', [
-				'setActiveModel',
+			...mapActions('models', [
+				'setIndexActiveModel',
 				'removeModel'
 			]),
 			choiceModelActive: function () {
-				if (this.index !== this.getIndexActiveModel) this.setActiveModel(this.index);
+				if (this.index !== this.getIndexActiveModel) this.setIndexActiveModel(this.index);
 			}
         }
 	}

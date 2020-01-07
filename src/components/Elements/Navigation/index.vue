@@ -1,10 +1,10 @@
 <template>
     <div>
-        <router-link :to="{ name: 'Scene3D' }" tag="div" class="openScene3D" v-if="scene === '2D'">
+        <router-link :to="{ name: 'Scene3D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE2D">
             <at-button type="primary" size="large" icon="icon-box" circle/>
         </router-link>
 
-        <router-link :to="{ name: 'Scene2D' }" tag="div" class="openScene3D" v-if="scene === '3D'">
+        <router-link :to="{ name: 'Scene2D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE3D">
             <at-button type="primary" size="large" icon="icon-square" circle/>
         </router-link>
 
@@ -48,10 +48,11 @@
 </template>
 
 <script>
-	import ModelPreview from "./../../Elements/ModelPreview";
+	import ModelPreview from "./ModelPreview";
 	import typesOfModels from "../../../consts/typesOfModels";
 
 	import { mapActions, mapGetters } from "vuex";
+	import typesOfScene from "../../../consts/typesOfScene";
 
 	export default {
 		name: "Navigation",
@@ -61,10 +62,13 @@
         props: {
 			scene: {
 				type: String,
-                default: '2D'
+                default: typesOfScene.SCENE2D
             }
         },
         computed: {
+			...mapGetters('scene', [
+				'getTypeScene'
+			]),
 			...mapGetters('navigation', [
 				'getMainMenuShow',
                 'getNavigation'
@@ -74,11 +78,14 @@
                 'getModels'
 			]),
 			typesOfModelsShow: function () {
-                return typesOfModels['models' + this.scene]
+                return typesOfModels[this.scene];
+			},
+			typesOfSceneShow: function () {
+				return typesOfScene;
 			},
 			choiceTypeModel: {
 				get() {
-					return this.getChoiceTypeModel
+					return this.getChoiceTypeModel;
 				},
 				set(t) {
 					this.setChoiceTypeModel(t);

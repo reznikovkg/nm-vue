@@ -1,4 +1,4 @@
-import Points from './../view/Points';
+import Points from './Points';
 import Spline from './../nm/Spline';
 import pNewton from './../nm/pNewton';
 import Matrix from './../math/Matrix';

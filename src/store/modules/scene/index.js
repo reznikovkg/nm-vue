@@ -1,44 +1,64 @@
 import Camera2D from './../../../classes/view/Camera2D';
 import Camera3D from './../../../classes/view/Camera2D';
 
-import { mutation } from "../../interaction";
 
-import typesOfModels from "../../../consts/typesOfModels";
+import typesOfModels from "./../../../consts/typesOfModels";
+import typesOfScene from "./../../../consts/typesOfScene";
 
 const state = {
-	camera: null
+	camera: null,
+	type: null,
 };
 
 const getters = {
-	getCamera: (state, getters, rootState) => {
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param state
+	 * @returns {null|Camera2D}
+	 */
+	getCamera: (state) => {
 		return state.camera;
-	}
+	},
+	getTypeScene: (state) => {
+		return state.type;
+	},
 };
 
 const mutations = {
-	...mutation,
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param state
+	 * @param data
+	 */
 	initScene(state, data) {
-		if (data.type === '2D') {
+		state.type = data.type;
+		if (data.type === typesOfScene.SCENE2D) {
 			state.camera = new Camera2D(data.canvas);
-		} else if (data.type === '3D') {
+		} else if (data.type === typesOfScene.SCENE3D) {
 			state.camera = new Camera3D(data.canvas);
 		}
 	},
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param state
+	 */
 	clear(state) {
 		state.camera.clear();
 	},
-	reRender(state, models) {
-		state.camera.reRender(models);
-	},
-
-
-
-
-
-
-
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param state
+	 * @param models
+	 */
 	render(state, models) {
 		state.camera.render(models);
+	},
+	reRender(state, models) {
+		state.camera.reRender(models);
 	},
 	setSizeCanvas(state, size) {
 		state.camera.setSizeCanvas(size);
@@ -55,100 +75,41 @@ const mutations = {
 	cameraWheelSize(state, e) {
 		state.camera.wheelSize(e);
 	},
-	choiceNavigation (state, title) {
-		for (let item in state.navigation) {
-			if (state.navigation[item].title === title) {
-				state.navigation[item].status = true;
-			} else {
-				state.navigation[item].status = false;
-			}
-		}
-	},
 };
 
 const actions = {
-	initScene ({ commit, state }, data) {
-		commit('initScene', data)
-	},
-	mouseDown ({ commit, state }, e) {
-		commit('mouseDown');
-		// if (state.navigation.moveCenter.status) {
-		// 	commit('cameraDragToStart', e);
-		// }
-		//
-		// if (state.navigation.addPoint.status) {
-		// 	commit('activeModelAddPoint', e);
-		// }
-		//
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsStart', e);
-		// }
-		// commit('reRender');
-	},
-	mouseDrag ({ commit, state }, e) {
-		commit('mouseDrag');
-		// if (state.navigation.moveCenter.status) {
-		// 	commit('cameraDragTo', e);
-		// }
-		//
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsDrag', e);
-		// }
-		// commit('reRender');
-	},
-	mouseUp ({ commit, state }, e) {
-		commit('mouseUp');
-		// if (state.navigation.moveCenter.status) {
-		// 	commit('cameraDragToStop', e);
-		// }
-		//
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsStop', e);
-		// }
-		// commit('reRender');
-	},
-	mouseWheel ({ commit, state }, e) {
-		commit('mouseWheel');
-		commit('cameraWheelSize', e);
-		commit('reRender');
-	},
-
-
-
-
-
-
-
-
-
-	addModel ({ commit, state }, model) {
-		commit('addModel', model);
-		commit('reRender');
-	},
-	removeModel({ commit, state }, index) {
-		commit('removeModel', index);
-		commit('reRender');
-	},
-	setActiveModel ({ commit, state }, index) {
-		commit('setActiveModel', index)
-	},
-	choiceNavigation ({ commit, state }, title) {
-		commit('choiceNavigation', title)
+	initScene ({ commit, state, dispatch }, data) {
+		commit('initScene', data);
+		dispatch('reRender');
 	},
 	setSizeCanvas ({ commit, state }, size = null) {
 		commit('setSizeCanvas', size)
 	},
-	render ({ commit, state, rootState }) {
+	render ({ commit, state, rootState }, models) {
 		commit('clear');
-		commit('render', rootState.models.models);
+		commit('render', models);
 	},
-	reRender ({ commit, state, rootState }) {
+	reRender ({ commit, rootState }) {
 		commit('reRender', rootState.models.models);
 	},
-	createModel({ commit, state }, e) {
-		commit('createModel');
-		commit('addModel', new typesOfModels['models' + '2d'][state.choiceType].class());
-		commit('reRender');
+	cameraDragToStart ({ commit, dispatch }, e) {
+		commit('cameraDragToStart', e);
+	},
+	cameraDragTo ({ commit, state, dispatch }, e) {
+		if (state.camera.drag.status) {
+			commit('cameraDragTo', e);
+			dispatch('reRender');
+		}
+	},
+	cameraDragToStop ({ commit, dispatch }, e) {
+		if (state.camera.drag.status) {
+			commit('cameraDragToStop', e);
+			dispatch('reRender');
+		}
+	},
+	cameraWheelSize ({ commit, dispatch }, e) {
+		commit('cameraWheelSize', e);
+		dispatch('reRender');
 	},
 };
 

@@ -1,4 +1,5 @@
 import typesOfModels from "../../../consts/typesOfModels";
+import typesOfScene from "../../../consts/typesOfScene";
 
 const state = {
 	models: [],
@@ -11,10 +12,10 @@ const getters = {
 		return state.models;
 	},
 	getChoiceTypeModel: (state, getters, rootState) => {
-		return state.choiceType;
+		return state.choiceTypeModel;
 	},
 	getIndexActiveModel: (state, getters, rootState) => {
-		return state.choiceTypeModel;
+		return state.indexActiveModel;
 	},
 	getActiveModel: (state, getters, rootState) => {
 		return state.models[state.indexActiveModel];
@@ -22,107 +23,120 @@ const getters = {
 };
 
 const mutations = {
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param state
+	 * @param model
+	 */
 	addModel(state, model) {
 		state.models.push(model);
+		state.indexActiveModel = state.models.length - 1;
+	},
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param state
+	 * @param point
+	 */
+	addPointToActiveModel(state, point) {
+		state.models[state.indexActiveModel].addPoint(
+			point.x,
+			point.y
+		);
 	},
 	removeModel(state, index) {
 		state.models.splice(index, 1);
 	},
-	activeModelAddPoint(state, e) {
-		state.models[state.activeModel].addPoint(
-			state.camera.ScreenToWorldX(e.clientX),
-			state.camera.ScreenToWorldY(e.clientY)
-		);
+	setIndexActiveModel(state, index) {
+		state.indexActiveModel = index;
 	},
 	setChoiceTypeModel(state, t) {
 		state.choiceTypeModel = t;
 	},
-	createModel(state, classType) {
-		state.indexActiveModel = state.models.length;
-	},
-	setIndexActiveModel(state, index) {
-		state.indexActiveModel = index;
-	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
 const actions = {
-	addModel ({ commit, state }, model) {
-		commit('addModel', model);
-		commit('reRender');
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param commit
+	 * @param state
+	 * @param rootState
+	 * @param dispatch
+	 * @param e
+	 */
+	createModel({ commit, state, rootState, dispatch }, e) {
+		commit('addModel', new typesOfModels[rootState.scene.type][state.choiceTypeModel].class());
+		dispatch('scene/reRender', null, { root: true });
 	},
-	setChoiceTypeModel({ commit, state }, t) {
-		commit('setChoiceTypeModel', t);
+	/**
+	 * STATUS: DONE
+	 *
+	 * @param commit
+	 * @param rootState
+	 * @param dispatch
+	 * @param e
+	 */
+	addPointToActiveModel({ commit, rootState, dispatch }, e) {
+		commit('addPointToActiveModel', {
+			x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+			y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		});
+		dispatch('scene/reRender', null, { root: true });
 	},
-	removeModel({ commit, state }, index) {
+	setChoiceTypeModel({ commit, state }, typeModel) {
+		commit('setChoiceTypeModel', typeModel);
+	},
+	setIndexActiveModel ({ commit, state }, index) {
+		commit('setIndexActiveModel', index)
+	},
+	removeModel({ commit, dispatch }, index) {
 		commit('removeModel', index);
-		commit('reRender');
+		dispatch('scene/reRender', null, { root: true });
 	},
-	setActiveModel ({ commit, state }, index) {
-		commit('setActiveModel', index)
-	},
-	choiceNavigation ({ commit, state }, title) {
-		commit('choiceNavigation', title)
-	},
-	setSizeCanvas ({ commit, state }, size = null) {
-		commit('setSizeCanvas', size)
-	},
-	render ({ commit, state }) {
-		commit('clear');
-		commit('render');
-	},
-	reRender ({ commit, state }) {
-		commit('reRender');
-	},
-	mouseDown ({ commit, state }, e) {
-		commit('mouseDown');
-		if (state.navigation.moveCenter.status) {
-			commit('cameraDragToStart', e);
-		}
 
-		if (state.navigation.addPoint.status) {
-			commit('activeModelAddPoint', e);
-		}
 
-		if (state.navigation.addComboPoints.status) {
-			commit('activeModelAddComboPointsStart', e);
-		}
-		commit('reRender');
-	},
-	mouseDrag ({ commit, state }, e) {
-		commit('mouseDrag');
-		if (state.navigation.moveCenter.status) {
-			commit('cameraDragTo', e);
-		}
 
-		if (state.navigation.addComboPoints.status) {
-			commit('activeModelAddComboPointsDrag', e);
-		}
-		commit('reRender');
-	},
-	mouseUp ({ commit, state }, e) {
-		commit('mouseUp');
-		if (state.navigation.moveCenter.status) {
-			commit('cameraDragToStop', e);
-		}
 
-		if (state.navigation.addComboPoints.status) {
-			commit('activeModelAddComboPointsStop', e);
-		}
-		commit('reRender');
-	},
-	setChoiceType({ commit, state }, t) {
-		commit('setChoiceType', t);
-	},
-	mouseWheel ({ commit, state }, e) {
-		commit('mouseWheel');
-		commit('cameraWheelSize', e);
-		commit('reRender');
-	},
-	createModel({ commit, state }, e) {
-		commit('createModel');
-		commit('addModel', new typesOfModels['models' + '2D'][state.choiceTypeModel].class());
-		commit('scene2d/reRender', state.models, { root: true });
-	},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
 export default {

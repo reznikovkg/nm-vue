@@ -1,15 +1,16 @@
 // 2D
-import Points from "../classes/view/Points";
-import PointsForm from '../components/Forms/Scene2D/Points';
+import Points from "../classes/models/Points";
+import PointsForm from './../components/Elements/Forms/Models2D/Points';
 
 import Spline from "../classes/nm/Spline";
-import SplineForm from '../components/Forms/Scene2D/Spline';
+import SplineForm from './../components/Elements/Forms/Models2D/Spline';
 
 import pNewton from "../classes/nm/pNewton";
+import pNewtonForm from './../components/Elements/Forms/Models2D/pNewton';
 
 // 3D
-import Kinematic from "../classes/view/KinematicModel";
-import KinematicForm from '../components/Forms/Scene3D/Kinematic';
+import Kinematic from "../classes/models/KinematicModel";
+import KinematicForm from './../components/Elements/Forms/Models3D/Kinematic';
 
 
 export const models2D = {
@@ -25,9 +26,11 @@ export const models2D = {
 		class: Spline,
 		form: SplineForm
 	},
-	pNewton: {
+	pnewton: {
 		name: 'pNewton',
-		class: pNewton
+		code: 'pnewton',
+		class: pNewton,
+		form: pNewtonForm
 	}
 };
 
@@ -41,6 +44,6 @@ export const models3D = {
 };
 
 export default {
-	models2D,
-	models3D
+	"2d": models2D,
+	"3d": models3D
 }

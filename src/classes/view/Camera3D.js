@@ -1,7 +1,7 @@
 import Vector from './../math/Vector';
 import Matrix from './../math/Matrix';
 
-import Model3D from './Model3D';
+import Model3D from './../models/Model3D';
 
 import Camera2D from './Camera2D';
 import * as AT3D from './../../consts/view/AffineTransform3D';

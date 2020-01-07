@@ -37,7 +37,6 @@
 				canvas: this.canvas,
 				type: this.type
 			});
-			this.reRender();
 			window.addEventListener(`resize`, event => {
 				this.setSizeCanvas();
 				this.reRender();
@@ -48,7 +47,8 @@
 				'initScene',
 				'setSizeCanvas',
 				'reRender',
-
+			]),
+			...mapActions('navigation', [
 				'mouseDown',
 				'mouseDrag',
 				'mouseUp',

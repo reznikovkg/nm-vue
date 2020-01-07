@@ -1,4 +1,4 @@
-export const mutation = {
+export const mutations = {
 	mouseDown(state) {},
 	mouseUp(state) {},
 	mouseDrag(state) {},

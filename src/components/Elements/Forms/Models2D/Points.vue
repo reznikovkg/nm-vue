@@ -16,19 +16,19 @@
             </div>
         </div>
         <div class="rowFlex">
-            <input-float-type v-model="p.x"/>
-            <input-float-type v-model="p.y"/>
+            <input-custom v-model="p.x"/>
+            <input-custom v-model="p.y"/>
 <!--            <at-button type="primary" size="small" @click="addPointFromInput">Add</at-button>-->
         </div>
     </div>
 </template>
 
 <script>
-    import InputFloatType from './../../Elements/input-float-type';
+    import InputCustom from './../Elements/InputCustom';
 	export default {
 		name: "Points",
         components: {
-			InputFloatType
+			InputCustom
         },
         data () {
 			return {

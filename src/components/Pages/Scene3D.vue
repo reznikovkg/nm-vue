@@ -1,17 +1,23 @@
 <template>
     <div class="page-scene-3d">
-        <scene :type="'3D'"/>
+        <scene :type="typesOfScene3d"/>
     </div>
 </template>
 
 <script>
 	import Scene from "./../Elements/Scene";
+	import typesOfScene from "./../../consts/typesOfScene";
 
 	export default {
 		name: "Scene3D",
 		components: {
 			Scene
 		},
+		computed: {
+			typesOfScene3d: function () {
+				return typesOfScene.SCENE3D;
+			}
+		}
 	}
 </script>
 
