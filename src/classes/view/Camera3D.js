@@ -5,6 +5,7 @@ import Model3D from './../models/Model3D';
 
 import Camera2D from './Camera2D';
 import * as AT3D from './../../consts/view/AffineTransform3D';
+import typesOfScene from "../../consts/typesOfScene";
 
 export default class Camera3D extends Camera2D {
 
@@ -156,7 +157,7 @@ export default class Camera3D extends Camera2D {
     reRender(models = []) {
         this.clear();
         this.axisPlot3D();
-        this.render(models);
+        this.render(models, typesOfScene.SCENE3D);
     }
 
     axisPlot3D () {

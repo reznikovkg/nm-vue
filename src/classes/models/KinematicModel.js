@@ -4,6 +4,8 @@ import pNewton from './../nm/pNewton';
 import Matrix from './../math/Matrix';
 import * as AT3D from './../../consts/view/AffineTransform3D';
 
+import typesOfScene from "./../../consts/typesOfScene";
+
 export default class KinematicModel {
 
     constructor(guide = null, form = null) {
@@ -11,6 +13,7 @@ export default class KinematicModel {
 
         this.name = "Kinematic";
         this.code = "kinematic";
+        this.type = typesOfScene.SCENE3D;
 
         this.guide = guide;
         this.form = form;

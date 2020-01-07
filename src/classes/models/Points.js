@@ -1,20 +1,21 @@
 import Vector from './../math/Vector';
 import Matrix from './../math/Matrix';
+import typesOfScene from "./../../consts/typesOfScene";
 
 export default class Points {
-
     constructor(
         // x = [], y = [], z = []
-
-                   x= [1,2,3,4],
-                y = [1,0,1,0],
-                z= [0,0,0,0]) {
+        x= [1,2,3,4],
+        y= [1,0,1,0],
+        z= [0,0,0,0]
+    ) {
         this.x = x;
         this.y = y;
         this.z = z;
 
         this.name = "Points";
         this.code = "points";
+        this.type = typesOfScene.SCENE2D;
 
         this.show = true;
 

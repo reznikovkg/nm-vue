@@ -35,7 +35,7 @@
                 <div class="nav-tab">
                     <h3>Models:</h3>
                     <hr>
-                    <model-preview  v-for="(model,index) in getModels" :model="model" :index="index" :key="index" :scene="scene"/>
+                    <model-preview  v-for="(model,index) in getModels" v-if="model.type === getTypeScene" :model="model" :index="index" :key="index" :scene="scene"/>
                     <hr>
                     <at-select v-model="choiceTypeModel" :placeholder="'Type plot'">
                         <at-option v-for="(type, index) in typesOfModelsShow" :value="index" :key="index">{{ type.name }}</at-option>

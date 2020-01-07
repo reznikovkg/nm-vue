@@ -1,3 +1,5 @@
+import typesOfScene from "../../consts/typesOfScene";
+
 export default class Camera2D {
 
     constructor(canvas = null) {
@@ -276,9 +278,9 @@ export default class Camera2D {
         }
     }
 
-    render(models = []) {
+    render(models = [], type = typesOfScene.SCENE2D) {
         for (let i = 0; i < models.length; i++) {
-            models[i].render(this);
+            if (models[i].type === type) models[i].render(this);
         }
     }
 

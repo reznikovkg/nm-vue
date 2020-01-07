@@ -4,13 +4,10 @@
 
 <!--        <div class="rowFlex">-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
-<!--                <p>Guide</p>-->
-<!--                <at-select v-model="kinematicModel.selectGuide" :placeholder="'Guide'">-->
-<!--                    <at-option  :value="'rotation'" :key="'rotation'">Rotation</at-option>-->
-<!--                    <at-option v-for="(val, index) in $root.points" :value="'points'+index" :key="'points'+index">Points {{ index }}</at-option>-->
-<!--                    <at-option v-for="(val, index) in $root.spline" :value="'spline'+index" :key="'spline'+index">Spline {{ index }}</at-option>-->
-<!--                    <at-option v-for="(val, index) in $root.pNewton" :value="'pNewton'+index" :key="'pNewton'+index">PNewton {{ index }}</at-option>-->
-<!--                </at-select>-->
+                <p>Guide</p>
+                <at-select v-model="t" :placeholder="'Guide'">
+                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">Points {{ index }}</at-option>
+                </at-select>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
 <!--                <p>Form</p>-->
@@ -70,11 +67,34 @@
 </template>
 
 <script>
+
+	import { mapGetters, mapActions } from 'vuex';
+	import typesOfScene from "../../../../consts/typesOfScene";
+
 	export default {
-		name: "Kinematic"
+		name: "Kinematic",
+        props: {
+			index: {
+                type: Number,
+                default: 0
+            }
+        },
+        data () {
+			return {
+				t: 0
+            }
+        },
+        computed: {
+            ...mapGetters('models', [
+            	'getModels'
+            ]),
+            getModelsForChoice: function () {
+                return this.getModels.filter((item) => (item.type === typesOfScene.SCENE2D))
+			}
+        }
 	}
 </script>
 
-<style scoped>
+<style scoped lang="less">
 
 </style>

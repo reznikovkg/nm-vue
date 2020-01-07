@@ -1,5 +1,5 @@
 import Camera2D from './../../../classes/view/Camera2D';
-import Camera3D from './../../../classes/view/Camera2D';
+import Camera3D from './../../../classes/view/Camera3D';
 
 
 import typesOfModels from "./../../../consts/typesOfModels";
