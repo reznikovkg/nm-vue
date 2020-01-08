@@ -45,9 +45,9 @@ export default class Matrix {
             colNum = strNum;
         }
 
-        for (var i = 0; i < strNum; i++) {
+        for (let i = 0; i < strNum; i++) {
             this.cells.push([]);
-            for (var j = 0; j < colNum; j++ ) {
+            for (let j = 0; j < colNum; j++ ) {
                 this.cells[i].push(0);
             }
         }
@@ -60,9 +60,9 @@ export default class Matrix {
             colNum = strNum;
         }
 
-        for (var i = 0; i < strNum; i++) {
+        for (let i = 0; i < strNum; i++) {
             this.cells.push([]);
-            for (var j = 0; j < colNum; j++ ) {
+            for (let j = 0; j < colNum; j++ ) {
                 this.cells[i].push(1);
             }
         }
@@ -76,8 +76,8 @@ export default class Matrix {
      */
     setMaxrix(matrix){
         if (this.getStrNum() === matrix.getStrNum() && this.getColNum() === matrix.getColNum()) {
-            for (var i = 0; i < this.getStrNum(); i++) {
-                for (var j = 0; j < this.getColNum(); j++ ) {
+            for (let i = 0; i < this.getStrNum(); i++) {
+                for (let j = 0; j < this.getColNum(); j++ ) {
                     this.cells[i][j] = matrix.cells[i][j];
                 }
             }
@@ -108,11 +108,11 @@ export default class Matrix {
      */
     sumWith(matrix, isReturn = false) {
         if (this.getStrNum() === matrix.getStrNum() && this.getColNum() === matrix.getColNum()) {
-            var m = new Matrix();
+            let m = new Matrix();
             m.AllocateCells(this.getStrNum(), this.getColNum());
 
-            for (var i = 0; i < this.getStrNum(); i++) {
-                for (var j = 0; j < this.getColNum(); j++ ) {
+            for (let i = 0; i < this.getStrNum(); i++) {
+                for (let j = 0; j < this.getColNum(); j++ ) {
                     m.cells[i][j] = this.cells[i][j] + matrix.cells[i][j];
                 }
             }

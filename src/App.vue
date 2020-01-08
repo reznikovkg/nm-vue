@@ -13,9 +13,7 @@
 <script>
 
 export default {
-    name: 'App',
-    methods: {
-    }
+    name: 'App'
 }
 </script>
 
@@ -96,5 +94,15 @@ export default {
     .row-fix-width {
         width: 50px;
         margin-right: 10px;
+    }
+
+    .nav-tab {
+        margin-right: 5px;
+    }
+
+    .row {
+        & .at-btn {
+            margin-right: 5px;
+        }
     }
 </style>

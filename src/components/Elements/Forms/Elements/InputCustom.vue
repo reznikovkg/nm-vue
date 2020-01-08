@@ -7,7 +7,7 @@
 
 <script>
     export default {
-        name: "input-float-type",
+        name: "InputCustom",
         data () {
             return {
                 text: '0',

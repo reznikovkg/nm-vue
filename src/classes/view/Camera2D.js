@@ -1,14 +1,14 @@
+import typesOfScene from "../../consts/typesOfScene";
+
 export default class Camera2D {
 
-    constructor(canvas) {
+    constructor(canvas = null) {
         this.canvas = canvas;
+        this.setSizeCanvas();
 
-        this.ctx = this.canvas.getContext("2d");
-
-        this.field = {
-            width: document.body.clientWidth,
-            height: document.body.clientHeight,
-        };
+        if (canvas) {
+            this.ctx = this.canvas.getContext("2d");
+        }
 
         this.center = {
             x: document.body.clientWidth/2,
@@ -26,14 +26,12 @@ export default class Camera2D {
             y: null
         };
 
-
         this.grid = {
             axiss: true,
             grid: true,
             serifs: true,
             serifsStep: 10.0,
             serifsSize: 30
-
         };
     }
 
@@ -167,12 +165,12 @@ export default class Camera2D {
             this.ctx.strokeStyle = '#979797';
             this.ctx.lineWidth = 1;
             this.ctx.setLineDash([10, 15]);
-            for (var i = 30; i < this.field.width; i+= 100) {
+            for (let i = 30; i < this.field.width; i+= 100) {
                 this.ctx.fillText(Math.ceil(this.ScreenToWorldY(i)*1000)/1000, 0, i);
                 this.ctx.moveTo(0, i);
                 this.ctx.lineTo(this.field.width, i);
             }
-            for (var i = 100; i < this.field.width; i+= 100) {
+            for (let i = 100; i < this.field.width; i+= 100) {
                 this.ctx.fillText(Math.ceil(this.ScreenToWorldX(i)*1000)/1000, i, this.field.height);
                 this.ctx.moveTo(i, 0);
                 this.ctx.lineTo(i, this.field.height);
@@ -186,7 +184,7 @@ export default class Camera2D {
          */
         if (this.grid.axiss) {
             this.ctx.beginPath();
-            this.ctx.strokeStyle = '#000000';
+            this.ctx.strokeStyle = '#b10009';
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([]);
 
@@ -202,7 +200,7 @@ export default class Camera2D {
 
         if (this.grid.serifs) {
             this.ctx.beginPath();
-            this.ctx.strokeStyle = '#000000';
+            this.ctx.strokeStyle = '#058600';
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([]);
 
@@ -278,6 +276,37 @@ export default class Camera2D {
             }
             this.ctx.stroke();
         }
+    }
 
+    render(models = [], type = typesOfScene.SCENE2D) {
+        for (let i = 0; i < models.length; i++) {
+            if (models[i].type === type) models[i].render(this);
+        }
+    }
+
+    reRender(models = []) {
+        this.clear();
+        this.axisPlot();
+        this.render(models);
+    }
+
+    setSizeCanvas(size = null) {
+        if (size) {
+            this.canvas.width = size.width;
+            this.canvas.height = size.height;
+
+            this.field = {
+                width: size.width,
+                height: size.height,
+            };
+        } else {
+            this.canvas.width = document.body.clientWidth;
+            this.canvas.height = document.body.clientHeight;
+
+            this.field = {
+                width: document.body.clientWidth,
+                height: document.body.clientHeight,
+            };
+        }
     }
 }

@@ -26,12 +26,12 @@ export default class tMatrix {
     solveX() {
         this.x = [];
 
-        var n = this.f.length;
+        let n = this.f.length;
 
-        var L = [];
-        var M = [];
+        let L = [];
+        let M = [];
 
-        for (var i = 0; i < n; i++)
+        for (let i = 0; i < n; i++)
         {
             L.push(0);
             M.push(0);
@@ -44,8 +44,8 @@ export default class tMatrix {
             M[0] = this.f[0] / this.b[0];
         }
 
-        var temp;
-        for (var i = 1; i < n; i++)
+        let temp;
+        for (let i = 1; i < n; i++)
         {
             temp = this.b[i] - this.a[i] * L[i - 1];
             if (temp !== 0)
@@ -55,7 +55,7 @@ export default class tMatrix {
             }
         }
         this.x[n - 1] = M[n - 1];
-        for (var i = n - 1; i > 0; i--)
+        for (let i = n - 1; i > 0; i--)
         {
             this.x[i - 1] = M[i - 1] - L[i - 1] * this.x[i];
         }
