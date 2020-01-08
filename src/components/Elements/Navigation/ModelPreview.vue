@@ -5,8 +5,9 @@
                 {{ model.name }}
             </div>
             <div class="row" v-if="index === getIndexActiveModel">
-                <at-button type="error" icon="icon-eye-off" circle size="smaller" title=""></at-button>
-                <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removeModel(index)"></at-button>
+                <at-button v-if="getActiveModel.show" type="success" icon="icon-eye" circle size="smaller" title="" @click="showModel(index)"/>
+                <at-button v-if="!getActiveModel.show" type="error" icon="icon-eye-off" circle size="smaller" title="" @click="showModel(index)"/>
+                <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removeModel(index)"/>
             </div>
         </div>
         <div class="model-body" v-if="index === getIndexActiveModel">
@@ -16,7 +17,7 @@
 </template>
 
 <script>
-	import typesOfModels from "../../../consts/typesOfModels";
+	import typesOfModels from "./../../../consts/typesOfModels";
 
     import { mapGetters, mapActions } from 'vuex';
 
@@ -43,7 +44,8 @@
         },
         computed: {
 			...mapGetters('models', [
-				'getIndexActiveModel'
+				'getIndexActiveModel',
+                'getActiveModel'
             ]),
 			...mapGetters('scene', [
 				'getTypeScene',
@@ -55,7 +57,8 @@
         methods: {
 			...mapActions('models', [
 				'setIndexActiveModel',
-				'removeModel'
+				'removeModel',
+                'showModel'
 			]),
 			choiceModelActive: function () {
 				if (this.index !== this.getIndexActiveModel) this.setIndexActiveModel(this.index);
@@ -70,7 +73,6 @@
         border-radius: 5px;
         margin-bottom: 5px;
         padding: 5px;
-        overflow: hidden;
         cursor: pointer;
 
         &.active {

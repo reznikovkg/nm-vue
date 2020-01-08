@@ -32,6 +32,15 @@
 				return this.$refs.canvas;
 			}
 		},
+
+		created: function() {
+			document.addEventListener('keydown', this.keyPress, false);
+			document.addEventListener('keypress', this.keyPress, false);
+		},
+		destroyed: function() {
+			document.removeEventListener('keydown', this.keyPress, false);
+			document.removeEventListener('keypress', this.keyPress, false);
+		},
 		mounted() {
 			this.initScene({
 				canvas: this.canvas,
@@ -53,6 +62,7 @@
 				'mouseDrag',
 				'mouseUp',
 				'mouseWheel',
+                'keyPress'
 			]),
 
 			canvasMouseDown(e) {

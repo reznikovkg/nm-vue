@@ -5,17 +5,15 @@
 <!--        <div class="rowFlex">-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
                 <p>Guide</p>
-                <at-select v-model="t" :placeholder="'Guide'">
+                <at-select v-model="guide" :placeholder="'Guide'">
                     <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">Points {{ index }}</at-option>
                 </at-select>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
-<!--                <p>Form</p>-->
-<!--                <at-select v-model="kinematicModel.selectForm" :placeholder="'Form'">-->
-<!--                    <at-option v-for="(val, index) in $root.points" :value="'points'+index" :key="'points'+index">Points {{ index }}</at-option>-->
-<!--                    <at-option v-for="(val, index) in $root.spline" :value="'spline'+index" :key="'spline'+index">Spline {{ index }}</at-option>-->
-<!--                    <at-option v-for="(val, index) in $root.pNewton" :value="'pNewton'+index" :key="'pNewton'+index">PNewton {{ index }}</at-option>-->
-<!--                </at-select>-->
+                <p>Form</p>
+                <at-select v-model="form" :placeholder="'Guide'">
+                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">Points {{ index }}</at-option>
+                </at-select>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
 <!--                <p>AT</p>-->
@@ -79,18 +77,37 @@
                 default: 0
             }
         },
-        data () {
-			return {
-				t: 0
-            }
-        },
         computed: {
             ...mapGetters('models', [
-            	'getModels'
+            	'getModels',
+				'getFormOfModel',
+				'getGuideOfModel',
             ]),
             getModelsForChoice: function () {
                 return this.getModels.filter((item) => (item.type === typesOfScene.SCENE2D))
-			}
+			},
+            guide: {
+            	get() {
+            		return this.getGuideOfModel
+                },
+                set(index){
+            		this.setGuideOfModel(index)
+                }
+            },
+            form: {
+				get() {
+					return this.getFormOfModel
+				},
+				set(index){
+					this.setFormOfModel(index)
+				}
+            }
+        },
+        methods: {
+			...mapActions('models', [
+				'setFormOfModel',
+                'setGuideOfModel'
+            ])
         }
 	}
 </script>

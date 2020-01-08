@@ -20,6 +20,12 @@ const getters = {
 	getActiveModel: (state, getters, rootState) => {
 		return state.models[state.indexActiveModel];
 	},
+	getFormOfModel: (state, getters, rootState) => {
+		return state.models[state.indexActiveModel].formIndex;
+	},
+	getGuideOfModel: (state, getters, rootState) => {
+		return state.models[state.indexActiveModel].guideIndex;
+	},
 };
 
 const mutations = {
@@ -48,6 +54,13 @@ const mutations = {
 	removeModel(state, index) {
 		state.models.splice(index, 1);
 	},
+	showModel(state, index) {
+		if (state.models[index].inverseShow) {
+			state.models[index].inverseShow()
+		} else {
+			state.models[index].show = !state.models[index].show;
+		}
+	},
 	setIndexActiveModel(state, index) {
 		state.indexActiveModel = index;
 	},
@@ -55,10 +68,15 @@ const mutations = {
 		state.choiceTypeModel = t;
 	},
 
-
-
-
-
+	setGuideOfModel(state, index) {
+		state.models[state.indexActiveModel].setGuide(state.models[index], index);
+	},
+	setFormOfModel(state, index) {
+		state.models[state.indexActiveModel].setForm(state.models[index], index);
+	},
+	apply(state, at) {
+		state.models[state.indexActiveModel].apply(at);
+	},
 
 
 
@@ -115,13 +133,26 @@ const actions = {
 	},
 
 
+	setGuideOfModel({ commit, dispatch }, index) {
+		commit('setGuideOfModel', index);
+		dispatch('scene/reRender', null, { root: true });
+	},
+	setFormOfModel({ commit, dispatch }, index) {
+		commit('setFormOfModel', index);
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 
 
+	showModel({ commit, dispatch }, index) {
+		commit('showModel', index);
+		dispatch('scene/reRender', null, { root: true });
+	},
 
-
-
-
+	apply({ commit, dispatch }, at) {
+		commit('apply', at);
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 
 

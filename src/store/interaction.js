@@ -3,4 +3,8 @@ export const mutations = {
 	mouseUp(state) {},
 	mouseDrag(state) {},
 	mouseWheel(state) {},
+
+	keyDown(state, key) {},
+	keyPress(state, key) {},
+	keyUp(state, key) {},
 };

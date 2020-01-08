@@ -4,6 +4,8 @@ import { mutations as mutationsOfInteraction } from "../../interaction";
 import typesOfModels from "../../../consts/typesOfModels";
 import typesOfScene from "../../../consts/typesOfScene";
 
+import * as AT3D from './../../../consts/view/AffineTransform3D';
+
 const state = {
 	mainMenuShow: false,
 	navigation: {
@@ -149,8 +151,27 @@ const actions = {
 	},
 
 
+	keyDown ({ commit, state, dispatch }, e) {
+		commit('keyDown', e.keyCode);
 
+	},
+	keyPress ({ commit, state, dispatch }, e) {
+		commit('keyPress', e.keyCode);
+		switch (e.keyCode) {
+			case 98: {
+				dispatch('models/apply', AT3D.rotationXDeg(Math.PI / 18), { root: true });
+				break;
+			}
+			case 104: {
+				dispatch('models/apply', AT3D.rotationXDeg(-Math.PI / 18), { root: true })
+				break;
+			}
+			default: {
+				break
+			}
+		}
 
+	},
 
 
 
