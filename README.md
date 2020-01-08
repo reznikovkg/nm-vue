@@ -1,7 +1,8 @@
 # nm-vue
 
-
-> [demo](http://reznikovk.ru/nm-vue/)
+> [DEMO (OLD VERSION)](http://reznikovk.ru/nm-vue/)
+>
+> [DEMO (NEW VERSION)](http://3d.reznikovk.ru/)
 
 ## Build Setup
 
