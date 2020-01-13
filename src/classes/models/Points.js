@@ -144,6 +144,10 @@ export default class Points {
         }
     }
 
+    apply( at ){
+        this.applyAT2D(at);
+    }
+
 
     render(camera) {
         if (!this.show) {

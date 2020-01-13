@@ -161,66 +161,51 @@ export default class Camera3D extends Camera2D {
     }
 
     axisPlot3D () {
-        // console.log(this.camera3D.worldToProjectF(true));
-        // for (var i = 1; i < 2; i++) {
-        //     this.moveTo(this.axis3D.x.getProjectX(i-1), this.axis3D.x.getProjectY(i-1));
-        //     this.lineTo(this.axis3D.x.getProjectX(i), this.axis3D.x.getProjectY(i));
-        // }
-        let ctx = this.canvas.getContext("2d");
-
-
-        let axis3D = {
-            x: new Model3D(),
-            y: new Model3D(),
-            z: new Model3D()
-        };
-
-        axis3D.x.setVertices(new Matrix([[1,0],[0,0],[0,0],[1,1]]));
-        axis3D.y.setVertices(new Matrix([[0,0],[1,0],[0,0],[1,1]]));
-        axis3D.z.setVertices(new Matrix([[0,0],[0,0],[1,0],[1,1]]));
-
         /**
          * axis X
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
          */
-        ctx.beginPath();
-        ctx.strokeStyle = '#1c137e';
-        ctx.setLineDash([]);
-        ctx.lineWidth = 2;
-        axis3D.x.project(this.worldToProjectF(true), true);
-        for (var i = 1; i < 2; i++) {
-            this.moveTo(axis3D.x.getProjectX(i-1), axis3D.x.getProjectY(i-1));
-            this.lineTo(axis3D.x.getProjectX(i), axis3D.x.getProjectY(i));
-        }
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#1c137e';
+        this.ctx.setLineDash([]);
+        this.ctx.lineWidth = 2;
+        this.moveTo(0,0,0);
+        this.lineTo(1,0,0);
+        this.ctx.stroke();
         /**
          * axis Y
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
          */
-        ctx.beginPath();
-        ctx.strokeStyle = '#0aaa00';
-        ctx.setLineDash([]);
-        ctx.lineWidth = 2;
-        axis3D.y.project(this.worldToProjectF(true), true);
-        for (let i = 1; i < 2; i++) {
-            this.moveTo(axis3D.y.getProjectX(i-1), axis3D.y.getProjectY(i-1));
-            this.lineTo(axis3D.y.getProjectX(i), axis3D.y.getProjectY(i));
-        }
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#0aaa00';
+        this.ctx.setLineDash([]);
+        this.ctx.lineWidth = 2;
+        this.moveTo(0,0,0);
+        this.lineTo(0,1,0);
+        this.ctx.stroke();
         /**
          * axis Z
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
          */
-        ctx.beginPath();
-        ctx.strokeStyle = '#cb0006';
-        ctx.setLineDash([]);
-        ctx.lineWidth = 2;
-        axis3D.z.project(this.worldToProjectF(true), true);
-        for (let i = 1; i < 2; i++) {
-            this.moveTo(axis3D.z.getProjectX(i-1), axis3D.z.getProjectY(i-1));
-            this.lineTo(axis3D.z.getProjectX(i), axis3D.z.getProjectY(i));
-        }
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#cb0006';
+        this.ctx.setLineDash([]);
+        this.ctx.lineWidth = 2;
+        this.moveTo(0,0,0);
+        this.lineTo(0,0,-1);
+        this.ctx.stroke();
+    }
+
+    moveTo(x, y, z) {
+        let t = new Matrix([[x], [y], [z], [1]]);
+        t.setArray(this.worldToProjectF(true).compWith(t,true).cells);
+        super.moveTo(t.cells[0][0], t.cells[1][0]);
+    }
+
+    lineTo(x, y, z) {
+        let t = new Matrix([[x], [y], [z], [1]]);
+        t.setArray(this.worldToProjectF(true).compWith(t,true).cells);
+        super.lineTo(t.cells[0][0], t.cells[1][0]);
     }
 
 }

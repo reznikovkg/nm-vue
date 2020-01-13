@@ -1,8 +1,9 @@
 import typesOfModels from "../../../consts/typesOfModels";
 import typesOfScene from "../../../consts/typesOfScene";
+import Points from "../../../classes/models/Points";
 
 const state = {
-	models: [],
+	models: [ new Points()],
 	indexActiveModel: 0,
 	choiceTypeModel: null,
 };
@@ -74,7 +75,7 @@ const mutations = {
 	setFormOfModel(state, index) {
 		state.models[state.indexActiveModel].setForm(state.models[index], index);
 	},
-	apply(state, at) {
+	applyToModel(state, at) {
 		state.models[state.indexActiveModel].apply(at);
 	},
 
@@ -149,8 +150,8 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
-	apply({ commit, dispatch }, at) {
-		commit('apply', at);
+	applyToModel({ commit, dispatch }, at) {
+		commit('applyToModel', at);
 		dispatch('scene/reRender', null, { root: true });
 	},
 

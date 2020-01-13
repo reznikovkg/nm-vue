@@ -5,6 +5,7 @@ import typesOfModels from "../../../consts/typesOfModels";
 import typesOfScene from "../../../consts/typesOfScene";
 
 import * as AT3D from './../../../consts/view/AffineTransform3D';
+import * as AT2D from './../../../consts/view/AffineTransform2D';
 
 const state = {
 	mainMenuShow: false,
@@ -27,7 +28,11 @@ const state = {
 			},
 		},
 		"3d": {
-
+			moveCenter: {
+				status: true,
+				title: 'moveCenter',
+				icon: 'icon-move'
+			},
 		}
 	},
 
@@ -155,19 +160,45 @@ const actions = {
 		commit('keyDown', e.keyCode);
 
 	},
-	keyPress ({ commit, state, dispatch }, e) {
+	keyPress ({ commit, state, dispatch, rootState }, e) {
 		commit('keyPress', e.keyCode);
-		switch (e.keyCode) {
-			case 98: {
-				dispatch('models/apply', AT3D.rotationXDeg(Math.PI / 18), { root: true });
-				break;
+
+
+		if (rootState.scene.type === typesOfScene.SCENE3D) {
+			switch (e.keyCode) {
+				case 98: {
+					dispatch('models/applyToModel', AT3D.rotationXDeg(Math.PI / 18), {root: true});
+					break;
+				}
+				case 104: {
+					dispatch('models/applyToModel', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
+					break;
+				}
+				default: {
+					break
+				}
 			}
-			case 104: {
-				dispatch('models/apply', AT3D.rotationXDeg(-Math.PI / 18), { root: true })
-				break;
-			}
-			default: {
-				break
+		} else if (rootState.scene.type === typesOfScene.SCENE2D) {
+			switch (e.keyCode) {
+				case 37: {
+					dispatch('models/applyToModel', AT2D.translation(-1, 0), {root: true});
+					break;
+				}
+				case 38: {
+					dispatch('models/applyToModel', AT2D.translation(0, 1), {root: true});
+					break;
+				}
+				case 39: {
+					dispatch('models/applyToModel', AT2D.translation(1, 0), {root: true});
+					break;
+				}
+				case 40: {
+					dispatch('models/applyToModel', AT2D.translation(0, -1), {root: true});
+					break;
+				}
+				default: {
+					break
+				}
 			}
 		}
 
