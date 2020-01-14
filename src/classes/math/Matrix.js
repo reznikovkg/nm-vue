@@ -87,6 +87,16 @@ export default class Matrix {
         }
     }
 
+    setMatrixForce(matrix) {
+        this.AllocateCells(matrix.getStrNum(), matrix.getColNum());
+        for (let i = 0; i < matrix.getStrNum(); i++) {
+            for (let j = 0; j < matrix.getColNum(); j++ ) {
+                this.cells[i][j] = matrix.cells[i][j];
+            }
+        }
+        return true;
+    }
+
     /**
      * Set cells from array
      *
@@ -96,6 +106,8 @@ export default class Matrix {
      */
     setArray(cells) {
         this.cells = cells;
+        // console.log("CELLS:",cells)
+        // console.log("CELLS this:",this.cells)
     }
 
     /**
@@ -137,11 +149,11 @@ export default class Matrix {
      */
     diffWith(matrix, isReturn = false) {
         if (this.getStrNum() === matrix.getStrNum() && this.getColNum() === matrix.getColNum()) {
-            var m = new Matrix();
+            let m = new Matrix();
             m.AllocateCells(this.getStrNum(), this.getColNum());
 
-            for (var i = 0; i < this.getStrNum(); i++) {
-                for (var j = 0; j < this.getColNum(); j++ ) {
+            for (let i = 0; i < this.getStrNum(); i++) {
+                for (let j = 0; j < this.getColNum(); j++ ) {
                     m.cells[i][j] = this.cells[i][j] - matrix.cells[i][j];
                 }
             }
@@ -164,7 +176,7 @@ export default class Matrix {
      *
      * Status: Done
      */
-    compWith(matrix, isReturn = false) {
+    compWith(matrix, isReturn = false, consol = false) {
         if (this.getColNum() !== matrix.getStrNum()) {
             return false;
         }
@@ -172,26 +184,69 @@ export default class Matrix {
         var m = new Matrix();
         m.AllocateCells(this.getStrNum(), matrix.getColNum());
 
-        for (var i = 0; i < this.getStrNum(); i++) {
-            for (var j = 0; j < matrix.getColNum(); j++)
+        for (let i = 0; i < this.getStrNum(); i++) {
+            for (let j = 0; j < matrix.getColNum(); j++)
             {
-                var cell = 0;
+                let cell = 0;
 
-                for (var k = 0; k < this.getColNum(); k++) {
+                for (let k = 0; k < this.getColNum(); k++) {
                     cell += this.cells[i][k]*matrix.cells[k][j];
                 }
 
                 m.cells[i][j] = cell;
+                if (consol)
+                    console.log("c:", cell);
             }
         }
 
         if (isReturn) {
+            if (consol)
+                console.log("M", m);
             return m;
         } else {
             this.setMaxrix(m);
         }
     }
 
+    /**
+     * Composition this matrix with matrix from parametr
+     *
+     * @param matrix
+     * @param isReturn
+     *
+     * Status: Done
+     */
+    compWithLeft(matrix, isReturn = false, consol = false) {
+        if (matrix.getColNum() !== this.getStrNum()) {
+            return false;
+        }
+
+        var m = new Matrix();
+        m.AllocateCells(matrix.getStrNum(), this.getColNum());
+
+        for (let i = 0; i < matrix.getStrNum(); i++) {
+            for (let j = 0; j < this.getColNum(); j++)
+            {
+                let cell = 0;
+
+                for (let k = 0; k < matrix.getColNum(); k++) {
+                    cell += matrix.cells[i][k]*this.cells[k][j];
+                }
+
+                m.cells[i][j] = cell;
+                if (consol)
+                    console.log("c:", cell);
+            }
+        }
+
+        if (isReturn) {
+            if (consol)
+                console.log("M", m);
+            return m;
+        } else {
+            this.setMaxrix(m);
+        }
+    }
 
     getProjectX(t) {
         return this.cells[0][t] / this.cells[2][t];

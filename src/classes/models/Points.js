@@ -1,13 +1,14 @@
 import Vector from './../math/Vector';
 import Matrix from './../math/Matrix';
 import typesOfScene from "./../../consts/typesOfScene";
+import {getArrayWithAllocateCells} from "../../consts/array";
 
 export default class Points {
     constructor(
         // x = [], y = [], z = []
-        x= [1,2,3,4],
-        y= [1,0,1,0],
-        z= [0,0,0,0]
+        x= [1,2,3,4,5],
+        y= [1,0,1,0,1],
+        z= [0,0,0,0,0]
     ) {
         this.x = x;
         this.y = y;
@@ -19,8 +20,7 @@ export default class Points {
 
         this.show = true;
 
-        this.identity = new Vector();
-        this.identity.IdentityCells(this.x.length);
+        this.identity = getArrayWithAllocateCells(this.x.length, 1);
 
         this.h = [];
 
@@ -56,7 +56,7 @@ export default class Points {
         this.x.push(x);
         this.y.push(y);
         this.z.push(z);
-        this.identity.cells.push(1);
+        this.identity.push(1);
 
         if (this.x.length > 1) {
             this.h.push(this.x[this.x.length-1]-this.x[this.x.length-2]);
@@ -76,7 +76,7 @@ export default class Points {
         this.x.unshift(x);
         this.y.unshift(y);
         this.z.unshift(z);
-        this.identity.cells.push(1);
+        this.identity.push(1);
 
         if (this.x.length > 1) {
             this.h.unshift(this.x[1]-this.x[0]);
@@ -87,7 +87,7 @@ export default class Points {
         this.x = [];
         this.y = [];
         this.z = [];
-        this.identity.cells = [];
+        this.identity = [];
         this.h = [];
     }
 
@@ -102,7 +102,7 @@ export default class Points {
             this.x.push(t.x[i]);
             this.y.push(t.y[i]);
             this.z.push(t.z[i]);
-            this.identity.cells.push(t.identity.cells[i]);
+            this.identity.push(t.identity.cells[i]);//!!!!!WARNING
         }
 
         const lH = t.h.length;
@@ -116,7 +116,7 @@ export default class Points {
         let matr = at.compWith(new Matrix([
             this.x,
             this.y,
-            this.identity.cells
+            this.identity
         ]), true);
 
         this.x = matr.getStrFirst();
@@ -128,7 +128,7 @@ export default class Points {
             this.x,
             this.y,
             this.z,
-            this.identity.cells
+            this.identity
         ]), true);
 
         this.x = matr.getStrFirst();
@@ -142,6 +142,10 @@ export default class Points {
             this.y[i] +=y;
             this.z[i] +=z;
         }
+    }
+
+    apply( at ){
+        this.applyAT2D(at);
     }
 
 
@@ -165,5 +169,17 @@ export default class Points {
             camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
         }
         ctx.stroke();
+    }
+
+    getCountPoints() {
+        return this.x.length;
+    }
+    getMatrixOfPoints() {
+        return new Matrix([
+            this.x,
+            this.y,
+            this.z,
+            this.identity
+        ])
     }
 }
