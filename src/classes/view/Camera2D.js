@@ -135,7 +135,7 @@ export default class Camera2D {
      * Status: done
      */
     wheelSize(e) {
-        var k = 1;
+        let k = 1;
         if (e.deltaY < 0) { k = 1.1; } else { k = 0.9; }
 
 
@@ -204,12 +204,12 @@ export default class Camera2D {
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([]);
 
-            var start = 0;
+            let start = 0;
             if (!this.grid.serifsStep){
                 return;
             }
 
-            var s = Math.abs(
+            let s = Math.abs(
                 this.ScreenToWorldY(0) -
                 this.ScreenToWorldY(this.grid.serifsSize)
             );
@@ -219,9 +219,9 @@ export default class Camera2D {
              */
             if ((this.center.y > 0) && (this.center.y < this.field.height)) {
 
-                var finish = this.ScreenToWorldX(this.field.width);
+                let finish = this.ScreenToWorldX(this.field.width);
 
-                for (var i = start; i < finish; i+=this.grid.serifsStep) {
+                for (let i = start; i < finish; i+=this.grid.serifsStep) {
                     this.moveTo(i+this.grid.serifsStep/2,(s/2));
                     this.lineTo(i+this.grid.serifsStep/2,-(s/2));
                     this.ctx.fillText(i+this.grid.serifsStep/2, this.WorldToScreenX(i+this.grid.serifsStep/2), this.WorldToScreenY(s/2));
@@ -233,7 +233,7 @@ export default class Camera2D {
 
                 finish = this.ScreenToWorldX(0);
 
-                for (var i = start; i > finish; i-=this.grid.serifsStep) {
+                for (let i = start; i > finish; i-=this.grid.serifsStep) {
                     this.moveTo(i-this.grid.serifsStep/2,(s/2));
                     this.lineTo(i-this.grid.serifsStep/2,-(s/2));
                     this.ctx.fillText(i-this.grid.serifsStep/2, this.WorldToScreenX(i-this.grid.serifsStep/2), this.WorldToScreenY(s/2));
@@ -250,9 +250,9 @@ export default class Camera2D {
             if ((this.center.x > 0) && (this.center.x < this.field.width)) {
 
                 start = 0;
-                finish = this.ScreenToWorldY(0);
+                let finish = this.ScreenToWorldY(0);
 
-                for (var i = start; i < finish; i+=this.grid.serifsStep) {
+                for (let i = start; i < finish; i+=this.grid.serifsStep) {
                     this.moveTo((s/2),i+this.grid.serifsStep/2);
                     this.lineTo(-(s/2),i+this.grid.serifsStep/2);
                     this.ctx.fillText(i+this.grid.serifsStep/2, this.WorldToScreenX(s/2), this.WorldToScreenY(i+this.grid.serifsStep/2));
@@ -264,7 +264,7 @@ export default class Camera2D {
 
                 finish = this.ScreenToWorldY(this.field.width);
 
-                for (var i = start; i > finish-this.grid.serifsStep; i-=this.grid.serifsStep) {
+                for (let i = start; i > finish-this.grid.serifsStep; i-=this.grid.serifsStep) {
                     this.moveTo((s/2),i+this.grid.serifsStep/2);
                     this.lineTo(-(s/2),i+this.grid.serifsStep/2);
                     this.ctx.fillText(i+this.grid.serifsStep/2, this.WorldToScreenX(s/2), this.WorldToScreenY(i+this.grid.serifsStep/2));

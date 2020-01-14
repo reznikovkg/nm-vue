@@ -12,6 +12,9 @@ import pNewtonForm from './../components/Elements/Forms/Models2D/pNewton';
 import Kinematic from "../classes/models/KinematicModel";
 import KinematicForm from './../components/Elements/Forms/Models3D/Kinematic';
 
+import Light from "../classes/models/Light";
+import LightForm from './../components/Elements/Forms/Models3D/Light';
+
 
 export const models2D = {
 	points: {
@@ -40,6 +43,12 @@ export const models3D = {
 		name: 'Kinematic',
 		class: Kinematic,
 		form: KinematicForm
+	},
+	light: {
+		code: 'light',
+		name: 'light',
+		class: Light,
+		form: LightForm
 	},
 };
 

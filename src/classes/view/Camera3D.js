@@ -199,13 +199,13 @@ export default class Camera3D extends Camera2D {
     moveTo(x, y, z) {
         let t = new Matrix([[x], [y], [z], [1]]);
         t.setArray(this.worldToProjectF(true).compWith(t,true).cells);
-        super.moveTo(t.cells[0][0], t.cells[1][0]);
+        super.moveTo(t.getProjectX(0),t.getProjectY(0));
     }
 
     lineTo(x, y, z) {
         let t = new Matrix([[x], [y], [z], [1]]);
         t.setArray(this.worldToProjectF(true).compWith(t,true).cells);
-        super.lineTo(t.cells[0][0], t.cells[1][0]);
+        super.lineTo(t.getProjectX(0),t.getProjectY(0));
     }
 
 }

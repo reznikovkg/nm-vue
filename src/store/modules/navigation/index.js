@@ -170,6 +170,14 @@ const actions = {
 					dispatch('models/applyToModel', AT3D.rotationXDeg(Math.PI / 18), {root: true});
 					break;
 				}
+				case 100: {
+					dispatch('models/applyToModel', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
+					break;
+				}
+				case 102: {
+					dispatch('models/applyToModel', AT3D.rotationYDeg(Math.PI / 18), {root: true});
+					break;
+				}
 				case 104: {
 					dispatch('models/applyToModel', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
 					break;

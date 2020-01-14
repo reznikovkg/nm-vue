@@ -6,28 +6,17 @@ import * as AT3D from './../../consts/view/AffineTransform3D';
 
 import typesOfScene from "./../../consts/typesOfScene";
 
+import ObjectScene from './ObjectScene';
+
 export default class KinematicModel {
 
-    constructor(guide = null, form = null) {
+    constructor() {
         this.show = false;
 
         this.name = "Kinematic";
         this.code = "kinematic";
         this.type = typesOfScene.SCENE3D;
 
-        this.guide = guide;
-        this.guideIndex = -1;
-        this.guideNumberPoints = 10;
-        this.guidePoints = null;
-
-        this.form = form;
-        this.formIndex = -1;
-        this.formNumberPoints = 10;
-        this.formPoints = null;
-
-
-        this.accumulationGuide = AT3D.identity();
-        this.accumulationForm = AT3D.rotationYDeg(Math.PI/2);
 
         this.at = 'identity';
         this.atCustom = AT3D.identity();
@@ -37,13 +26,12 @@ export default class KinematicModel {
     }
 
     setGuide(guide, index) {
-        this.guide = guide;
-        this.guideIndex = index;
+        this.guide = new ObjectScene(guide, index);
     }
 
     setForm(form, index) {
-        this.form = form;
-        this.formIndex = index;
+        this.form = new ObjectScene(form, index);
+        this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
     }
 
     // setPoints() {
@@ -306,23 +294,22 @@ export default class KinematicModel {
      */
     apply(at) {
         if (this.formAT3D) {
-            this.formPoints.applyAT3D(at);
+            this.form.applyToAt(at);
         }
 
         if (this.guideAT3D) {
-            this.guidePoints.applyAT3D(at);
+            this.guide.applyToAt(at);
         }
 
-        if ( !this.formAT3D && !this.guideAT3D ) {
-            for (let i = 0; i < this.matrixPoints.length; i++) {
-                this.matrixPoints[i] = at.compWith(this.matrixPoints[i], true);
-            }
-        }
+        // if ( !this.formAT3D && !this.guideAT3D ) {
+        //     for (let i = 0; i < this.matrixPoints.length; i++) {
+        //         this.matrixPoints[i] = at.compWith(this.matrixPoints[i], true);
+        //     }
+        // }
     }
 
 
     render(camera) {
-
         if (!this.show) {
             return;
         }
@@ -335,45 +322,89 @@ export default class KinematicModel {
         ctx.setLineDash([]);
         ctx.lineWidth = 3;
 
-
-
         //###
-        let guideRender = this.accumulationGuide.compWith(new Matrix([
-            this.guide.x,
-            this.guide.y,
-            this.guide.z,
-            this.guide.identity.cells
-        ]), true);
-        let formRender = this.accumulationForm.compWith(new Matrix([
-            this.form.x,
-            this.form.y,
-            this.form.z,
-            this.form.identity.cells
-        ]), true);
+        // var formRender = this.form.getMatrixOfPoints();
+        // const guideRender = this.guide.getMatrixOfPoints();
+        // new Matrix();
+        // formRender.setArray(this.accumulationForm.compWith(new Matrix([
+        //     this.form.x,
+        //     this.form.y,
+        //     this.form.z,
+        //     this.form.identity.cells
+        // ]), true, true).cells);
 
 
-        console.log(this.form, this.guide)
-        console.log(formRender, guideRender)
-        for (let i = 0; i < guideRender.getStrFirst().length - 1; i++) {
-            for (let j = 0; j < formRender.getStrFirst().length - 1; j++ ) {
+        // let guideRender = new Matrix();
+        // guideRender.setArray(this.accumulationGuide.compWith(new Matrix([
+        //     this.guide.x,
+        //     this.guide.y,
+        //     this.guide.z,
+        //     this.guide.identity.cells
+        // ]), true).cells);
+
+
+        this.form.setMatrixOfPoints();
+        this.guide.setMatrixOfPoints();
+        this.form.applyToAt(AT3D.translation(
+            - this.form.getMatrixOfPoints().getStrFirst()[0]
+            + this.guide.getMatrixOfPoints().getStrFirst()[0],
+            - this.form.getMatrixOfPoints().getStrSecond()[0]
+            + this.guide.getMatrixOfPoints().getStrSecond()[0],
+            - this.form.getMatrixOfPoints().getStrThird()[0]
+            + this.guide.getMatrixOfPoints().getStrThird()[0],
+        ));
+
+        let matForm = new Matrix();
+        matForm.setMatrixForce(this.form.getMatrixOfPoints());
+
+        for (let i = 0; i < this.guide.getMatrixOfPoints().getStrFirst().length; i++) {
+            for (let j = 0; j < matForm.getStrFirst().length ; j++ ) {
+
+                if (j + 1 < matForm.getStrFirst().length ) {
+                    camera.moveTo(
+                        matForm.getStrFirst()[j],
+                        matForm.getStrSecond()[j],
+                        matForm.getStrThird()[j]
+                    );
+                    camera.lineTo(
+                        matForm.getStrFirst()[j + 1],
+                        matForm.getStrSecond()[j + 1],
+                        matForm.getStrThird()[j + 1]
+                    );
+                }
+
                 camera.moveTo(
-                    formRender.getStrFirst()[i],
-                    formRender.getStrSecond()[i],
-                    formRender.getStrThird()[i]
+                    matForm.getStrFirst()[j],
+                    matForm.getStrSecond()[j],
+                    matForm.getStrThird()[j]
                 );
                 camera.lineTo(
-                    formRender.getStrFirst[i+1],
-                    formRender.getStrSecond[i+1],
-                    formRender.getStrThird[i+1]
+                    matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i+1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                    matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i+1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                    matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i+1] - this.guide.getMatrixOfPoints().getStrThird()[i]
                 );
             }
-            formRender.setArray(AT3D.translation(
-                guideRender.getStrFirst[i+1] - guideRender.getStrFirst[i],
-                guideRender.getStrSecond[i+1] - guideRender.getStrSecond[i],
-                guideRender.getStrThird[i+1] - guideRender.getStrThird[i],
-            ).compWith(formRender, true).cells);
+
+            matForm.compWithLeft(AT3D.translation(
+                this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i],
+            ));
         }
 
+        for (let j = 0; j < matForm.getStrFirst().length ; j++ ) {
+
+            camera.moveTo(
+                matForm.getStrFirst()[j],
+                matForm.getStrSecond()[j],
+                matForm.getStrThird()[j]
+            );
+            camera.lineTo(
+                matForm.getStrFirst()[j + 1],
+                matForm.getStrSecond()[j + 1],
+                matForm.getStrThird()[j + 1]
+            );
+        }
         ctx.stroke();
 
     }

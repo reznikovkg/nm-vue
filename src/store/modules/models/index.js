@@ -3,13 +3,16 @@ import typesOfScene from "../../../consts/typesOfScene";
 import Points from "../../../classes/models/Points";
 
 const state = {
-	models: [ new Points()],
+	models: [ new Points() ],
 	indexActiveModel: 0,
 	choiceTypeModel: null,
 };
 
 const getters = {
 	getModels: (state, getters, rootState) => {
+		return state.models;
+	},
+	getLights:(state, getters, rootState) => {
 		return state.models;
 	},
 	getChoiceTypeModel: (state, getters, rootState) => {

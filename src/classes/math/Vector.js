@@ -4,7 +4,6 @@ export default class Vector {
         this.cells = cells;
     }
 
-
     /**
      * @returns {number}
      *
@@ -25,7 +24,7 @@ export default class Vector {
     AllocateCells(strNum) {
         this.cells = [];
 
-        for (var i = 0; i < strNum; i++) {
+        for (let i = 0; i < strNum; i++) {
             this.cells.push(0);
         }
     }
@@ -41,7 +40,7 @@ export default class Vector {
     IdentityCells(strNum) {
         this.cells = [];
 
-        for (var i = 0; i < strNum; i++) {
+        for (let i = 0; i < strNum; i++) {
             this.cells.push(1);
         }
     }
@@ -55,9 +54,9 @@ export default class Vector {
     }
 
     norma() {
-        var b = 0;
+        let b = 0;
 
-        for (var i = 0; i < this.cells.length; i++){
+        for (let i = 0; i < this.cells.length; i++){
             b += this.cells[i] * this.cells[i];
         }
         return Math.sqrt(b);
@@ -92,10 +91,10 @@ export default class Vector {
      * Status: Done *
      */
     divWith(value, isReturn = false) {
-        var vec = new Vector();
+        let vec = new Vector();
         vec.AllocateCells(this.getNum());
 
-        for (var i = 0; i < this.getNum(); i++) {
+        for (let i = 0; i < this.getNum(); i++) {
             vec.cells[i] = this.cells[i] / value;
         }
 
@@ -115,7 +114,7 @@ export default class Vector {
      * Status: Done *
      */
     scalarWith(vector, isReturn = false) {
-        var vec = new Vector();
+        let vec = new Vector();
         vec.AllocateCells(this.getNum());
 
         if (this.getNum() === vector.getNum())
