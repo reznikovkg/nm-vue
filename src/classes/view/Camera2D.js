@@ -278,9 +278,11 @@ export default class Camera2D {
         }
     }
 
-    render(models = [], type = typesOfScene.SCENE2D) {
+    render(models = [], type = typesOfScene.SCENE2D, lights = null) {
+        lights = models.find((item) => (item.code === "light" && item.show));
+
         for (let i = 0; i < models.length; i++) {
-            if (models[i].type === type) models[i].render(this);
+            if (models[i].type === type) models[i].render(this, lights);
         }
     }
 
@@ -308,5 +310,9 @@ export default class Camera2D {
                 height: document.body.clientHeight,
             };
         }
+    }
+
+    getCoord(x,y) {
+        return [this.WorldToScreenX(x), this.WorldToScreenY(y)];
     }
 }

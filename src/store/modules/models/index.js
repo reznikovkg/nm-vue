@@ -30,6 +30,9 @@ const getters = {
 	getGuideOfModel: (state, getters, rootState) => {
 		return state.models[state.indexActiveModel].guideIndex;
 	},
+	getPointsOfModel: (state, getters, rootState) => {
+		return state.models[state.indexActiveModel].points;
+	},
 };
 
 const mutations = {
@@ -83,6 +86,9 @@ const mutations = {
 	},
 
 
+	setPointsOfModel(state, points) {
+		state.models[state.indexActiveModel].setPoints(points);
+	},
 
 
 
@@ -146,6 +152,10 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
+	setPointsOfModel({ commit, dispatch }, points) {
+		commit('setPointsOfModel', points);
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 
 	showModel({ commit, dispatch }, index) {

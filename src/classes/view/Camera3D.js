@@ -14,9 +14,9 @@ export default class Camera3D extends Camera2D {
 
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
-        this.vN = new Vector([0,0,1]);
+        this.vN = new Vector([-1,1,1]);
 
-        this.d = 10;
+        this.d = 30;
 
         this.updateCamera();
 
@@ -53,13 +53,13 @@ export default class Camera3D extends Camera2D {
             return new Matrix([
                 [1, 0, 0, 0],
                 [0, 1, 0, 0],
-                [0, 0, (-1.0)/this.d, 1]
+                [0, 0, (1.0)/this.d, 1]
             ]);
         } else {
             this.viewToProject = new Matrix([
                 [1, 0, 0, 0],
                 [0, 1, 0, 0],
-                [0, 0, (-1.0)/this.d, 1]
+                [0, 0, (1.0)/this.d, 1]
             ]);
         }
     }
@@ -192,7 +192,7 @@ export default class Camera3D extends Camera2D {
         this.ctx.setLineDash([]);
         this.ctx.lineWidth = 2;
         this.moveTo(0,0,0);
-        this.lineTo(0,0,-1);
+        this.lineTo(0,0,1);
         this.ctx.stroke();
     }
 
@@ -208,4 +208,9 @@ export default class Camera3D extends Camera2D {
         super.lineTo(t.getProjectX(0),t.getProjectY(0));
     }
 
+    getCoord(x, y, z) {
+        let t = new Matrix([[x], [y], [z], [1]]);
+        t.setArray(this.worldToProjectF(true).compWith(t,true).cells);
+        return super.getCoord(t.getProjectX(0),t.getProjectY(0));
+    }
 }

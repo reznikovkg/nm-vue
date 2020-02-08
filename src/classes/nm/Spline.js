@@ -1,11 +1,16 @@
+import BaseModel from "./../models/BaseModel";
+import typesOfScene from "../../consts/typesOfScene";
+import typesOfModels from "../../consts/typesOfModels";
+import tMatrix from "../nm/tMatrix";
 
-export default class Spline {
+export default class Spline extends BaseModel {
 
     constructor() {
-        this.show = false;
+        super();
 
-        this.name = "Spline";
-        this.code = "spline";
+        this.type = typesOfScene.SCENE2D;
+        this.name = typesOfModels[typesOfScene.SCENE2D].spline.name;
+        this.code = typesOfModels[typesOfScene.SCENE2D].spline.code;
 
         this.x = [];
         this.fx = [];
@@ -20,12 +25,26 @@ export default class Spline {
         this.c = [];
         this.d = [];
 
-
         this.degStart = 0;
         this.degFinish = 0;
+
+        this.points = {};
     }
 
+    setPoints(points) {
+        this.points = points;
+        this.setXFX({
+            x: points.x,
+            fx: points.y,
+            h: points.h
+        });
+        this.setCoeffC();
 
+        let matr = new tMatrix();
+        matr.setABCF(this.getCoeffC());
+        matr.solveX();
+        this.setCoeffSpline(matr.getX());
+    }
 
     setXFX(params)
     {

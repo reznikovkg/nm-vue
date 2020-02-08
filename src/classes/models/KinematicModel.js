@@ -7,6 +7,7 @@ import * as AT3D from './../../consts/view/AffineTransform3D';
 import typesOfScene from "./../../consts/typesOfScene";
 
 import ObjectScene from './ObjectScene';
+import {normalToPlane} from "../../consts/AnalitycGeometry";
 
 export default class KinematicModel {
 
@@ -309,10 +310,23 @@ export default class KinematicModel {
     }
 
 
-    render(camera) {
+    render(camera, light = null) {
         if (!this.show) {
             return;
         }
+
+
+        let pointli;
+        if (light) {
+            pointli = [
+                light.position.cells[0][0],
+                light.position.cells[1][0],
+                light.position.cells[2][0],
+            ]
+        } else {
+            pointli = [0, 10, 0];
+        }
+        console.log(light,pointli)
 
         let ctx = camera.canvas.getContext("2d");
 
@@ -357,10 +371,15 @@ export default class KinematicModel {
         let matForm = new Matrix();
         matForm.setMatrixForce(this.form.getMatrixOfPoints());
 
+
+
         for (let i = 0; i < this.guide.getMatrixOfPoints().getStrFirst().length; i++) {
             for (let j = 0; j < matForm.getStrFirst().length ; j++ ) {
 
                 if (j + 1 < matForm.getStrFirst().length ) {
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "red";
                     camera.moveTo(
                         matForm.getStrFirst()[j],
                         matForm.getStrSecond()[j],
@@ -371,6 +390,48 @@ export default class KinematicModel {
                         matForm.getStrSecond()[j + 1],
                         matForm.getStrThird()[j + 1]
                     );
+
+                    if (i + 1 < matForm.getStrFirst().length ) {
+                        camera.lineTo(
+                            matForm.getStrFirst()[j+1] + this.guide.getMatrixOfPoints().getStrFirst()[i+1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j+1] + this.guide.getMatrixOfPoints().getStrSecond()[i+1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j+1] + this.guide.getMatrixOfPoints().getStrThird()[i+1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                        );
+                        camera.lineTo(
+                            matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i+1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i+1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i+1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                        );
+
+
+
+                        let point = normalToPlane([
+                            [
+                                matForm.getStrFirst()[j],
+                                matForm.getStrSecond()[j],
+                                matForm.getStrThird()[j]
+                            ], [
+                                matForm.getStrFirst()[j + 1],
+                                matForm.getStrSecond()[j + 1],
+                                matForm.getStrThird()[j + 1]
+                            ], [
+                                matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                                matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                                matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                            ]
+
+                        ], pointli)
+
+                        let r = camera.getCoord(point[0],point[1],point[2]);
+                        let gradient = ctx.createRadialGradient(r[0], r[1], 1000, r[0], r[1],10);
+                        gradient.addColorStop(0, "blue");
+                        gradient.addColorStop(1, "white");
+
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+                        ctx.beginPath();
+
+                    }
                 }
 
                 camera.moveTo(
@@ -392,6 +453,7 @@ export default class KinematicModel {
             ));
         }
 
+        ctx.beginPath();
         for (let j = 0; j < matForm.getStrFirst().length ; j++ ) {
 
             camera.moveTo(

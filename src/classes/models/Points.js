@@ -1,25 +1,26 @@
+import BaseModel from "./BaseModel";
 import Vector from './../math/Vector';
 import Matrix from './../math/Matrix';
 import typesOfScene from "./../../consts/typesOfScene";
-import {getArrayWithAllocateCells} from "../../consts/array";
+import typesOfModels from "./../../consts/typesOfModels";
+import { getArrayWithAllocateCells } from "../../consts/array";
 
-export default class Points {
+export default class Points extends BaseModel {
     constructor(
         // x = [], y = [], z = []
         x= [1,2,3,4,5],
         y= [1,0,1,0,1],
         z= [0,0,0,0,0]
     ) {
+        super();
+
+        this.type = typesOfScene.SCENE2D;
+        this.name = typesOfModels[typesOfScene.SCENE2D].points.name;
+        this.code = typesOfModels[typesOfScene.SCENE2D].points.code;
+
         this.x = x;
         this.y = y;
         this.z = z;
-
-        this.name = "Points";
-        this.code = "points";
-        this.type = typesOfScene.SCENE2D;
-
-        this.show = true;
-
         this.identity = getArrayWithAllocateCells(this.x.length, 1);
 
         this.h = [];
