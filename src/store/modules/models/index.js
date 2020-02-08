@@ -91,6 +91,9 @@ const mutations = {
 	},
 
 
+	removePointInModel(state, index) {
+		state.models[state.indexActiveModel].removePoint(index);
+	},
 
 
 
@@ -169,7 +172,10 @@ const actions = {
 	},
 
 
-
+	removePointInModel({commit, dispatch}, index) {
+		commit('removePointInModel', index);
+		dispatch('scene/reRender', null, { root: true });
+	}
 
 
 

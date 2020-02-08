@@ -35,6 +35,7 @@ export default class Points extends BaseModel {
      * Set array H
      */
     setH() {
+        this.h = [];
         for (let i = 0; i < this.x.length - 1; i++) {
             this.h[i] = this.x[i+1] - this.x[i];
         }
@@ -182,5 +183,12 @@ export default class Points extends BaseModel {
             this.z,
             this.identity
         ])
+    }
+
+    removePoint(index) {
+        this.x.splice(index, 1);
+        this.y.splice(index, 1);
+        this.z.splice(index, 1);
+        this.setH();
     }
 }

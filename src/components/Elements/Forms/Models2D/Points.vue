@@ -20,8 +20,8 @@
             </div>
             <div class="row-fix-width">
                 <p>A</p>
-                <p v-for="item in model.x">
-                    <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removePointInModel"/>
+                <p v-for="(item, index) in model.x">
+                    <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removePointInModel(index)"/>
                 </p>
             </div>
         </div>
@@ -36,6 +36,8 @@
 
 <script>
     import InputCustom from './../Elements/InputCustom';
+    import { mapActions } from 'vuex';
+
 	export default {
 		name: "Points",
         components: {
@@ -60,7 +62,9 @@
 			// ...mapGetters
         },
         methods: {
-			// ...mapActions
+			...mapActions('models', [
+				'removePointInModel'
+            ])
         }
 	}
 </script>
