@@ -25,10 +25,18 @@ const getters = {
 		return state.models[state.indexActiveModel];
 	},
 	getFormOfModel: (state, getters, rootState) => {
-		return state.models[state.indexActiveModel].formIndex;
+		if (state.models[state.indexActiveModel].form) {
+			return state.models[state.indexActiveModel].form.model;
+		} else {
+			return null
+		}
 	},
 	getGuideOfModel: (state, getters, rootState) => {
-		return state.models[state.indexActiveModel].guideIndex;
+		if (state.models[state.indexActiveModel].guide) {
+			return state.models[state.indexActiveModel].guide.model;
+		} else {
+			return null
+		}
 	},
 	getPointsOfModel: (state, getters, rootState) => {
 		return state.models[state.indexActiveModel].points;
@@ -75,11 +83,11 @@ const mutations = {
 		state.choiceTypeModel = t;
 	},
 
-	setGuideOfModel(state, index) {
-		state.models[state.indexActiveModel].setGuide(state.models[index], index);
+	setGuideOfModel(state, model) {
+		state.models[state.indexActiveModel].setGuide(model);
 	},
-	setFormOfModel(state, index) {
-		state.models[state.indexActiveModel].setForm(state.models[index], index);
+	setFormOfModel(state, model) {
+		state.models[state.indexActiveModel].setForm(model);
 	},
 	applyToModel(state, at) {
 		state.models[state.indexActiveModel].apply(at);
@@ -146,12 +154,12 @@ const actions = {
 	},
 
 
-	setGuideOfModel({ commit, dispatch }, index) {
-		commit('setGuideOfModel', index);
+	setGuideOfModel({ commit, dispatch }, model) {
+		commit('setGuideOfModel', model);
 		dispatch('scene/reRender', null, { root: true });
 	},
-	setFormOfModel({ commit, dispatch }, index) {
-		commit('setFormOfModel', index);
+	setFormOfModel({ commit, dispatch }, model) {
+		commit('setFormOfModel', model);
 		dispatch('scene/reRender', null, { root: true });
 	},
 

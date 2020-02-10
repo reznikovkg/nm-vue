@@ -6,14 +6,16 @@
 <!--            <div class="row-fix-width" style="width: 100px">-->
                 <p>Guide</p>
                 <at-select v-model="guide" :placeholder="'Guide'">
-                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">Points {{ index }}</at-option>
+                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>
                 </at-select>
+                <object-scene v-if="getActiveModel.guide" :model="getActiveModel.guide"/>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
                 <p>Form</p>
                 <at-select v-model="form" :placeholder="'Guide'">
-                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">Points {{ index }}</at-option>
+                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>
                 </at-select>
+                <object-scene v-if="getActiveModel.form" :model="getActiveModel.form"/>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
 <!--                <p>AT</p>-->
@@ -68,9 +70,13 @@
 
 	import { mapGetters, mapActions } from 'vuex';
 	import typesOfScene from "../../../../consts/typesOfScene";
+	import ObjectScene from "../Models2D/ObjectScene";
 
 	export default {
 		name: "Kinematic",
+        components: {
+			ObjectScene
+        },
         props: {
 			index: {
                 type: Number,
@@ -82,24 +88,35 @@
             	'getModels',
 				'getFormOfModel',
 				'getGuideOfModel',
+                'getActiveModel'
             ]),
             getModelsForChoice: function () {
                 return this.getModels.filter((item) => (item.type === typesOfScene.SCENE2D))
 			},
             guide: {
             	get() {
-            		return this.getGuideOfModel
+					if (this.getGuideOfModel && this.getModelsForChoice.find((item) => (item.hash === this.getGuideOfModel.hash))) {
+						return this.getModelsForChoice.findIndex((item) => (item.hash === this.getGuideOfModel.hash));
+					} else {
+						console.log(-1)
+						return -1;
+					}
                 },
                 set(index){
-            		this.setGuideOfModel(index)
+            		this.setGuideOfModel(this.getModelsForChoice[index])
                 }
             },
             form: {
 				get() {
-					return this.getFormOfModel
+					if (this.getFormOfModel && this.getModelsForChoice.find((item) => (item.hash === this.getFormOfModel.hash))) {
+						return this.getModelsForChoice.findIndex((item) => (item.hash === this.getFormOfModel.hash));
+					} else {
+						console.log(-1)
+						return -1;
+					}
 				},
 				set(index){
-					this.setFormOfModel(index)
+					this.setFormOfModel(this.getModelsForChoice[index])
 				}
             }
         },

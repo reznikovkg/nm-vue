@@ -5,14 +5,13 @@ import typesOfModels from "../../consts/typesOfModels";
 import typesOfScene from "../../consts/typesOfScene";
 
 export default class ObjectScene {
-	constructor(model, index) {
-		this.setModel(model, index);
+	constructor(model) {
+		this.setModel(model);
 	}
 
-	setModel(model, index) {
+	setModel(model) {
 		this.model = model;
 		this.countPoints = model.getCountPoints();
-		this.indexOfModel = index;
 		this.setAccumulationAP();
 	}
 

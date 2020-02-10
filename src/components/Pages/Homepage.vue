@@ -6,6 +6,9 @@
         <router-link :to="{ name: 'Scene3D' }">
             <at-button type="primary">Scene3D</at-button>
         </router-link>
+        <router-link :to="{ name: 'Documentation' }">
+            <at-button type="primary">Documentation</at-button>
+        </router-link>
     </div>
 </template>
 
@@ -15,6 +18,18 @@ export default {
 }
 </script>
 
-<style lang="less">
-
+<style scoped lang="less">
+    .hello {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        & > * {
+            margin: 1rem;
+        }
+    }
 </style>
