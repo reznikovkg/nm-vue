@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import InputCustom from './../Elements/InputCustom';
+    import InputCustom from './Elements/InputCustom';
     import { mapActions } from 'vuex';
 
 	export default {

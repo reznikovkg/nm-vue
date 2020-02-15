@@ -1,9 +1,8 @@
 import BaseModel from "./BaseModel";
-import Vector from './../math/Vector';
 import Matrix from './../math/Matrix';
-import typesOfScene from "./../../consts/typesOfScene";
-import typesOfModels from "./../../consts/typesOfModels";
-import { getArrayWithAllocateCells } from "../../consts/array";
+import typesOfScene from "./../scene/typesOfScene";
+import typesOfModels from "./../models/typesOfModels";
+import { getArrayWithAllocateCells } from "./../functions/array";
 
 export default class Points extends BaseModel {
     constructor(

@@ -1,4 +1,4 @@
-import Matrix from './../../classes/math/Matrix';
+import Matrix from './../math/Matrix';
 
 function identity() {
     return new Matrix([

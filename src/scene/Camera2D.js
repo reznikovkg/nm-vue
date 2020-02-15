@@ -1,4 +1,4 @@
-import typesOfScene from "../../consts/typesOfScene";
+import typesOfScene from "./typesOfScene";
 
 export default class Camera2D {
 

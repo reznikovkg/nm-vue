@@ -1,9 +1,9 @@
-import Camera2D from './../../../classes/view/Camera2D';
-import Camera3D from './../../../classes/view/Camera3D';
+import Camera2D from './../../../scene/Camera2D';
+import Camera3D from './../../../scene/Camera3D';
 
 
-import typesOfModels from "./../../../consts/typesOfModels";
-import typesOfScene from "./../../../consts/typesOfScene";
+import typesOfModels from "./../../../models/typesOfModels";
+import typesOfScene from "./../../../scene/typesOfScene";
 
 const state = {
 	camera: null,

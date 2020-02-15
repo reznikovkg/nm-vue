@@ -1,6 +1,6 @@
-import typesOfModels from "../../../consts/typesOfModels";
-import typesOfScene from "../../../consts/typesOfScene";
-import Points from "../../../classes/models/Points";
+import typesOfModels from "../../../models/typesOfModels";
+import typesOfScene from "../../../scene/typesOfScene";
+import Points from "../../../models/Points";
 
 const state = {
 	models: [ new Points() ],
@@ -125,6 +125,7 @@ const actions = {
 	 * @param e
 	 */
 	createModel({ commit, state, rootState, dispatch }, e) {
+		//TODO write default params of models to model
 		commit('addModel', new typesOfModels[rootState.scene.type][state.choiceTypeModel].class());
 		dispatch('scene/reRender', null, { root: true });
 	},

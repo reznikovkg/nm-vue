@@ -1,6 +1,5 @@
-import Matrix from './../math/Matrix';
-import typesOfScene from "../../consts/typesOfScene";
-import * as AT3D from "../../consts/view/AffineTransform3D";
+import Matrix from './../../math/Matrix';
+import typesOfScene from "../../scene/typesOfScene";
 
 export default class Light {
 

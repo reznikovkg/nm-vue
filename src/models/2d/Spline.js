@@ -1,7 +1,7 @@
-import BaseModel from "./../models/BaseModel";
-import typesOfScene from "../../consts/typesOfScene";
-import typesOfModels from "../../consts/typesOfModels";
-import tMatrix from "../nm/tMatrix";
+import BaseModel from "./../BaseModel";
+import typesOfScene from "../../scene/typesOfScene";
+import typesOfModels from "./../typesOfModels";
+import tMatrix from "./../../math/tMatrix";
 
 export default class Spline extends BaseModel {
 

@@ -8,7 +8,7 @@
 
 <script>
     import InputCustom from './../Elements/InputCustom';
-    import { mapActions } from 'vuex';
+	import {mapActions, mapGetters} from 'vuex';
 
 	export default {
 		name: "ObjectScene",
@@ -27,9 +27,16 @@
             }
         },
         computed: {
-			// ...mapGetters
+			...mapGetters('models', [
+				'getModels',
+				'getActiveModel'
+			]),
         },
         methods: {
+			...mapActions('models', [
+				'setFormOfModel',
+				'setGuideOfModel'
+			])
 
         }
 	}

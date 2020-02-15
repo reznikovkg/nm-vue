@@ -17,7 +17,7 @@
 </template>
 
 <script>
-	import typesOfModels from "./../../../consts/typesOfModels";
+	import typesOfModels from "./../../../models/typesOfModels";
 
     import { mapGetters, mapActions } from 'vuex';
 

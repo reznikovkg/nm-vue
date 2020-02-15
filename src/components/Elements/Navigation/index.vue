@@ -49,10 +49,10 @@
 
 <script>
 	import ModelPreview from "./ModelPreview";
-	import typesOfModels from "../../../consts/typesOfModels";
+	import typesOfModels from "../../../models/typesOfModels";
 
 	import { mapActions, mapGetters } from "vuex";
-	import typesOfScene from "../../../consts/typesOfScene";
+	import typesOfScene from "../../../scene/typesOfScene";
 
 	export default {
 		name: "Navigation",

@@ -1,22 +1,26 @@
-// 2D
-import Points from "../classes/models/Points";
-import PointsForm from './../components/Elements/Forms/Models2D/Points';
 
-import Spline from "../classes/nm/Spline";
+import Points from "./Points";
+import PointsForm from './../components/Elements/Forms/Points';
+
+// 2D
+import Spline from "./2d/Spline";
 import SplineForm from './../components/Elements/Forms/Models2D/Spline';
 
-import pNewton from "../classes/nm/pNewton";
+import pNewton from "./2d/pNewton";
 import pNewtonForm from './../components/Elements/Forms/Models2D/pNewton';
 
 // 3D
-import Kinematic from "../classes/models/KinematicModel";
+import Kinematic from "./3d/KinematicModel";
 import KinematicForm from './../components/Elements/Forms/Models3D/Kinematic';
 
-import Light from "../classes/models/Light";
+import Light from "./3d/Light";
 import LightForm from './../components/Elements/Forms/Models3D/Light';
 
+import ObjectScene from "./3d/ObjectScene";
+import ObjectSceneForm from './../components/Elements/Forms/Models3D/ObjectScene';
 
-export const models2D = {
+
+export const models2d = {
 	points: {
 		code: 'points',
 		name: 'Points',
@@ -37,12 +41,24 @@ export const models2D = {
 	}
 };
 
-export const models3D = {
+export const models3d = {
+	points: {
+		code: 'points',
+		name: 'Points',
+		class: Points,
+		form: PointsForm
+	},
 	kinematic: {
 		code: 'kinematic',
 		name: 'Kinematic',
 		class: Kinematic,
 		form: KinematicForm
+	},
+	object: {
+		code: 'object',
+		name: 'Object',
+		class: ObjectScene,
+		form: ObjectSceneForm
 	},
 	light: {
 		code: 'light',
@@ -53,6 +69,6 @@ export const models3D = {
 };
 
 export default {
-	"2d": models2D,
-	"3d": models3D
+	"2d": models2d,
+	"3d": models3d
 }

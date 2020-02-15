@@ -1,18 +1,16 @@
-import Points from './Points';
-import Spline from './../nm/Spline';
-import pNewton from './../nm/pNewton';
-import Matrix from './../math/Matrix';
-import * as AT3D from './../../consts/view/AffineTransform3D';
+import Matrix from './../../math/Matrix';
+import * as AT3D from './../../scene/AffineTransform3D';
 
-import typesOfScene from "./../../consts/typesOfScene";
+import typesOfScene from "./../../scene/typesOfScene";
 
 import ObjectScene from './ObjectScene';
-import {normalToPlane} from "../../consts/AnalitycGeometry";
+import { normalToPlane } from "../../math/AnalitycGeometry";
+import BaseModel from "./../BaseModel";
 
-export default class KinematicModel {
+export default class KinematicModel extends BaseModel {
 
     constructor() {
-        this.show = false;
+        super();
 
         this.name = "Kinematic";
         this.code = "kinematic";
@@ -27,11 +25,13 @@ export default class KinematicModel {
     }
 
     setGuide(model) {
-        this.guide = new ObjectScene(model);
+        this.guide = new ObjectScene();
+        this.guide.setModel(model);
     }
 
     setForm(model) {
-        this.form = new ObjectScene(model);
+        this.form = new ObjectScene();
+        this.form.setModel(model);
         this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
     }
 
@@ -147,42 +147,42 @@ export default class KinematicModel {
     //     this.guidePoints = k;
     // }
 
-    plotDefault() {
-        this.matrixPoints = [];
-
-        for (let i = 0; i < this.guidePoints.x.length; i++) {
-            let TTT = new Points();
-            TTT.copy(this.formPoints);
-            TTT.applyAT3D(this.atF(i));
-            TTT.addAll(
-                this.guidePoints.x[i]-this.guidePoints.x[0],
-                this.guidePoints.y[i]-this.guidePoints.y[0],
-                this.guidePoints.z[i]-this.guidePoints.z[0]
-            );
-
-            let pointsStep = new Matrix([
-                TTT.x,
-                TTT.y,
-                TTT.z,
-                TTT.identity.cells
-            ]);
-            this.matrixPoints.push(pointsStep);
-        }
-
-        this.matrixGuide = new Matrix([
-            this.guidePoints.x,
-            this.guidePoints.y,
-            this.guidePoints.z,
-            this.guidePoints.identity.cells
-        ]);
-
-        this.matrixForm = new Matrix([
-            this.formPoints.x,
-            this.formPoints.y,
-            this.formPoints.z,
-            this.formPoints.identity.cells
-        ]);
-    }
+    // plotDefault() {
+    //     this.matrixPoints = [];
+    //
+    //     for (let i = 0; i < this.guidePoints.x.length; i++) {
+    //         let TTT = new Points();
+    //         TTT.copy(this.formPoints);
+    //         TTT.applyAT3D(this.atF(i));
+    //         TTT.addAll(
+    //             this.guidePoints.x[i]-this.guidePoints.x[0],
+    //             this.guidePoints.y[i]-this.guidePoints.y[0],
+    //             this.guidePoints.z[i]-this.guidePoints.z[0]
+    //         );
+    //
+    //         let pointsStep = new Matrix([
+    //             TTT.x,
+    //             TTT.y,
+    //             TTT.z,
+    //             TTT.identity.cells
+    //         ]);
+    //         this.matrixPoints.push(pointsStep);
+    //     }
+    //
+    //     this.matrixGuide = new Matrix([
+    //         this.guidePoints.x,
+    //         this.guidePoints.y,
+    //         this.guidePoints.z,
+    //         this.guidePoints.identity.cells
+    //     ]);
+    //
+    //     this.matrixForm = new Matrix([
+    //         this.formPoints.x,
+    //         this.formPoints.y,
+    //         this.formPoints.z,
+    //         this.formPoints.identity.cells
+    //     ]);
+    // }
 
     setAT(at) {
         this.at = at;
@@ -226,41 +226,41 @@ export default class KinematicModel {
 
 
 
-    setPointsDefault () {
-        this.matrixGuide = new Matrix([
-            this.guide.x,
-            this.guide.y,
-            this.guide.z,
-            this.guide.identity.cells
-        ]);
-
-        this.matrixForm = new Matrix([
-            this.form.x,
-            this.form.y,
-            this.form.z,
-            this.form.identity.cells
-        ]);
-
-        this.matrixPoints = [];
-
-        let pointsStep = new Matrix([
-            this.form.x,
-            this.form.y,
-            this.form.z,
-            this.form.identity.cells
-        ]);
-
-        this.matrixPoints.push(pointsStep);
-
-        for (let i = 0; i < this.guide.x.length - 1; i++) {
-            pointsStep = AT3D.translation(
-                this.guide.x[i+1] - this.guide.x[i],
-                this.guide.y[i+1] - this.guide.y[i],
-                this.guide.z[i+1] - this.guide.z[i],
-            ).compWith(pointsStep, true);
-            this.matrixPoints.push(pointsStep);
-        }
-    }
+    // setPointsDefault () {
+    //     this.matrixGuide = new Matrix([
+    //         this.guide.x,
+    //         this.guide.y,
+    //         this.guide.z,
+    //         this.guide.identity.cells
+    //     ]);
+    //
+    //     this.matrixForm = new Matrix([
+    //         this.form.x,
+    //         this.form.y,
+    //         this.form.z,
+    //         this.form.identity.cells
+    //     ]);
+    //
+    //     this.matrixPoints = [];
+    //
+    //     let pointsStep = new Matrix([
+    //         this.form.x,
+    //         this.form.y,
+    //         this.form.z,
+    //         this.form.identity.cells
+    //     ]);
+    //
+    //     this.matrixPoints.push(pointsStep);
+    //
+    //     for (let i = 0; i < this.guide.x.length - 1; i++) {
+    //         pointsStep = AT3D.translation(
+    //             this.guide.x[i+1] - this.guide.x[i],
+    //             this.guide.y[i+1] - this.guide.y[i],
+    //             this.guide.z[i+1] - this.guide.z[i],
+    //         ).compWith(pointsStep, true);
+    //         this.matrixPoints.push(pointsStep);
+    //     }
+    // }
 
 
     /**
@@ -282,11 +282,6 @@ export default class KinematicModel {
         for (let i = 0; i < lH; i++) {
             this.h.push(t.h[i]);
         }
-    }
-
-    inverseShow() {
-        //this.setPoints();
-        this.show = !this.show;
     }
 
     /**
@@ -314,7 +309,6 @@ export default class KinematicModel {
         if (!this.show) {
             return;
         }
-
 
         let pointli;
         if (light) {

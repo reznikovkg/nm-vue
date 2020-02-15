@@ -10,8 +10,8 @@
 
 <script>
 	import { mapGetters, mapActions } from 'vuex';
-	import typesOfScene from "../../../../consts/typesOfScene";
-	import typesOfModels from "../../../../consts/typesOfModels";
+	import typesOfScene from "../../../../scene/typesOfScene";
+	import typesOfModels from "../../../../models/typesOfModels";
 
 	export default {
 		name: "Spline",

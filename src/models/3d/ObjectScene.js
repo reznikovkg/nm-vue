@@ -1,13 +1,15 @@
-import Matrix from './../math/Matrix';
-import * as AT3D from './../../consts/view/AffineTransform3D';
-import * as AT2D from './../../consts/view/AffineTransform2D';
-import typesOfModels from "../../consts/typesOfModels";
-import typesOfScene from "../../consts/typesOfScene";
+import Matrix from './../../math/Matrix';
+import * as AT3D from './../../scene/AffineTransform3D';
+import typesOfScene from "../../scene/typesOfScene";
+import BaseModel from "./../BaseModel";
 
-export default class ObjectScene {
+export default class ObjectScene extends BaseModel {
 	constructor(model) {
-		console.log(model)
-		this.setModel(model);
+		super(model);
+
+		this.name = "Object";
+		this.code = "object";
+		this.type = typesOfScene.SCENE3D;
 	}
 
 	setModel(model) {
@@ -47,5 +49,10 @@ export default class ObjectScene {
 		return this.matrixResult;
 	}
 
+	render() {
+		if (!this.show) {
+			return;
+		}
+	}
 
 }

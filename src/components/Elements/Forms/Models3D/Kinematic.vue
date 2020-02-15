@@ -69,8 +69,8 @@
 <script>
 
 	import { mapGetters, mapActions } from 'vuex';
-	import typesOfScene from "../../../../consts/typesOfScene";
-	import ObjectScene from "../Models2D/ObjectScene";
+	import typesOfScene from "../../../../scene/typesOfScene";
+	import ObjectScene from "./ObjectScene";
 
 	export default {
 		name: "Kinematic",

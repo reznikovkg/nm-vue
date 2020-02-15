@@ -1,11 +1,11 @@
-import Camera from './../../../classes/view/Camera2D'
-import { mutations as mutationsOfInteraction } from "../../interaction";
+import Camera from './../../../scene/Camera2D'
+import { mutations as mutationsOfInteraction } from "./interaction";
 
-import typesOfModels from "../../../consts/typesOfModels";
-import typesOfScene from "../../../consts/typesOfScene";
+import typesOfModels from "./../../../models/typesOfModels";
+import typesOfScene from "./../../../scene/typesOfScene";
 
-import * as AT3D from './../../../consts/view/AffineTransform3D';
-import * as AT2D from './../../../consts/view/AffineTransform2D';
+import * as AT3D from './../../../scene/AffineTransform3D';
+import * as AT2D from './../../../scene/AffineTransform2D';
 
 const state = {
 	mainMenuShow: false,

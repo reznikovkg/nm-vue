@@ -1,4 +1,4 @@
-import { genHash } from './../../consts/functions';
+import { genHash } from './../functions/functions';
 
 export default class BaseModel {
 	constructor() {

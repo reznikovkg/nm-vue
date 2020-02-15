@@ -6,7 +6,7 @@
 
 <script>
 	import Scene from "./../Elements/Scene";
-	import typesOfScene from "./../../consts/typesOfScene";
+	import typesOfScene from "./../../scene/typesOfScene";
 
     export default {
         name: "Scene2D",
