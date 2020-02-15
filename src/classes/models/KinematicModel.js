@@ -26,11 +26,11 @@ export default class KinematicModel {
         this.formAT3D = true;
     }
 
-    setGuide(guide, model) {
+    setGuide(model) {
         this.guide = new ObjectScene(model);
     }
 
-    setForm(form, model) {
+    setForm(model) {
         this.form = new ObjectScene(model);
         this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
     }

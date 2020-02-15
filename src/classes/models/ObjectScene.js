@@ -6,6 +6,7 @@ import typesOfScene from "../../consts/typesOfScene";
 
 export default class ObjectScene {
 	constructor(model) {
+		console.log(model)
 		this.setModel(model);
 	}
 

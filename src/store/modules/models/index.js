@@ -84,6 +84,7 @@ const mutations = {
 	},
 
 	setGuideOfModel(state, model) {
+		console.log(state.models[state.indexActiveModel])
 		state.models[state.indexActiveModel].setGuide(model);
 	},
 	setFormOfModel(state, model) {

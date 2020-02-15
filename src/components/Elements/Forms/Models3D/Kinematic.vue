@@ -98,7 +98,6 @@
 					if (this.getGuideOfModel && this.getModelsForChoice.find((item) => (item.hash === this.getGuideOfModel.hash))) {
 						return this.getModelsForChoice.findIndex((item) => (item.hash === this.getGuideOfModel.hash));
 					} else {
-						console.log(-1)
 						return -1;
 					}
                 },
@@ -111,7 +110,6 @@
 					if (this.getFormOfModel && this.getModelsForChoice.find((item) => (item.hash === this.getFormOfModel.hash))) {
 						return this.getModelsForChoice.findIndex((item) => (item.hash === this.getFormOfModel.hash));
 					} else {
-						console.log(-1)
 						return -1;
 					}
 				},

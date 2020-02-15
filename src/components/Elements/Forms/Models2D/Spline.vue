@@ -28,7 +28,6 @@
 					if (this.getPointsOfModel && this.getModelsForChoice.find((item) => (item.hash === this.getPointsOfModel.hash))) {
 						return this.getModelsForChoice.findIndex((item) => (item.hash === this.getPointsOfModel.hash));
                     } else {
-						console.log(-1)
 						return -1;
                     }
 				},
