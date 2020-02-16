@@ -285,5 +285,10 @@ export default class Matrix {
         ];
     }
 
-
+    addPoint(x,y,z) {
+        this.cells[0].push(x);
+        this.cells[1].push(y);
+        this.cells[2].push(z);
+        this.cells[3].push(1);
+    }
 }

@@ -13,10 +13,6 @@ export default class Points extends BaseModel {
     ) {
         super();
 
-        this.type = typesOfScene.SCENE2D;
-        this.name = typesOfModels[typesOfScene.SCENE2D].points.name;
-        this.code = typesOfModels[typesOfScene.SCENE2D].points.code;
-
         this.x = x;
         this.y = y;
         this.z = z;
@@ -146,7 +142,11 @@ export default class Points extends BaseModel {
     }
 
     apply( at ){
-        this.applyAT2D(at);
+        if (this.type === typesOfScene.SCENE2D) {
+            this.applyAT2D(at);
+        } else if (this.type === typesOfScene.SCENE3D) {
+            this.applyAT3D(at);
+        }
     }
 
 
@@ -154,6 +154,7 @@ export default class Points extends BaseModel {
         if (!this.show) {
             return;
         }
+
         let ctx = camera.canvas.getContext("2d");
         ctx.beginPath();
         ctx.strokeStyle = '#107e00';
@@ -163,11 +164,25 @@ export default class Points extends BaseModel {
             camera.ScreenToWorldY(0) -
             camera.ScreenToWorldY(camera.grid.serifsSize)
         );
-        for (let i = 0; i < this.x.length; i++) {
-            camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));
-            camera.lineTo(this.x[i]-(s/2), this.y[i]+(s/2));
-            camera.moveTo(this.x[i]+(s/2), this.y[i]+(s/2));
-            camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
+        console.log(this.type)
+        if (this.type === typesOfScene.SCENE2D) {
+            for (let i = 0; i < this.x.length; i++) {
+                camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));
+                camera.lineTo(this.x[i]-(s/2), this.y[i]+(s/2));
+                camera.moveTo(this.x[i]+(s/2), this.y[i]+(s/2));
+                camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
+            }
+        } else if (this.type === typesOfScene.SCENE3D) {
+            for (let i = 0; i < this.x.length; i++) {
+                camera.moveTo(this.x[i]+(s/2), this.y[i], this.z[i]);
+                camera.lineTo(this.x[i]-(s/2), this.y[i], this.z[i]);
+
+                camera.moveTo(this.x[i], this.y[i]+(s/2), this.z[i]);
+                camera.lineTo(this.x[i], this.y[i]-(s/2), this.z[i]);
+
+                camera.moveTo(this.x[i], this.y[i], this.z[i]+(s/2));
+                camera.lineTo(this.x[i], this.y[i], this.z[i]-(s/2));
+            }
         }
         ctx.stroke();
     }

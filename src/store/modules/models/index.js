@@ -3,7 +3,9 @@ import typesOfScene from "../../../scene/typesOfScene";
 import Points from "../../../models/Points";
 
 const state = {
-	models: [ new Points() ],
+	models: [
+		(new Points()).setDefaultParams(typesOfModels[typesOfScene.SCENE2D].points, typesOfScene.SCENE2D)
+	],
 	indexActiveModel: 0,
 	choiceTypeModel: null,
 };
@@ -37,6 +39,14 @@ const getters = {
 		} else {
 			return null
 		}
+	},
+	getChildModel: (state, getters, rootState) => {
+		console.log(state.models[state.indexActiveModel])
+		return state.models[state.indexActiveModel].childModel;
+		// if (state.models[state.indexActiveModel].childModel) {
+		// } else {
+		// 	return null
+		// }
 	},
 	getPointsOfModel: (state, getters, rootState) => {
 		return state.models[state.indexActiveModel].points;
@@ -90,6 +100,9 @@ const mutations = {
 	setFormOfModel(state, model) {
 		state.models[state.indexActiveModel].setForm(model);
 	},
+	setChildModel(state, model) {
+		state.models[state.indexActiveModel].setChildModel(model);
+	},
 	applyToModel(state, at) {
 		state.models[state.indexActiveModel].apply(at);
 	},
@@ -104,7 +117,9 @@ const mutations = {
 		state.models[state.indexActiveModel].removePoint(index);
 	},
 
-
+	setCountOfPoints(state, count) {
+		state.models[state.indexActiveModel].setCountPoints(count);
+	},
 
 
 
@@ -126,7 +141,9 @@ const actions = {
 	 */
 	createModel({ commit, state, rootState, dispatch }, e) {
 		//TODO write default params of models to model
-		commit('addModel', new typesOfModels[rootState.scene.type][state.choiceTypeModel].class());
+		let model = new typesOfModels[rootState.scene.type][state.choiceTypeModel].class();
+		model.setDefaultParams(typesOfModels[rootState.scene.type][state.choiceTypeModel], rootState.scene.type);
+		commit('addModel', model);
 		dispatch('scene/reRender', null, { root: true });
 	},
 	/**
@@ -164,6 +181,10 @@ const actions = {
 		commit('setFormOfModel', model);
 		dispatch('scene/reRender', null, { root: true });
 	},
+	setChildModel({ commit, dispatch }, model) {
+		commit('setChildModel', model);
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 	setPointsOfModel({ commit, dispatch }, points) {
 		commit('setPointsOfModel', points);
@@ -185,9 +206,12 @@ const actions = {
 	removePointInModel({commit, dispatch}, index) {
 		commit('removePointInModel', index);
 		dispatch('scene/reRender', null, { root: true });
-	}
+	},
 
-
+	setCountOfPoints({commit, dispatch}, index) {
+		commit('setCountOfPoints', index);
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 
 

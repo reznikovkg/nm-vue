@@ -2,15 +2,12 @@ import BaseModel from "./../BaseModel";
 import typesOfScene from "../../scene/typesOfScene";
 import typesOfModels from "./../typesOfModels";
 import tMatrix from "./../../math/tMatrix";
+import Matrix from "../../math/Matrix";
 
 export default class Spline extends BaseModel {
 
     constructor() {
         super();
-
-        this.type = typesOfScene.SCENE2D;
-        this.name = typesOfModels[typesOfScene.SCENE2D].spline.name;
-        this.code = typesOfModels[typesOfScene.SCENE2D].spline.code;
 
         this.x = [];
         this.fx = [];
@@ -49,6 +46,31 @@ export default class Spline extends BaseModel {
     //BUG
     getCountPoints() {
         return 100;
+    }
+
+    getMatrixOfPoints(countPoints = this.getCountPoints()) {
+        let matrix = new Matrix([
+            [],
+            [],
+            [],
+            []
+        ]);
+
+        let start = this.getStart();
+        let finish = this.getFinish();
+
+        let h = (finish - start) / countPoints;
+        //TODO change to integer i
+        for (let i = start; i < finish; i += h)
+        {
+            matrix.addPoint(
+                i,
+                this.pointSpline(i),
+                0
+            );
+        }
+
+        return matrix;
     }
 
     setXFX(params)

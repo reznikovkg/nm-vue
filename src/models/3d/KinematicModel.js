@@ -12,11 +12,6 @@ export default class KinematicModel extends BaseModel {
     constructor() {
         super();
 
-        this.name = "Kinematic";
-        this.code = "kinematic";
-        this.type = typesOfScene.SCENE3D;
-
-
         this.at = 'identity';
         this.atCustom = AT3D.identity();
 

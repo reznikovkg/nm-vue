@@ -280,7 +280,6 @@ export default class Camera2D {
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
         lights = models.find((item) => (item.code === "light" && item.show));
-
         for (let i = 0; i < models.length; i++) {
             if (models[i].type === type) models[i].render(this, lights);
         }

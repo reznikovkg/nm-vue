@@ -6,16 +6,19 @@ import BaseModel from "./../BaseModel";
 export default class ObjectScene extends BaseModel {
 	constructor(model) {
 		super(model);
-
-		this.name = "Object";
-		this.code = "object";
-		this.type = typesOfScene.SCENE3D;
 	}
 
-	setModel(model) {
-		this.model = model;
+	setChildModel(model) {
+		console.log(11, model)
+		this.childModel = model;
 		this.countPoints = model.getCountPoints();
 		this.setAccumulationAP();
+		this.setMatrixOfPoints();
+	}
+
+	setCountPoints(val) {
+		this.countPoints = val;
+		this.setMatrixOfPoints()
 	}
 
 	setAccumulationAP(at = null) {
@@ -31,6 +34,11 @@ export default class ObjectScene extends BaseModel {
 		}
 	}
 
+	apply(at) {
+		this.accumulationAP.compWithLeft(at);
+		this.setMatrixOfPoints();
+	}
+
 	applyToAt(at) {
 		this.accumulationAP.compWithLeft(at);
 		this.setMatrixOfPoints();
@@ -38,9 +46,10 @@ export default class ObjectScene extends BaseModel {
 
 	setMatrixOfPoints() {
 		this.matrixResult = new Matrix();
-		this.matrixResult.AllocateCells(this.accumulationAP.getStrNum(), this.model.getMatrixOfPoints().getColNum());
+		console.log(this.countPoints)
+		this.matrixResult.AllocateCells(this.accumulationAP.getStrNum(), this.childModel.getMatrixOfPoints(this.countPoints).getColNum());
 
-		return this.matrixResult.sumWith(this.accumulationAP.compWith(this.model.getMatrixOfPoints(), true));
+		return this.matrixResult.sumWith(this.accumulationAP.compWith(this.childModel.getMatrixOfPoints(this.countPoints), true));
 	}
 
 	getMatrixOfPoints() {
@@ -49,10 +58,32 @@ export default class ObjectScene extends BaseModel {
 		return this.matrixResult;
 	}
 
-	render() {
+	render(camera) {
 		if (!this.show) {
 			return;
 		}
+
+		let ctx = camera.canvas.getContext("2d");
+		ctx.beginPath();
+		ctx.strokeStyle = '#107e00';
+		ctx.setLineDash([]);
+		ctx.lineWidth = 3;
+		console.log(this.type)
+		// if (this.type === typesOfScene.SCENE2D) {
+		// 	for (let i = 0; i < this.x.length; i++) {
+		// 		camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));
+		// 		camera.lineTo(this.x[i]-(s/2), this.y[i]+(s/2));
+		// 		camera.moveTo(this.x[i]+(s/2), this.y[i]+(s/2));
+		// 		camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
+		// 	}
+		// } else if (this.type === typesOfScene.SCENE3D) {
+			camera.moveTo(this.matrixResult.getStrFirst()[0], this.matrixResult.getStrSecond()[0], this.matrixResult.getStrThird()[0]);
+			for (let i = 0; i < this.matrixResult.getStrFirst().length; i++) {
+				camera.lineTo(this.matrixResult.getStrFirst()[i], this.matrixResult.getStrSecond()[i], this.matrixResult.getStrThird()[i]);
+			}
+		// }
+		ctx.stroke();
+
 	}
 
 }
