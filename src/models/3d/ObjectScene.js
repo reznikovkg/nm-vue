@@ -63,6 +63,10 @@ export default class ObjectScene extends BaseModel {
 			return;
 		}
 
+		if (this.countPoints < 1) {
+			return;
+		}
+
 		let ctx = camera.canvas.getContext("2d");
 		ctx.beginPath();
 		ctx.strokeStyle = '#107e00';

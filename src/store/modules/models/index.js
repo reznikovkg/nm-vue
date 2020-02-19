@@ -8,6 +8,8 @@ const state = {
 	],
 	indexActiveModel: 0,
 	choiceTypeModel: null,
+
+	buildCount: 0
 };
 
 const getters = {
@@ -20,6 +22,7 @@ const getters = {
 	getChoiceTypeModel: (state, getters, rootState) => {
 		return state.choiceTypeModel;
 	},
+
 	getIndexActiveModel: (state, getters, rootState) => {
 		return state.indexActiveModel;
 	},
@@ -122,7 +125,11 @@ const mutations = {
 	},
 
 
-
+	resetIndexActiveModel(state) {
+		const t = state.indexActiveModel;
+		state.indexActiveModel = -1;
+		state.indexActiveModel = t;
+	},
 
 
 
@@ -183,7 +190,7 @@ const actions = {
 	},
 	setChildModel({ commit, dispatch }, model) {
 		commit('setChildModel', model);
-		dispatch('scene/reRender', null, { root: true });
+		commit('resetIndexActiveModel');
 	},
 
 	setPointsOfModel({ commit, dispatch }, points) {

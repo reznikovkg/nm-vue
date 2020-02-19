@@ -56,19 +56,43 @@ export default class Spline extends BaseModel {
             []
         ]);
 
+        // let start = this.getStart();
+        // let finish = this.getFinish();
+        //
+        // let h = (finish - start) / countPoints;
+        // //TODO change to integer i
+        // for (let i = start; i < finish; i += h)
+        // {
+        //     matrix.addPoint(
+        //         i,
+        //         this.pointSpline(i),
+        //         0
+        //     );
+        // }
+
+
+
         let start = this.getStart();
         let finish = this.getFinish();
 
-        let h = (finish - start) / countPoints;
+        let h = (finish - start) / (countPoints - 1);
         //TODO change to integer i
-        for (let i = start; i < finish; i += h)
+        for (let i = 0; i < countPoints - 1; i++)
         {
+            const t = start + i*h;
             matrix.addPoint(
-                i,
-                this.pointSpline(i),
+                t,
+                this.pointSpline(t),
                 0
             );
         }
+
+        matrix.addPoint(
+            finish,
+            this.pointSpline(finish),
+            0
+        );
+
 
         return matrix;
     }

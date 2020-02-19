@@ -4,13 +4,13 @@
         <at-select v-model="childModelIndex" :placeholder="'Guide'">
             <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>
         </at-select>
-        <at-input-number v-if="getChildModel" v-model="countOfPoints" :disabled="disableCountPoints"/>
+        <at-input v-if="getChildModel" v-model="countOfPoints" :disabled="disableCountPoints"/>
     </div>
 </template>
 
 <script>
     import InputCustom from './../Elements/InputCustom';
-	import {mapActions, mapGetters} from 'vuex';
+	import { mapActions, mapGetters } from 'vuex';
 	import typesOfScene from "../../../../scene/typesOfScene";
 	import typesOfModels from "../../../../models/typesOfModels";
 
@@ -18,11 +18,6 @@
 		name: "ObjectScene",
         components: {
 			InputCustom
-        },
-        data () {
-			return {
-
-            }
         },
         props: {
 			model: {
