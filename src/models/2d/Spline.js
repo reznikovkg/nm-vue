@@ -198,10 +198,8 @@ export default class Spline extends BaseModel {
         let i = 0;
         let ost = true;
 
-        while ((ost)&&(i>=0)&& (i < this.x.length - 1))
-        {
-            if ( ( this.x[i] <= x ) && ( this.x[i+1] > x ) )
-            {
+        while ((ost) && (i>=0) && (i < this.x.length - 1)) {
+            if ( ( this.x[i] <= x ) && ( this.x[i+1] >= x ) ) {
                 ost = false;
             } else {
                 i++;
@@ -209,12 +207,10 @@ export default class Spline extends BaseModel {
         }
 
         let xt = x - this.x[i];
-        if (i < this.b.length)
-        {
+        if (i < this.b.length) {
             return this.a[i] + this.b[i] * xt + this.c[i] * xt * xt + this.d[i] * xt * xt * xt;
-        } else
-        {
-            return 0;
+        } else {
+            return -1000;
         }
     }
 

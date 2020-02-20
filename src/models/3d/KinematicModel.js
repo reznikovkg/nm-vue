@@ -20,13 +20,16 @@ export default class KinematicModel extends BaseModel {
     }
 
     setGuide(model) {
-        this.guide = new ObjectScene();
-        this.guide.setModel(model);
+        this.guide = model;
+        // this.guide = new ObjectScene();
+        // this.guide.setModel(model);
     }
 
     setForm(model) {
-        this.form = new ObjectScene();
-        this.form.setModel(model);
+        this.form = model;
+        // this.form = new ObjectScene();
+        // this.form.setModel(model);
+        console.log(this.form)
         this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
     }
 
@@ -315,7 +318,6 @@ export default class KinematicModel extends BaseModel {
         } else {
             pointli = [0, 10, 0];
         }
-        console.log(light,pointli)
 
         let ctx = camera.canvas.getContext("2d");
 

@@ -11,5 +11,5 @@ export function genHash(length = 32) {
 		hash += chars[randomInteger(0, chars.length-1)]
 	}
 
-	return hash;
+	return hash + (new Date()).getTime();
 }

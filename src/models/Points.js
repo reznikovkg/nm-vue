@@ -164,7 +164,6 @@ export default class Points extends BaseModel {
             camera.ScreenToWorldY(0) -
             camera.ScreenToWorldY(camera.grid.serifsSize)
         );
-        console.log(this.type)
         if (this.type === typesOfScene.SCENE2D) {
             for (let i = 0; i < this.x.length; i++) {
                 camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));

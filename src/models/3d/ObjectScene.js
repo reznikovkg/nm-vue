@@ -9,7 +9,6 @@ export default class ObjectScene extends BaseModel {
 	}
 
 	setChildModel(model) {
-		console.log(11, model)
 		this.childModel = model;
 		this.countPoints = model.getCountPoints();
 		this.setAccumulationAP();
@@ -46,7 +45,6 @@ export default class ObjectScene extends BaseModel {
 
 	setMatrixOfPoints() {
 		this.matrixResult = new Matrix();
-		console.log(this.countPoints)
 		this.matrixResult.AllocateCells(this.accumulationAP.getStrNum(), this.childModel.getMatrixOfPoints(this.countPoints).getColNum());
 
 		return this.matrixResult.sumWith(this.accumulationAP.compWith(this.childModel.getMatrixOfPoints(this.countPoints), true));
@@ -72,7 +70,6 @@ export default class ObjectScene extends BaseModel {
 		ctx.strokeStyle = '#107e00';
 		ctx.setLineDash([]);
 		ctx.lineWidth = 3;
-		console.log(this.type)
 		// if (this.type === typesOfScene.SCENE2D) {
 		// 	for (let i = 0; i < this.x.length; i++) {
 		// 		camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));
@@ -82,12 +79,29 @@ export default class ObjectScene extends BaseModel {
 		// 	}
 		// } else if (this.type === typesOfScene.SCENE3D) {
 			camera.moveTo(this.matrixResult.getStrFirst()[0], this.matrixResult.getStrSecond()[0], this.matrixResult.getStrThird()[0]);
-			for (let i = 0; i < this.matrixResult.getStrFirst().length; i++) {
+			for (let i = 0; i < this.matrixResult.getStrFirst().length - 1; i++) {
 				camera.lineTo(this.matrixResult.getStrFirst()[i], this.matrixResult.getStrSecond()[i], this.matrixResult.getStrThird()[i]);
 			}
 		// }
 		ctx.stroke();
 
+
+
+		ctx.beginPath();
+		ctx.strokeStyle = '#7e000d';
+		ctx.setLineDash([]);
+		ctx.lineWidth = 3;
+		camera.moveTo(
+			this.matrixResult.getStrFirst()[this.matrixResult.getStrFirst().length - 2],
+			this.matrixResult.getStrSecond()[this.matrixResult.getStrFirst().length - 2],
+			this.matrixResult.getStrThird()[this.matrixResult.getStrFirst().length - 2]
+		);
+		camera.lineTo(
+			this.matrixResult.getStrFirst()[this.matrixResult.getStrFirst().length - 1],
+			this.matrixResult.getStrSecond()[this.matrixResult.getStrFirst().length - 1],
+			this.matrixResult.getStrThird()[this.matrixResult.getStrFirst().length - 1]
+		);
+		ctx.stroke();
 	}
 
 }

@@ -2,6 +2,9 @@ import typesOfModels from "../../../models/typesOfModels";
 import typesOfScene from "../../../scene/typesOfScene";
 import Points from "../../../models/Points";
 
+import objectScene from "./includes/objectScene";
+import kinematic from "./includes/kinematic";
+
 const state = {
 	models: [
 		(new Points()).setDefaultParams(typesOfModels[typesOfScene.SCENE2D].points, typesOfScene.SCENE2D)
@@ -13,6 +16,9 @@ const state = {
 };
 
 const getters = {
+	...objectScene.getters,
+	...kinematic.getters,
+
 	getModels: (state, getters, rootState) => {
 		return state.models;
 	},
@@ -57,6 +63,8 @@ const getters = {
 };
 
 const mutations = {
+	...objectScene.mutations,
+	...kinematic.mutations,
 	/**
 	 * STATUS: DONE
 	 *
@@ -121,6 +129,7 @@ const mutations = {
 	},
 
 	setCountOfPoints(state, count) {
+		if (count <= 500)
 		state.models[state.indexActiveModel].setCountPoints(count);
 	},
 
@@ -133,10 +142,12 @@ const mutations = {
 
 
 
-
 };
 
 const actions = {
+	...objectScene.actions,
+	...kinematic.actions,
+
 	/**
 	 * STATUS: DONE
 	 *
@@ -219,7 +230,6 @@ const actions = {
 		commit('setCountOfPoints', index);
 		dispatch('scene/reRender', null, { root: true });
 	},
-
 
 
 
