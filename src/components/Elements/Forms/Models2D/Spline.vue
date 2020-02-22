@@ -1,9 +1,9 @@
 <template>
     <div class="">
         <h3>Spline</h3>
-        <at-select v-model="indexOfPoints" :placeholder="'Points'">
+        <at-select v-model="points" :placeholder="'Points'">
             <at-option :value="-1" :key="-1">Not choice</at-option>
-            <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">Points {{ index }} ({{ model.hash }}</at-option>
+            <at-option v-for="(modelChoice) in getModelsForChoice" :value="modelChoice.hash" :key="modelChoice.hash">Points ({{ modelChoice.hash }}</at-option>
         </at-select>
     </div>
 </template>
@@ -15,26 +15,30 @@
 
 	export default {
 		name: "Spline",
+        props: {
+			model: {
+				type: Object,
+                default: null
+            }
+        },
 		computed: {
 			...mapGetters('models', [
 				'getModels',
-                'getPointsOfModel'
+                'getModelByHash'
 			]),
 			getModelsForChoice: function () {
 				return this.getModels.filter((item) => (item.code === typesOfModels[typesOfScene.SCENE2D].points.code))
 			},
-			indexOfPoints: {
+			points: {
 				get() {
-					if (this.getPointsOfModel && this.getModelsForChoice.find((item) => (item.hash === this.getPointsOfModel.hash))) {
-						return this.getModelsForChoice.findIndex((item) => (item.hash === this.getPointsOfModel.hash));
+					if (this.model.getPoints()) {
+						return this.model.getPoints().hash
                     } else {
 						return -1;
                     }
 				},
-				set(index){
-					if (index >= 0) {
-						this.setPointsOfModel(this.getModelsForChoice[index])
-                    }
+				set(hash){
+                    this.model.setPoints(this.getModelByHash(hash))
 				}
 			},
 		},

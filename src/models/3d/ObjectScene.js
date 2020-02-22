@@ -15,6 +15,10 @@ export default class ObjectScene extends BaseModel {
 		this.setMatrixOfPoints();
 	}
 
+	getCountPoints() {
+		return this.countPoints;
+	}
+
 	setCountPoints(val) {
 		this.countPoints = val;
 		this.setMatrixOfPoints()

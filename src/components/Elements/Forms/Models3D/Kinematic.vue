@@ -114,7 +114,7 @@
             },
             guide: {
 				get() {
-					return this.getActiveModel.guide;
+					return this.getActiveModel.getGuide.hash;
 				},
 				set(model) {
 					this.setGuideByHash({
@@ -135,7 +135,7 @@
             },
             form: {
 				get() {
-					return this.getActiveModel.form;
+					return this.getActiveModel.getForm.hash;
 				},
 				set(model) {
 					this.setFormByHash({

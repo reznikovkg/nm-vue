@@ -20,16 +20,28 @@ export default class KinematicModel extends BaseModel {
     }
 
     setGuide(model) {
-        this.guide = model;
+        let ob = new ObjectScene();
+        ob.type = typesOfScene.SCENE3D;
+        ob.setChildModel(model);
+        this.guide = ob;
         // this.guide = new ObjectScene();
         // this.guide.setModel(model);
     }
+    getGuide() {
+        return this.guide.childModel;
+    }
 
     setForm(model) {
-        this.form = model;
+        let ob = new ObjectScene();
+        ob.type = typesOfScene.SCENE3D;
+        ob.setChildModel(model);
+        this.form = ob;
         // this.form = new ObjectScene();
         // this.form.setModel(model);
-        this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
+        // this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
+    }
+    getForm() {
+        return this.form.childModel;
     }
 
     // setPoints() {
@@ -413,6 +425,9 @@ export default class KinematicModel extends BaseModel {
                         ], pointli)
 
                         let r = camera.getCoord(point[0],point[1],point[2]);
+                        console.log(
+                            r[0], r[1], 1000, r[0], r[1],10
+                        )
                         let gradient = ctx.createRadialGradient(r[0], r[1], 1000, r[0], r[1],10);
                         gradient.addColorStop(0, "blue");
                         gradient.addColorStop(1, "white");

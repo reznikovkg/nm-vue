@@ -12,7 +12,7 @@ export const actions = {
 	setChildModelByHash({commit, dispatch}, data) {
 		commit('setChildModelByHash', data);
 
-		commit('resetIndexActiveModel');
+		commit('reBuildModels');
 	},
 };
 

@@ -33,6 +33,11 @@ const state = {
 				title: 'moveCenter',
 				icon: 'icon-move'
 			},
+			moveCamera: {
+				status: false,
+				title: 'moveCamera',
+				icon: 'icon-video'
+			},
 		}
 	},
 
@@ -168,18 +173,22 @@ const actions = {
 			switch (e.keyCode) {
 				case 98: {
 					dispatch('models/applyToModel', AT3D.rotationXDeg(Math.PI / 18), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationXDeg(Math.PI / 18), {root: true});
 					break;
 				}
 				case 100: {
 					dispatch('models/applyToModel', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
 					break;
 				}
 				case 102: {
 					dispatch('models/applyToModel', AT3D.rotationYDeg(Math.PI / 18), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationYDeg(Math.PI / 18), {root: true});
 					break;
 				}
 				case 104: {
 					dispatch('models/applyToModel', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
 					break;
 				}
 				default: {

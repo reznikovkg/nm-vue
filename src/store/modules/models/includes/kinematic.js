@@ -16,12 +16,12 @@ export const actions = {
 	setGuideByHash({commit, dispatch}, data) {
 		commit('setGuideByHash', data);
 
-		commit('resetIndexActiveModel');
+		commit('reBuildModels');
 	},
 	setFormByHash({commit, dispatch}, data) {
 		commit('setFormByHash', data);
 
-		commit('resetIndexActiveModel');
+		commit('reBuildModels');
 	},
 };
 
