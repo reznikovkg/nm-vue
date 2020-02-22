@@ -26,6 +26,9 @@ export function normalToPlane(ar, point) {
 	let al = x*x + y*y + z*z;
 
 	let j = -s/al;
+	if (al === 0) {
+		j = 999;
+	}
 
 	let poi = [
 		point[0] + x*j,

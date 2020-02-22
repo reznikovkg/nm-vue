@@ -1,9 +1,10 @@
 import Matrix from './../../math/Matrix';
 import typesOfScene from "../../scene/typesOfScene";
+import BaseModel from "./../BaseModel";
 
-export default class Light {
+export default class Light extends BaseModel {
     constructor() {
-        this.show = false;
+        super();
 
         this.position = new Matrix([[3],[3],[3],[1]]);
     }

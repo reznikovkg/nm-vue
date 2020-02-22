@@ -43,6 +43,10 @@ export default class Spline extends BaseModel {
         this.setCoeffSpline(matr.getX());
     }
 
+    getPoints() {
+        return this.points;
+    }
+
     //BUG
     getCountPoints() {
         return 100;

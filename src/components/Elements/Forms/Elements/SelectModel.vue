@@ -1,7 +1,11 @@
 <template>
     <div>
-        <at-select v-model="childModelIndex" :placeholder="'Guide'">
-            <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>
+        <at-select v-model="childModel" :placeholder="'Guide'">
+            <at-option v-for="modelChoice in getModelsForChoice"
+                       :value="modelChoice.hash"
+                       :key="modelChoice.hash">
+                {{ modelChoice.name }} ({{ modelChoice.hash }})
+            </at-option>
         </at-select>
     </div>
 </template>
@@ -26,38 +30,30 @@
 				type: Object,
 				default: null,
 			},
-            typeScene: {
-				type: String,
-                default: null
+            filterFunction: {
+				type: Function,
+                default: (item) => true
             }
         },
         computed: {
 			...mapGetters('models', [
-				'getModels'
+				'getModels',
+                'getModelByHash'
 			]),
-
-			childModelIndex: {
+			childModel: {
 				get() {
 					if (this.value && this.getModelsForChoice.find((item) => (item.hash === this.value.hash))) {
-						return this.getModelsForChoice.findIndex((item) => (item.hash === this.value.hash));
+						return this.getModelsForChoice.find((item) => (item.hash === this.value.hash)).hash;
 					} else {
 						return -1;
 					}
 				},
-				set(index){
-					console.log(index)
-					this.$emit('change', this.getModelsForChoice[index]);
+				set(hash){
+					this.$emit('change', this.getModelByHash(hash));
 				}
 			},
 			getModelsForChoice: function () {
-				return this.getModels.filter((item) => {
-					if (this.typeScene) {
-						if (item.type === this.typeScene) return true;
-                    }
-
-					return true;
-					// It can be expanded later
-				})
+				return this.getModels.filter(this.filterFunction)
 			},
         }
     }

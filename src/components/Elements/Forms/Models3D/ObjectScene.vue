@@ -5,7 +5,7 @@
 <!--            <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
 <!--        </at-select>-->
 
-        <select-model v-model="childModel"></select-model>
+        <select-model v-model="childModel" :filterFunction="filterFunction"></select-model>
         <at-input v-if="childModel" v-model="countOfPoints" :disabled="disableCountPoints"/>
     </div>
 </template>
@@ -75,6 +75,15 @@
 					});
 				}
 			},
+			filterFunction: function () {
+                return (item) => {
+                    if (item.hash === this.model.hash) return false;
+                    if (item.type === typesOfScene.SCENE2D) return true;
+                    if (item.code === typesOfModels["3d"].object.code) return true;
+
+                    return false
+                }
+			}
         },
         methods: {
 			...mapActions('models', [

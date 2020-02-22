@@ -1,17 +1,22 @@
 <template>
-    <div v-if="model" class="model" :class="{ active: index === getIndexActiveModel }" @click="choiceModelActive">
-        <div class="model-nav">
-            <div class="model-name">
-                {{ model.name }}
+    <div v-if="model" class="model" :class="{ active: isActive }">
+        <div class="model-header">
+            <div class="model-name" @click="choiceModelActive">
+                {{ model.getTitle() }}
             </div>
-            <div class="row" v-if="index === getIndexActiveModel">
-                <at-button v-if="getActiveModel.show" type="success" icon="icon-eye" circle size="smaller" title="" @click="showModel(index)"/>
-                <at-button v-if="!getActiveModel.show" type="error" icon="icon-eye-off" circle size="smaller" title="" @click="showModel(index)"/>
-                <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removeModel(index)"/>
+            <div class="model-header-nav">
+                <at-button
+                           icon="icon-edit-1"
+                           circle size="smaller" title="Change Title" @click="changeTitle(model)"/>
+
+                <at-button :type="model.show ? 'success' : 'error'"
+                           :icon="model.show ? 'icon-eye' : 'icon-eye-off'"
+                           circle size="smaller" title="" @click="toggleShowModel(model)"/>
+                <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removeModel(model)"/>
             </div>
         </div>
-        <div class="model-body" v-if="index === getIndexActiveModel">
-            <component :is="typesOfModelsShow[model.code].form" :model="model"/>
+        <div class="model-body" v-if="isActive">
+            <component :is="formModel" :model="model"/>
         </div>
     </div>
 </template>
@@ -27,41 +32,45 @@
 			model: {
 				type: Object,
                 default: null
-            },
-            index: {
-				type: Number,
-                default: -1
-            },
-			scene: {
-				type: String,
-                default: '2d'
-            }
-        },
-        data () {
-			return {
-				checkboxValue1: false
             }
         },
         computed: {
 			...mapGetters('models', [
-				'getIndexActiveModel',
                 'getActiveModel'
             ]),
 			...mapGetters('scene', [
 				'getTypeScene',
 			]),
-			typesOfModelsShow: function () {
-				return typesOfModels[this.getTypeScene];
+            isActive: function () {
+				return (this.getActiveModel && (this.model.hash === this.getActiveModel.hash));
+            },
+			formModel: function () {
+				return typesOfModels[this.model.type][this.model.code].form;
 			},
         },
         methods: {
 			...mapActions('models', [
-				'setIndexActiveModel',
+				'setActiveModel',
+				'toggleShowModel',
 				'removeModel',
-                'showModel'
+                'setTitleOfModel'
 			]),
 			choiceModelActive: function () {
-				if (this.index !== this.getIndexActiveModel) this.setIndexActiveModel(this.index);
+				if (!this.isActive) this.setActiveModel(this.model);
+			},
+			changeTitle: function (model) {
+				this.$Modal.prompt({
+					title: 'Custom title',
+					content: `Enter custom title for ${ model.name}\n(${ model.hash })`,
+                    value: model.name
+				}).then((data) => {
+					this.setTitleOfModel({
+						model,
+						title: data.value
+					})
+				}).catch(() => {
+
+				})
 			}
         }
 	}
@@ -72,22 +81,33 @@
         border: 1px solid #6190e8;
         border-radius: 5px;
         margin-bottom: 5px;
-        padding: 5px;
-        cursor: pointer;
+
 
         &.active {
             background: #6190e8;
-            color: white;
-            cursor: default;
+            .model-name {
+                color: white;
+            }
         }
 
-        .model-nav {
+        &-name {
+            padding: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        &-header {
             display: flex;
             justify-content: space-between;
+            &-nav {
+                padding: 5px;
+            }
         }
 
-        .model-body {
-
+        &-body {
+            padding: 5px;
         }
     }
 </style>

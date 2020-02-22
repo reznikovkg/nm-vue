@@ -8,6 +8,8 @@ import typesOfScene from "./../../../scene/typesOfScene";
 const state = {
 	camera: null,
 	type: null,
+
+	build: 0
 };
 
 const getters = {
@@ -75,6 +77,13 @@ const mutations = {
 	cameraWheelSize(state, e) {
 		state.camera.wheelSize(e);
 	},
+	applyToCamera(state, at) {
+		state.camera.apply(at);
+	},
+
+	reBuildCamera(state) {
+		state.build++;
+	}
 };
 
 const actions = {
@@ -110,6 +119,13 @@ const actions = {
 	cameraWheelSize ({ commit, dispatch }, e) {
 		commit('cameraWheelSize', e);
 		dispatch('reRender');
+	},
+	applyToCamera({ commit, dispatch, rootGetters }, at) {
+		if (rootGetters['navigation/getNavigation'].moveCamera.status) {
+			commit('applyToCamera', at);
+			commit('reBuildCamera');
+			dispatch('reRender');
+		}
 	},
 };
 

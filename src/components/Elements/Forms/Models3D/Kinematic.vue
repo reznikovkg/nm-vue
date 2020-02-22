@@ -9,7 +9,7 @@
 <!--                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
 <!--                </at-select>-->
 <!--                <object-scene v-if="getActiveModel.guide" :model="getActiveModel.guide"/>-->
-                <select-model v-model="guide"></select-model>
+                <select-model v-model="guide" :filterFunction="filterFunction"></select-model>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
                 <p>Form</p>
@@ -17,7 +17,7 @@
 <!--                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
 <!--                </at-select>-->
 <!--                <object-scene v-if="getActiveModel.form" :model="getActiveModel.form"/>-->
-                <select-model v-model="form"></select-model>
+                <select-model v-model="form" :filterFunction="filterFunction"></select-model>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
 <!--                <p>AT</p>-->
@@ -74,6 +74,7 @@
 	import typesOfScene from "../../../../scene/typesOfScene";
 	import ObjectScene from "./ObjectScene";
 	import SelectModel from "../Elements/SelectModel";
+	import typesOfModels from "../../../../models/typesOfModels";
 
 	export default {
 		name: "Kinematic",
@@ -102,9 +103,18 @@
             getModelsForChoice: function () {
                 return this.getModels.filter((item) => (item.type === typesOfScene.SCENE2D))
 			},
+            filterFunction: function () {
+            	return (item) => {
+                    if (item.type === typesOfScene.SCENE2D) return true;
+                    if (item.code === typesOfModels["3d"].points.code) return true;
+					if (item.code === typesOfModels["3d"].object.code) return true;
+
+					return false;
+                }
+            },
             guide: {
 				get() {
-					return this.getActiveModel.guide;
+					return this.getActiveModel.getGuide.hash;
 				},
 				set(model) {
 					this.setGuideByHash({
@@ -125,7 +135,7 @@
             },
             form: {
 				get() {
-					return this.getActiveModel.guide;
+					return this.getActiveModel.getForm.hash;
 				},
 				set(model) {
 					this.setFormByHash({

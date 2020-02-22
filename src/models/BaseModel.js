@@ -5,6 +5,7 @@ import typesOfModels from "./typesOfModels";
 export default class BaseModel {
 	constructor() {
 		this.show = false;
+		this.title = null;
 		this.hash = genHash();
 	}
 
@@ -18,5 +19,16 @@ export default class BaseModel {
 		this.code = params.code;
 
 		return this;
+	}
+
+	setTitle(title) {
+		this.title = title;
+	}
+	getTitle() {
+		if (this.title) {
+			return this.title
+		} else {
+			return `${ this.name } (${ this.hash })`;
+		}
 	}
 }

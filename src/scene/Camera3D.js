@@ -13,7 +13,7 @@ export default class Camera3D extends Camera2D {
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
         this.vN = new Vector([-1,1,1]);
-
+        console.log(this.vN)
         this.d = 30;
 
         this.updateCamera();
@@ -153,6 +153,8 @@ export default class Camera3D extends Camera2D {
 
 
     reRender(models = []) {
+
+        console.log(this.vN)
         this.clear();
         this.axisPlot3D();
         this.render(models, typesOfScene.SCENE3D);
@@ -210,5 +212,23 @@ export default class Camera3D extends Camera2D {
         let t = new Matrix([[x], [y], [z], [1]]);
         t.setArray(this.worldToProjectF(true).compWith(t,true).cells);
         return super.getCoord(t.getProjectX(0),t.getProjectY(0));
+    }
+
+    apply(at) {
+
+        let mat = new Matrix([
+            [ this.vN.cells[0] ],
+            [ this.vN.cells[1] ],
+            [ this.vN.cells[2] ],
+            [1],
+        ]);
+
+        mat.compWithLeft(at);
+
+        this.vN.cells[0] = mat.cells[0][0];
+        this.vN.cells[1] = mat.cells[1][0];
+        this.vN.cells[2] = mat.cells[2][0];
+
+        this.updateCamera();
     }
 }

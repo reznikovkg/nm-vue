@@ -27,7 +27,7 @@ export default {
     #app {
         & .openGit {
             position: fixed;
-            right: 10px;
+            left: 10px;
             bottom: 10px;
             z-index: 1000;
         }
@@ -51,12 +51,13 @@ export default {
 
     .nav-scene {
         position: absolute;
-        right: 0;
-        top: 0;
+        border-radius: 5px;
+        right: 0.5rem;
+        top: 0.5rem;
+        bottom: 0.5rem;
         width: 300px;
-        height: 100%;
         background: #fff;
-        border-left: 2px solid #6190e8;
+        box-shadow: 0 0 5px #757575;
         padding: 10px;
         transition: 0.3s;
 

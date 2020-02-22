@@ -2,6 +2,7 @@ import typesOfModels from "../../../models/typesOfModels";
 import typesOfScene from "../../../scene/typesOfScene";
 import Points from "../../../models/Points";
 
+import base from "./includes/base";
 import objectScene from "./includes/objectScene";
 import kinematic from "./includes/kinematic";
 
@@ -9,31 +10,21 @@ const state = {
 	models: [
 		(new Points()).setDefaultParams(typesOfModels[typesOfScene.SCENE2D].points, typesOfScene.SCENE2D)
 	],
-	indexActiveModel: 0,
-	choiceTypeModel: null,
+	activeModel: null,
 
 	buildCount: 0
 };
 
 const getters = {
+	...base.getters,
 	...objectScene.getters,
 	...kinematic.getters,
 
-	getModels: (state, getters, rootState) => {
-		return state.models;
-	},
 	getLights:(state, getters, rootState) => {
 		return state.models;
 	},
 	getChoiceTypeModel: (state, getters, rootState) => {
 		return state.choiceTypeModel;
-	},
-
-	getIndexActiveModel: (state, getters, rootState) => {
-		return state.indexActiveModel;
-	},
-	getActiveModel: (state, getters, rootState) => {
-		return state.models[state.indexActiveModel];
 	},
 	getFormOfModel: (state, getters, rootState) => {
 		if (state.models[state.indexActiveModel].form) {
@@ -50,31 +41,19 @@ const getters = {
 		}
 	},
 	getChildModel: (state, getters, rootState) => {
-		console.log(state.models[state.indexActiveModel])
 		return state.models[state.indexActiveModel].childModel;
 		// if (state.models[state.indexActiveModel].childModel) {
 		// } else {
 		// 	return null
 		// }
 	},
-	getPointsOfModel: (state, getters, rootState) => {
-		return state.models[state.indexActiveModel].points;
-	},
 };
 
 const mutations = {
+	...base.mutations,
 	...objectScene.mutations,
 	...kinematic.mutations,
-	/**
-	 * STATUS: DONE
-	 *
-	 * @param state
-	 * @param model
-	 */
-	addModel(state, model) {
-		state.models.push(model);
-		state.indexActiveModel = state.models.length - 1;
-	},
+
 	/**
 	 * STATUS: DONE
 	 *
@@ -82,30 +61,16 @@ const mutations = {
 	 * @param point
 	 */
 	addPointToActiveModel(state, point) {
-		state.models[state.indexActiveModel].addPoint(
+		state.activeModel.addPoint(
 			point.x,
 			point.y
 		);
-	},
-	removeModel(state, index) {
-		state.models.splice(index, 1);
-	},
-	showModel(state, index) {
-		if (state.models[index].inverseShow) {
-			state.models[index].inverseShow()
-		} else {
-			state.models[index].show = !state.models[index].show;
-		}
-	},
-	setIndexActiveModel(state, index) {
-		state.indexActiveModel = index;
 	},
 	setChoiceTypeModel(state, t) {
 		state.choiceTypeModel = t;
 	},
 
 	setGuideOfModel(state, model) {
-		console.log(state.models[state.indexActiveModel])
 		state.models[state.indexActiveModel].setGuide(model);
 	},
 	setFormOfModel(state, model) {
@@ -115,12 +80,12 @@ const mutations = {
 		state.models[state.indexActiveModel].setChildModel(model);
 	},
 	applyToModel(state, at) {
-		state.models[state.indexActiveModel].apply(at);
+		state.activeModel.apply(at);
 	},
 
 
 	setPointsOfModel(state, points) {
-		state.models[state.indexActiveModel].setPoints(points);
+		state.activeModel.setPoints(points);
 	},
 
 
@@ -134,17 +99,12 @@ const mutations = {
 	},
 
 
-	resetIndexActiveModel(state) {
-		const t = state.indexActiveModel;
-		state.indexActiveModel = -1;
-		state.indexActiveModel = t;
-	},
-
 
 
 };
 
 const actions = {
+	...base.actions,
 	...objectScene.actions,
 	...kinematic.actions,
 
@@ -157,10 +117,10 @@ const actions = {
 	 * @param dispatch
 	 * @param e
 	 */
-	createModel({ commit, state, rootState, dispatch }, e) {
+	createModel({ commit, state, rootState, dispatch }, classObject) {
 		//TODO write default params of models to model
-		let model = new typesOfModels[rootState.scene.type][state.choiceTypeModel].class();
-		model.setDefaultParams(typesOfModels[rootState.scene.type][state.choiceTypeModel], rootState.scene.type);
+		let model = new classObject.class();
+		model.setDefaultParams(classObject, rootState.scene.type);
 		commit('addModel', model);
 		dispatch('scene/reRender', null, { root: true });
 	},
@@ -182,12 +142,8 @@ const actions = {
 	setChoiceTypeModel({ commit, state }, typeModel) {
 		commit('setChoiceTypeModel', typeModel);
 	},
-	setIndexActiveModel ({ commit, state }, index) {
-		commit('setIndexActiveModel', index)
-	},
-	removeModel({ commit, dispatch }, index) {
-		commit('removeModel', index);
-		dispatch('scene/reRender', null, { root: true });
+	setActiveModel ({ commit, state }, model) {
+		commit('setActiveModel', model)
 	},
 
 
@@ -209,14 +165,8 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
-
-	showModel({ commit, dispatch }, index) {
-		commit('showModel', index);
-		dispatch('scene/reRender', null, { root: true });
-	},
-
-	applyToModel({ commit, dispatch }, at) {
-		commit('applyToModel', at);
+	applyToModel({ state, commit, dispatch }, at) {
+		if (state.activeModel) commit('applyToModel', at);
 		dispatch('scene/reRender', null, { root: true });
 	},
 
