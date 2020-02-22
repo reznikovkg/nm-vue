@@ -9,6 +9,7 @@ const state = {
 	models: [
 		(new Points()).setDefaultParams(typesOfModels[typesOfScene.SCENE2D].points, typesOfScene.SCENE2D)
 	],
+	activeModel: null,
 	indexActiveModel: 0,
 	choiceTypeModel: null,
 

@@ -29,7 +29,6 @@ export default class KinematicModel extends BaseModel {
         this.form = model;
         // this.form = new ObjectScene();
         // this.form.setModel(model);
-        console.log(this.form)
         this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
     }
 

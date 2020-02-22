@@ -26,9 +26,9 @@
 				type: Object,
 				default: null,
 			},
-            typeScene: {
-				type: String,
-                default: null
+            filterFunction: {
+				type: Function,
+                default: (item) => true
             }
         },
         computed: {
@@ -45,19 +45,11 @@
 					}
 				},
 				set(index){
-					console.log(index)
 					this.$emit('change', this.getModelsForChoice[index]);
 				}
 			},
 			getModelsForChoice: function () {
-				return this.getModels.filter((item) => {
-					if (this.typeScene) {
-						if (item.type === this.typeScene) return true;
-                    }
-
-					return true;
-					// It can be expanded later
-				})
+				return this.getModels.filter(this.filterFunction)
 			},
         }
     }
