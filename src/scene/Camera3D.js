@@ -13,7 +13,6 @@ export default class Camera3D extends Camera2D {
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
         this.vN = new Vector([-1,1,1]);
-        console.log(this.vN)
         this.d = 30;
 
         this.updateCamera();

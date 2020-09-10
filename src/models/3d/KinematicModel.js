@@ -4,7 +4,7 @@ import * as AT3D from './../../scene/AffineTransform3D';
 import typesOfScene from "./../../scene/typesOfScene";
 
 import ObjectScene from './ObjectScene';
-import { normalToPlane } from "../../math/AnalitycGeometry";
+import {normalToPlane} from "../../math/AnalitycGeometry";
 import BaseModel from "./../BaseModel";
 
 export default class KinematicModel extends BaseModel {
@@ -27,6 +27,7 @@ export default class KinematicModel extends BaseModel {
         // this.guide = new ObjectScene();
         // this.guide.setModel(model);
     }
+
     getGuide() {
         return this.guide.childModel;
     }
@@ -40,6 +41,7 @@ export default class KinematicModel extends BaseModel {
         // this.form.setModel(model);
         // this.form.applyToAt(AT3D.rotationYDeg(Math.PI / 2));
     }
+
     getForm() {
         return this.form.childModel;
     }
@@ -197,8 +199,8 @@ export default class KinematicModel extends BaseModel {
         this.at = at;
     }
 
-    atF (p) {
-        let y = (Math.PI*2)/(this.guideNumberPoints);
+    atF(p) {
+        let y = (Math.PI * 2) / (this.guideNumberPoints);
 
         if (this.at === "identity") {
             return AT3D.identity();
@@ -209,30 +211,17 @@ export default class KinematicModel extends BaseModel {
         }
 
         if (this.at === "rotationXDeg") {
-            return AT3D.rotationXDeg(y*p);
+            return AT3D.rotationXDeg(y * p);
         }
 
         if (this.at === "rotationYDeg") {
-            return AT3D.rotationYDeg(y*p);
+            return AT3D.rotationYDeg(y * p);
         }
 
         if (this.at === "rotationZDeg") {
-            return AT3D.rotationZDeg(y*p);
+            return AT3D.rotationZDeg(y * p);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // setPointsDefault () {
@@ -362,11 +351,11 @@ export default class KinematicModel extends BaseModel {
         this.form.setMatrixOfPoints();
         this.guide.setMatrixOfPoints();
         this.form.applyToAt(AT3D.translation(
-            - this.form.getMatrixOfPoints().getStrFirst()[0]
+            -this.form.getMatrixOfPoints().getStrFirst()[0]
             + this.guide.getMatrixOfPoints().getStrFirst()[0],
-            - this.form.getMatrixOfPoints().getStrSecond()[0]
+            -this.form.getMatrixOfPoints().getStrSecond()[0]
             + this.guide.getMatrixOfPoints().getStrSecond()[0],
-            - this.form.getMatrixOfPoints().getStrThird()[0]
+            -this.form.getMatrixOfPoints().getStrThird()[0]
             + this.guide.getMatrixOfPoints().getStrThird()[0],
         ));
 
@@ -374,37 +363,56 @@ export default class KinematicModel extends BaseModel {
         matForm.setMatrixForce(this.form.getMatrixOfPoints());
 
 
-
         for (let i = 0; i < this.guide.getMatrixOfPoints().getStrFirst().length; i++) {
-            for (let j = 0; j < matForm.getStrFirst().length ; j++ ) {
+            for (let j = 0; j < matForm.getStrFirst().length; j++) {
 
-                if (j + 1 < matForm.getStrFirst().length ) {
+                if (j + 1 < matForm.getStrFirst().length) {
 
                     ctx.beginPath();
                     ctx.fillStyle = "red";
+                    const polygon = [[],[]];
                     camera.moveTo(
                         matForm.getStrFirst()[j],
                         matForm.getStrSecond()[j],
                         matForm.getStrThird()[j]
                     );
+                    polygon[0].push([
+                        matForm.getStrFirst()[j],
+                        matForm.getStrSecond()[j],
+                        matForm.getStrThird()[j]
+                    ]);
                     camera.lineTo(
                         matForm.getStrFirst()[j + 1],
                         matForm.getStrSecond()[j + 1],
                         matForm.getStrThird()[j + 1]
                     );
+                    polygon[0].push([
+                        matForm.getStrFirst()[j + 1],
+                        matForm.getStrSecond()[j + 1],
+                        matForm.getStrThird()[j + 1]
+                    ]);
 
-                    if (i + 1 < matForm.getStrFirst().length ) {
+                    if (i + 1 < matForm.getStrFirst().length) {
                         camera.lineTo(
-                            matForm.getStrFirst()[j+1] + this.guide.getMatrixOfPoints().getStrFirst()[i+1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
-                            matForm.getStrSecond()[j+1] + this.guide.getMatrixOfPoints().getStrSecond()[i+1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
-                            matForm.getStrThird()[j+1] + this.guide.getMatrixOfPoints().getStrThird()[i+1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                            matForm.getStrFirst()[j + 1] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j + 1] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j + 1] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
                         );
+                        polygon[0].push([
+                            matForm.getStrFirst()[j + 1] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j + 1] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j + 1] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                        ]);
                         camera.lineTo(
-                            matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i+1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
-                            matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i+1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
-                            matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i+1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                            matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
                         );
-
+                        polygon[0].push([
+                            matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                        ]);
 
 
                         let point = normalToPlane([
@@ -424,17 +432,20 @@ export default class KinematicModel extends BaseModel {
 
                         ], pointli)
 
-                        let r = camera.getCoord(point[0],point[1],point[2]);
+                        let r = camera.getCoord(point[0], point[1], point[2]);
+
                         console.log(
-                            r[0], r[1], 1000, r[0], r[1],10
+                            r[0], r[1], 1000, r[0], r[1], 10
                         )
-                        let gradient = ctx.createRadialGradient(r[0], r[1], 1000, r[0], r[1],10);
-                        gradient.addColorStop(0, "blue");
+                        let gradient = ctx.createRadialGradient(r[0], r[1], 1000, r[0], r[1], 10);
+                        gradient.addColorStop(0, "red");
                         gradient.addColorStop(1, "white");
 
                         ctx.fillStyle = gradient;
                         ctx.fill();
                         ctx.beginPath();
+
+                        camera.polygons.push(polygon);
 
                     }
                 }
@@ -445,9 +456,9 @@ export default class KinematicModel extends BaseModel {
                     matForm.getStrThird()[j]
                 );
                 camera.lineTo(
-                    matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i+1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
-                    matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i+1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
-                    matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i+1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                    matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
+                    matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
+                    matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
                 );
             }
 
@@ -459,7 +470,7 @@ export default class KinematicModel extends BaseModel {
         }
 
         ctx.beginPath();
-        for (let j = 0; j < matForm.getStrFirst().length ; j++ ) {
+        for (let j = 0; j < matForm.getStrFirst().length; j++) {
 
             camera.moveTo(
                 matForm.getStrFirst()[j],

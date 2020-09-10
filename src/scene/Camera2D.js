@@ -1,10 +1,13 @@
 import typesOfScene from "./typesOfScene";
+import { GPU } from 'gpu.js';
 
 export default class Camera2D {
 
     constructor(canvas = null) {
         this.canvas = canvas;
         this.setSizeCanvas();
+
+        this.polygons = [];
 
         if (canvas) {
             this.ctx = this.canvas.getContext("2d");
@@ -279,10 +282,44 @@ export default class Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
+        this.polygons = [1];
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {
             if (models[i].type === type) models[i].render(this, lights);
         }
+
+        setTimeout(() => {
+            const gpu = new GPU();
+
+            const kernel = gpu.createKernel(function(_polygons) {
+              const len  = this.constants.len;
+              //
+              // let cell = 0;
+              //
+              // for (let k = 0; k < len; k++) {
+              //   cell += a[this.thread.x][k]*b[k][this.thread.y];
+              // }
+
+
+                this.color(
+                    (this.thread.x > 255) ? 1 : this.thread.x/255,
+                    (this.thread.y > 255) ? 1 : this.thread.y/255,
+                    0);
+            })
+              .setConstants({
+                len: 120
+              })
+                .setGraphical(true)
+              .setOutput([this.canvas.width, this.canvas.height]);
+
+            kernel(this.polygons);
+
+            // const out = document.body;
+            // out.appendChild(kernel.canvas);
+            this.ctx.drawImage(kernel.canvas, 0, 0);
+
+            console.log('DOne')
+        }, 1);
     }
 
     reRender(models = []) {
