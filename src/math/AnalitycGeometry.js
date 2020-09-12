@@ -40,3 +40,16 @@ export function normalToPlane(ar, point) {
 	return poi;
 }
 
+/**
+ *
+ * @param a = [ x, y ]
+ * @param b = [ x, y ]
+ */
+export function cosDegVectors(a, b) {
+	const ab = a[0]*b[0]+a[1]*b[1];
+
+	const sqrtA = Math.sqrt(a[0]*a[0]+a[1]*a[1]);
+	const sqrtB = Math.sqrt(b[0]*b[0]+b[1]*b[1]);
+
+	return ab / (sqrtA*sqrtB);
+}
