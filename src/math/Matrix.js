@@ -65,7 +65,11 @@ export default class Matrix {
         for (let i = 0; i < strNum; i++) {
             this.cells.push([]);
             for (let j = 0; j < colNum; j++ ) {
-                this.cells[i].push(1);
+                if (i===j) {
+                    this.cells[i].push(1);
+                } else {
+                    this.cells[i].push(0);
+                }
             }
         }
     }
