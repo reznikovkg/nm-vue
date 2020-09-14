@@ -108,8 +108,6 @@ export function getMatrixToTransformPoint2D(oldParams, newParams) {
 
 
 export function getWorldPoint(x, y) {
-
-
 	const cam = new Camera3D();
 	const t = {
 		x: cam.ScreenToWorldX(0),

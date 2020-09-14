@@ -5,6 +5,8 @@ import Camera2D from './Camera2D';
 import * as AT3D from './AffineTransform3D';
 import typesOfScene from "./typesOfScene";
 import {GPU} from "gpu.js";
+import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
+import fKernel from "@/scene/fKernel";
 
 const defaultParamsCamera = {
     vOv: new Vector([0,0,0]),
@@ -168,28 +170,105 @@ export default class Camera3D extends Camera2D {
         setTimeout(() => {
             const gpu = new GPU();
 
-            const kernel = gpu.createKernel(function(_polygons) {
-                const len  = this.constants.len;
-                //
-                // let cell = 0;
-                //
-                // for (let k = 0; k < len; k++) {
-                //   cell += a[this.thread.x][k]*b[k][this.thread.y];
-                // }
+            // function fKernel(_polygons, _polygonsLength) {
+            //     const matrixTransform00 = this.constants.matrixTransform00;
+            //     const matrixTransform10 = this.constants.matrixTransform10;
+            //     const matrixTransform20 = this.constants.matrixTransform20;
+            //
+            //     const matrixTransform01 = this.constants.matrixTransform01;
+            //     const matrixTransform11 = this.constants.matrixTransform11;
+            //     const matrixTransform21 = this.constants.matrixTransform21;
+            //
+            //
+            //     const positionOfCamera0 = this.constants.positionOfCamera0;
+            //     const positionOfCamera1 = this.constants.positionOfCamera1;
+            //     const positionOfCamera2 = this.constants.positionOfCamera2;
+            //
+            //     const centerX = this.constants.centerX;
+            //     const centerY = this.constants.centerY;
+            //     const scalePx = this.constants.scalePx;
+            //     const scalePy = this.constants.scalePy;
+            //
+            //     const coordsX =  (this.thread.x - centerX + 0.5) / scalePx;
+            //     const coordsY =  -( this.thread.y - centerY + 0.5) / scalePy;
+            //     const coordsZ = 0;
+            //
+            //     /**
+            //      * вектор направления луча от камеры в пиксель экрана
+            //      * @type {number[]}
+            //      */
+            //     const ray = [
+            //         matrixTransform00*coordsX + matrixTransform01*coordsY - positionOfCamera0,
+            //         matrixTransform10*coordsX + matrixTransform11*coordsY - positionOfCamera1,
+            //         matrixTransform20*coordsX + matrixTransform21*coordsY - positionOfCamera2,
+            //         1
+            //     ];
+            //
+            //
+            //     let colorNow = [
+            //         255,
+            //         255,
+            //         255,
+            //     ];
+            //
+            //     let distance = 99999;
+            //
+            //     //цикл по полигонам
+            //     for (let k = 0; k < _polygonsLength; k++) {
+            //
+            //         const point1 = _polygons[k][0][0];
+            //         const point2 = _polygons[k][0][1];
+            //
+            //         //найти плоскость по точкам полигона
+            //
+            //         //найти точку пересечения ray и плоскости
+            //
+            //         //проверить точку на принадлежность полигону
+            //
+            //         //если принадлежит
+            //         if (true) {
+            //
+            //             //вычислить расстояние от точки до камеры
+            //             //если меньше чем distance то заменить на цвет полигона и новое расстояние
+            //         }
+            //     }
+            //
+            //
+            //     this.color(
+            //         (this.thread.x > 255) ? 1 : this.thread.x/255,
+            //         (this.thread.y > 255) ? 1 : this.thread.y/255,
+            //         0);
+            // }
 
 
-                this.color(
-                    (this.thread.x > 255) ? 1 : this.thread.x/255,
-                    (this.thread.y > 255) ? 1 : this.thread.y/255,
-                    0);
-            })
+            const matrixTransform = getMatrixToTransformPoint2D(
+                defaultParamsCamera,
+                this
+            ).cells;
+
+            const kernel = gpu.createKernel(fKernel)
                 .setConstants({
-                    len: 120
+                    matrixTransform00: matrixTransform[0][0],
+                    matrixTransform10: matrixTransform[1][0],
+                    matrixTransform20: matrixTransform[2][0],
+
+                    matrixTransform01: matrixTransform[0][1],
+                    matrixTransform11: matrixTransform[1][1],
+                    matrixTransform21: matrixTransform[2][1],
+
+                    positionOfCamera0: (this.vN.cells[0] - this.vOv.cells[0])*this.d,
+                    positionOfCamera1: (this.vN.cells[1] - this.vOv.cells[1])*this.d,
+                    positionOfCamera2: (this.vN.cells[2] - this.vOv.cells[2])*this.d,
+
+                    centerX: this.center.x,
+                    centerY: this.center.y,
+                    scalePx: this.scale.px,
+                    scalePy: this.scale.py,
                 })
                 .setGraphical(true)
                 .setOutput([this.canvas.width, this.canvas.height]);
 
-            kernel(this.polygons);
+            if (this.polygons.length) kernel(this.polygons, this.polygons.length);
 
             // const out = document.body;
             // out.appendChild(kernel.canvas);

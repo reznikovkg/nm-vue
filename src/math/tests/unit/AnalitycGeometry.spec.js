@@ -20,9 +20,9 @@ test('cosDegVectors [7,1] with [5,5] to equal 0.8', () => {
     //     })
     // ).toBe(1)
 
-    expect(
-        getWorldPoint(0,0)
-    ).toBeCloseTo(0.8);
+    // expect(
+    //     getWorldPoint(0,0)
+    // ).toBeCloseTo(0.8);
 
 
 });
