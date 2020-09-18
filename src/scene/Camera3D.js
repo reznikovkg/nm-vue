@@ -6,12 +6,12 @@ import * as AT3D from './AffineTransform3D';
 import typesOfScene from "./typesOfScene";
 import {GPU} from "gpu.js";
 import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
-import fKernel from "@/scene/fKernel";
+import {BuildVector, fKernel, LengthFPTP, VectorCombine} from "@/scene/fKernel";
 
 const defaultParamsCamera = {
     vOv: new Vector([0,0,0]),
     vT: new Vector([0,1,0]),
-    vN: new Vector([-1,1,1]),
+    vN: new Vector([0,0,-1]),
     d: 30
 }
 
@@ -22,7 +22,7 @@ export default class Camera3D extends Camera2D {
 
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
-        this.vN = new Vector([-1,1,1]);
+        this.vN = new Vector([0,0,-1]);
         this.d = 30;
 
         this.updateCamera();
@@ -161,7 +161,25 @@ export default class Camera3D extends Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
-        this.polygons = [1];
+        this.polygons = [
+            [
+                [
+                    [0,0,0],
+                    [0,10,-10],
+                    [10,10,-10],
+                ],
+                [
+                    [0,0,0],
+                    [10,10,-10],
+                    [10,0,0],
+                ],
+                [
+                    [-20,0,0],
+                    [10,10,-10],
+                    [10,0,0],
+                ],
+            ]
+        ];
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {
             if (models[i].type === type) models[i].render(this, lights);
@@ -170,81 +188,14 @@ export default class Camera3D extends Camera2D {
         setTimeout(() => {
             const gpu = new GPU();
 
-            // function fKernel(_polygons, _polygonsLength) {
-            //     const matrixTransform00 = this.constants.matrixTransform00;
-            //     const matrixTransform10 = this.constants.matrixTransform10;
-            //     const matrixTransform20 = this.constants.matrixTransform20;
-            //
-            //     const matrixTransform01 = this.constants.matrixTransform01;
-            //     const matrixTransform11 = this.constants.matrixTransform11;
-            //     const matrixTransform21 = this.constants.matrixTransform21;
-            //
-            //
-            //     const positionOfCamera0 = this.constants.positionOfCamera0;
-            //     const positionOfCamera1 = this.constants.positionOfCamera1;
-            //     const positionOfCamera2 = this.constants.positionOfCamera2;
-            //
-            //     const centerX = this.constants.centerX;
-            //     const centerY = this.constants.centerY;
-            //     const scalePx = this.constants.scalePx;
-            //     const scalePy = this.constants.scalePy;
-            //
-            //     const coordsX =  (this.thread.x - centerX + 0.5) / scalePx;
-            //     const coordsY =  -( this.thread.y - centerY + 0.5) / scalePy;
-            //     const coordsZ = 0;
-            //
-            //     /**
-            //      * вектор направления луча от камеры в пиксель экрана
-            //      * @type {number[]}
-            //      */
-            //     const ray = [
-            //         matrixTransform00*coordsX + matrixTransform01*coordsY - positionOfCamera0,
-            //         matrixTransform10*coordsX + matrixTransform11*coordsY - positionOfCamera1,
-            //         matrixTransform20*coordsX + matrixTransform21*coordsY - positionOfCamera2,
-            //         1
-            //     ];
-            //
-            //
-            //     let colorNow = [
-            //         255,
-            //         255,
-            //         255,
-            //     ];
-            //
-            //     let distance = 99999;
-            //
-            //     //цикл по полигонам
-            //     for (let k = 0; k < _polygonsLength; k++) {
-            //
-            //         const point1 = _polygons[k][0][0];
-            //         const point2 = _polygons[k][0][1];
-            //
-            //         //найти плоскость по точкам полигона
-            //
-            //         //найти точку пересечения ray и плоскости
-            //
-            //         //проверить точку на принадлежность полигону
-            //
-            //         //если принадлежит
-            //         if (true) {
-            //
-            //             //вычислить расстояние от точки до камеры
-            //             //если меньше чем distance то заменить на цвет полигона и новое расстояние
-            //         }
-            //     }
-            //
-            //
-            //     this.color(
-            //         (this.thread.x > 255) ? 1 : this.thread.x/255,
-            //         (this.thread.y > 255) ? 1 : this.thread.y/255,
-            //         0);
-            // }
-
-
             const matrixTransform = getMatrixToTransformPoint2D(
                 defaultParamsCamera,
                 this
             ).cells;
+
+            gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
+            gpu.addFunction(LengthFPTP);
+            gpu.addFunction(BuildVector);
 
             const kernel = gpu.createKernel(fKernel)
                 .setConstants({
@@ -268,7 +219,8 @@ export default class Camera3D extends Camera2D {
                 .setGraphical(true)
                 .setOutput([this.canvas.width, this.canvas.height]);
 
-            if (this.polygons.length) kernel(this.polygons, this.polygons.length);
+
+            if (this.polygons[0].length) kernel(this.polygons, this.polygons[0].length);
 
             // const out = document.body;
             // out.appendChild(kernel.canvas);
@@ -279,8 +231,6 @@ export default class Camera3D extends Camera2D {
     }
 
     reRender(models = []) {
-
-        console.log(this.vN)
         this.clear();
         this.axisPlot3D();
         this.render(models, typesOfScene.SCENE3D);

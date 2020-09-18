@@ -1,4 +1,5 @@
-import fKernel from "@/scene/fKernel";
+
+import {BuildVector, fKernel, LengthFPTP, VectorCombine} from "@/scene/fKernel";
 import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
 import Vector from "@/math/Vector";
 
@@ -66,6 +67,12 @@ test('fKernel with one polygon', () => {
     expect(
         fKernel.bind(kkk)([
             [
+                [
+                    [0,0,0],
+                    [0,10,-10],
+                    [10,10,-10],
+                    [10,0,0],
+                ],
                 [
                     [0,0,0],
                     [0,10,-10],
