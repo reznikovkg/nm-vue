@@ -4,14 +4,14 @@ import Matrix from './../math/Matrix';
 import Camera2D from './Camera2D';
 import * as AT3D from './AffineTransform3D';
 import typesOfScene from "./typesOfScene";
-import {GPU} from "gpu.js";
 import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
-import {BuildVector, fKernel, LengthFPTP, VectorCombine} from "@/scene/fKernel";
+import {fKernel, initGPU, VectorCombine,LengthFPTP} from "@/scene/fKernel";
+import {GPU} from "gpu.js";
 
 const defaultParamsCamera = {
     vOv: new Vector([0,0,0]),
     vT: new Vector([0,1,0]),
-    vN: new Vector([0,0,-1]),
+    vN: new Vector([0,0,1]),
     d: 30
 }
 
@@ -22,7 +22,7 @@ export default class Camera3D extends Camera2D {
 
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
-        this.vN = new Vector([0,0,-1]);
+        this.vN = new Vector([0,0,1]);
         this.d = 30;
 
         this.updateCamera();
@@ -164,19 +164,14 @@ export default class Camera3D extends Camera2D {
         this.polygons = [
             [
                 [
-                    [0,0,0],
-                    [0,10,-10],
-                    [10,10,-10],
+                    [-1,1,0],
+                    [3,3,0],
+                    [3,-2,0],
                 ],
                 [
-                    [0,0,0],
-                    [10,10,-10],
-                    [10,0,0],
-                ],
-                [
-                    [-20,0,0],
-                    [10,10,-10],
-                    [10,0,0],
+                    [-1,1,0],
+                    [1,0,1],
+                    [-1,-1,0],
                 ],
             ]
         ];
@@ -186,16 +181,17 @@ export default class Camera3D extends Camera2D {
         }
 
         setTimeout(() => {
-            const gpu = new GPU();
+            const gpu = initGPU();
+            // const gpu = new GPU();
+            //
+            // gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
+            // gpu.addFunction(LengthFPTP);
 
             const matrixTransform = getMatrixToTransformPoint2D(
                 defaultParamsCamera,
                 this
             ).cells;
 
-            gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
-            gpu.addFunction(LengthFPTP);
-            gpu.addFunction(BuildVector);
 
             const kernel = gpu.createKernel(fKernel)
                 .setConstants({
@@ -207,9 +203,9 @@ export default class Camera3D extends Camera2D {
                     matrixTransform11: matrixTransform[1][1],
                     matrixTransform21: matrixTransform[2][1],
 
-                    positionOfCamera0: (this.vN.cells[0] - this.vOv.cells[0])*this.d,
-                    positionOfCamera1: (this.vN.cells[1] - this.vOv.cells[1])*this.d,
-                    positionOfCamera2: (this.vN.cells[2] - this.vOv.cells[2])*this.d,
+                    positionOfCamera0: (this.vN.cells[0]*this.d - this.vOv.cells[0]),
+                    positionOfCamera1: (this.vN.cells[1]*this.d - this.vOv.cells[1]),
+                    positionOfCamera2: (this.vN.cells[2]*this.d - this.vOv.cells[2]),
 
                     centerX: this.center.x,
                     centerY: this.center.y,
@@ -221,12 +217,8 @@ export default class Camera3D extends Camera2D {
 
 
             if (this.polygons[0].length) kernel(this.polygons, this.polygons[0].length);
-
-            // const out = document.body;
-            // out.appendChild(kernel.canvas);
             this.ctx.drawImage(kernel.canvas, 0, 0);
 
-            console.log('DOne')
         }, 1);
     }
 

@@ -5,7 +5,7 @@ import Vector from "@/math/Vector";
 
 const vOv = new Vector([0,0,0]);
 const vT = new Vector([0,1,0]);
-const vN = new Vector([-1,1,1]);
+const vN = new Vector([0,0,1]);
 const d = 30;
 
 const center = {
@@ -23,21 +23,21 @@ const matrixTransform = getMatrixToTransformPoint2D(
     {
         vOv: new Vector([0,0,0]),
         vT: new Vector([0,1,0]),
-        vN: new Vector([-1,1,1]),
+        vN: new Vector([0,0,1]),
         d: 30
     },
     {
-        vOv: new Vector([0,0,0]),
-        vT: new Vector([0,1,0]),
-        vN: new Vector([-1,1,1]),
+        vOv,
+        vT,
+        vN,
         d: 30
     }
 ).cells;
 
 const kkk = {
     thread: {
-        x: 0,
-        y: 0,
+        x: 300,
+        y: 300,
     },
     color: function () {
         console.log(arguments)
@@ -53,9 +53,9 @@ kkk.constants = {
     matrixTransform11: matrixTransform[1][1],
     matrixTransform21: matrixTransform[2][1],
 
-    positionOfCamera0: (vN.cells[0] - vOv.cells[0])*d,
-    positionOfCamera1: (vN.cells[1] - vOv.cells[1])*d,
-    positionOfCamera2: (vN.cells[2] - vOv.cells[2])*d,
+    positionOfCamera0: (vN.cells[0]*d - vOv.cells[0]),
+    positionOfCamera1: (vN.cells[1]*d - vOv.cells[1]),
+    positionOfCamera2: (vN.cells[2]*d - vOv.cells[2]),
 
     centerX: center.x,
     centerY: center.y,
@@ -63,25 +63,24 @@ kkk.constants = {
     scalePy: scale.py,
 };
 
+
+const polygons = [
+    [
+        [
+            [-1,1,0],
+            [1,0,-4],
+            [-1,-1,0],
+        ],
+        [
+            [-1,1,0],
+            [3,3,0],
+            [3,-2,0],
+        ],
+    ]
+];
+
 test('fKernel with one polygon', () => {
     expect(
-        fKernel.bind(kkk)([
-            [
-                [
-                    [0,0,0],
-                    [0,10,-10],
-                    [10,10,-10],
-                    [10,0,0],
-                ],
-                [
-                    [0,0,0],
-                    [0,10,-10],
-                    [10,10,-10],
-                    [10,0,0],
-                ]
-            ]
-        ], 1)
+        fKernel.bind(kkk)(polygons, polygons[0].length)
     ).toBeCloseTo(0.8);
-
-
 });

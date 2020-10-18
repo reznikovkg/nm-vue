@@ -47,7 +47,10 @@
 				type: this.type
 			});
 			window.addEventListener(`resize`, event => {
-				this.setSizeCanvas();
+				this.setSizeCanvas({
+                    width: 320,
+                    height: 240,
+                });
 				this.reRender();
 			}, false);
 		},

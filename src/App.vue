@@ -22,6 +22,7 @@ export default {
         margin: 0;
         overflow-y: hidden;
         overflow-x: hidden;
+        background: #dedede;
      }
 
     #app {
