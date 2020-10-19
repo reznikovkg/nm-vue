@@ -117,7 +117,7 @@ function getProjectionToPlane(plane, point) {
 }
 
 
-export function fKernel(_polygons, _polygonsLength) {
+export function fKernel(_polygons) {
     const matrixTransform00 = this.constants.matrixTransform00;
     const matrixTransform10 = this.constants.matrixTransform10;
     const matrixTransform20 = this.constants.matrixTransform20;
@@ -139,6 +139,8 @@ export function fKernel(_polygons, _polygonsLength) {
     const coordsX = (this.thread.x - centerX + 0.5) / scalePx;
     const coordsY = -(this.thread.y - centerY + 0.5) / scalePy;
     const coordsZ = 0;
+
+    const countOfPolygons = this.constants.countOfPolygons;
 
 
 
@@ -186,7 +188,7 @@ export function fKernel(_polygons, _polygonsLength) {
 
 
     //цикл по полигонам
-    for (let k = 0; k < _polygonsLength; k++) {
+    for (let k = 0; k < countOfPolygons; k++) {
         const point0 = [
             _polygons[0][k][0][0],
             _polygons[0][k][0][1],
@@ -318,6 +320,7 @@ export function fKernel(_polygons, _polygonsLength) {
 
         const crossPoint = pT;
 
+        // console.log(pRay2, pRay1,crossPoint)
 
         const v11 = [
             _polygons[0][k][1][0]-_polygons[0][k][0][0],
@@ -367,19 +370,21 @@ export function fKernel(_polygons, _polygonsLength) {
             v32
         );
 
-
+        // console.log('point')
 
         const cos12 = ( n1[0]*n2[0]+n1[1]*n2[1]+n1[2]*n2[2]) / (
                 Math.sqrt(n1[0]*n1[0]+n1[1]*n1[1]+n1[2]*n1[2]) *
                 Math.sqrt(n2[0]*n2[0]+n2[1]*n2[1]+n2[2]*n2[2])
             );
 
+        // console.log(cos12)
         if (cos12 < 0 ) {
             continue;
         }
 
         const cos13 = (n1[0]*n3[0]+n1[1]*n3[1]+n1[2]*n3[2])/(Math.sqrt(n1[0]*n1[0]+n1[1]*n1[1]+n1[2]*n1[2])*Math.sqrt(n3[0]*n3[0]+n3[1]*n3[1]+n3[2]*n3[2]));
 
+        // console.log(cos13)
         if (cos13 < 0 ) {
             continue;
         }
@@ -424,6 +429,7 @@ export function fKernel(_polygons, _polygonsLength) {
         //если меньше чем distance то заменить на цвет полигона и новое расстояние
         // }
     }
+
 
     this.color(
         colorNowX,

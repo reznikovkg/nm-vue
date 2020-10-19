@@ -36,8 +36,8 @@ const matrixTransform = getMatrixToTransformPoint2D(
 
 const kkk = {
     thread: {
-        x: 300,
-        y: 300,
+        x: 400,
+        y: 0,
     },
     color: function () {
         console.log(arguments)
@@ -67,19 +67,21 @@ kkk.constants = {
 const polygons = [
     [
         [
-            [-1,1,0],
-            [1,0,-4],
-            [-1,-1,0],
+            [-5,5,0],
+            [5,0,0],
+            [-5,-5,0],
         ],
         [
-            [-1,1,0],
-            [3,3,0],
-            [3,-2,0],
+            [5,5,0],
+            [5,-5,0],
+            [-5,0,0],
         ],
     ]
 ];
 
 test('fKernel with one polygon', () => {
+
+    console.log(polygons, polygons[0].length)
     expect(
         fKernel.bind(kkk)(polygons, polygons[0].length)
     ).toBeCloseTo(0.8);

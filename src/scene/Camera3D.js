@@ -164,17 +164,18 @@ export default class Camera3D extends Camera2D {
         this.polygons = [
             [
                 [
-                    [-1,1,0],
-                    [3,3,0],
-                    [3,-2,0],
+                    [-5,5,0],
+                    [5,0,0],
+                    [-5,-5,0],
                 ],
                 [
-                    [-1,1,0],
-                    [1,0,1],
-                    [-1,-1,0],
+                    [5,5,0],
+                    [5,-5,0],
+                    [-5,0,0],
                 ],
             ]
         ];
+
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {
             if (models[i].type === type) models[i].render(this, lights);
@@ -211,12 +212,13 @@ export default class Camera3D extends Camera2D {
                     centerY: this.center.y,
                     scalePx: this.scale.px,
                     scalePy: this.scale.py,
+
+                    countOfPolygons: this.polygons[0].length
                 })
                 .setGraphical(true)
                 .setOutput([this.canvas.width, this.canvas.height]);
 
-
-            if (this.polygons[0].length) kernel(this.polygons, this.polygons[0].length);
+            if (this.polygons[0].length) kernel(this.polygons);
             this.ctx.drawImage(kernel.canvas, 0, 0);
 
         }, 1);
