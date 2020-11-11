@@ -12,7 +12,7 @@ const defaultParamsCamera = {
     vOv: new Vector([0,0,0]),
     vT: new Vector([0,1,0]),
     vN: new Vector([0,0,1]),
-    d: 30
+    d: 100
 }
 
 export default class Camera3D extends Camera2D {
@@ -23,7 +23,7 @@ export default class Camera3D extends Camera2D {
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
         this.vN = new Vector([0,0,1]);
-        this.d = 30;
+        this.d = 100;
 
         this.updateCamera();
 
@@ -160,21 +160,54 @@ export default class Camera3D extends Camera2D {
         this.updateCamera();
     }
 
+    addPolygon(polygon, options) {
+        if (polygon.length === 3) {
+            polygon[3] = options;
+            this.polygons[0].push(polygon)
+        } else if (polygon.length === 4) {
+            this.polygons[0].push([
+                polygon[0],
+                polygon[1],
+                polygon[3],
+                options
+            ])
+            this.polygons[0].push([
+                polygon[1],
+                polygon[2],
+                polygon[3],
+                options
+            ])
+        }
+    }
+
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
-        this.polygons = [
-            [
-                [
-                    [-5,5,0],
-                    [5,0,0],
-                    [-5,-5,0],
-                ],
-                [
-                    [5,5,0],
-                    [5,-5,0],
-                    [-5,0,0],
-                ],
-            ]
-        ];
+        this.polygons = [[]]
+
+        this.addPolygon([
+            [-3,5,2],
+            [3,5,2],
+            [0,-5,-3],
+        ], [1,0,0]);
+
+        this.addPolygon([
+            [-4,-5,2],
+            [-5,-1,2],
+            [4,3,-3],
+        ], [0,0,1]);
+
+        this.addPolygon([
+            [5,-1,2],
+            [4,-5,2],
+            [-5,5,-3],
+        ], [0,1,0]);
+
+        this.polygons[1] = [
+          [
+            [10, 0, 0],
+            [1, 1, 1],
+            [10]
+          ]
+        ]
 
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {

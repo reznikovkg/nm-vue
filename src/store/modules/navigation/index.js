@@ -168,27 +168,27 @@ const actions = {
 	keyPress ({ commit, state, dispatch, rootState }, e) {
 		commit('keyPress', e.keyCode);
 
-
 		if (rootState.scene.type === typesOfScene.SCENE3D) {
+			const deg = Math.PI / 36;
 			switch (e.keyCode) {
 				case 98: {
-					dispatch('models/applyToModel', AT3D.rotationXDeg(Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationXDeg(Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationXDeg(deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationXDeg(deg), {root: true});
 					break;
 				}
 				case 100: {
-					dispatch('models/applyToModel', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationYDeg(-deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationYDeg(-deg), {root: true});
 					break;
 				}
 				case 102: {
-					dispatch('models/applyToModel', AT3D.rotationYDeg(Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationYDeg(Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationYDeg(deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationYDeg(deg), {root: true});
 					break;
 				}
 				case 104: {
-					dispatch('models/applyToModel', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationXDeg(-deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationXDeg(-deg), {root: true});
 					break;
 				}
 				default: {

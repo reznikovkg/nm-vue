@@ -178,6 +178,11 @@ export function fKernel(_polygons) {
      * x(t) = x + j2 * t = pRay2[2] + pRayN[2] * t
      */
 
+    // let pointFound;
+    // let pointFoundX;
+    // let pointFoundY;
+    // let pointFoundZ;
+
     let colorNowX = 1;
     let colorNowY = 1;
     let colorNowZ = 1;
@@ -203,6 +208,11 @@ export function fKernel(_polygons) {
             _polygons[0][k][2][0],
             _polygons[0][k][2][1],
             _polygons[0][k][2][2],
+        ];
+        const color = [
+            _polygons[0][k][3][0],
+            _polygons[0][k][3][1],
+            _polygons[0][k][3][2],
         ];
 
 
@@ -320,6 +330,7 @@ export function fKernel(_polygons) {
 
         const crossPoint = pT;
 
+
         // console.log(pRay2, pRay1,crossPoint)
 
         const v11 = [
@@ -389,9 +400,25 @@ export function fKernel(_polygons) {
             continue;
         }
 
+        const d = Math.sqrt(
+            (pT[0]-pRay2[0])*(pT[0]-pRay2[0]) +
+            (pT[1]-pRay2[1])*(pT[1]-pRay2[1]) +
+            (pT[2]-pRay2[2])*(pT[2]-pRay2[2])
+        )
+        if (d < distance) {
+            distance = d;
+            colorNowX = color[0];
+            colorNowY = color[1];
+            colorNowZ = color[2];
+
+            // pointFoundX = crossPoint[0];
+            // pointFoundY = crossPoint[1];
+            // pointFoundZ = crossPoint[2];
+            // pointFound = crossPoint;
+        }
 
         // console.log(v11,  _polygons[0][k][1], _polygons[0][k][0])
-        colorNowX = 0;
+        // colorNowX = 0;
 
 
         //     Math.abs(crossPoint[0]) > 255 ? 255: Math.abs(crossPoint[0]);
@@ -431,11 +458,50 @@ export function fKernel(_polygons) {
     }
 
 
-    this.color(
-        colorNowX,
-        colorNowY,
-        colorNowZ
-    );
+
+    // const lightPos = [
+    //     _polygons[1][0][0][0],
+    //     _polygons[1][0][0][1],
+    //     _polygons[1][0][0][2],
+    // ];
+    //
+    // const lightColor = [
+    //     _polygons[1][0][1][0],
+    //     _polygons[1][0][1][1],
+    //     _polygons[1][0][1][2],
+    // ];
+
+    // const lightPower = _polygons[1][0][2][0];
+
+    // const _d = LengthFPTP(pointFound, lightPos)
+
+        this.color(
+          colorNowX,
+          colorNowY,
+          colorNowZ
+        );
+
+    // if (_d > lightPower) {
+    //     this.color(
+    //       0,
+    //       0,
+    //       0
+    //     )
+    // } else {
+    //
+    //     const koef = 2 * (lightPower - _d) / lightPower;
+    //
+    //     colorNowX*=koef;
+    //     colorNowY*=koef;
+    //     colorNowZ*=koef;
+    //
+    //     this.color(
+    //       colorNowX > 1 ? 1 : colorNowX,
+    //       colorNowY > 1 ? 1 : colorNowY,
+    //       colorNowZ > 1 ? 1 : colorNowZ
+    //     );
+    // }
+
 }
 
 

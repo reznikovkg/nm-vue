@@ -6,8 +6,8 @@ export default class Camera2D {
     constructor(canvas = null) {
         this.canvas = canvas;
         this.setSizeCanvas({
-            width: 320,
-            height: 240,
+            width: 1320,
+            height: 740,
         });
 
         this.polygons = [];
@@ -22,8 +22,8 @@ export default class Camera2D {
         };
 
         this.scale = {
-            px: 50,
-            py: 50
+            px: 10,
+            py: 10
         };
 
         this.drag = {
