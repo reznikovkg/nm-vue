@@ -181,7 +181,21 @@ export default class Camera3D extends Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
-        this.polygons = [[]]
+        this.polygons = [
+            [
+
+            ]
+        ]
+        this.op = [
+            [
+                [
+                    [10, 0, 0],
+                    [1, 1, 1],
+                    [15, 0, 0]
+                ]
+            ]
+        ]
+        console.log(this.polygons)
 
         this.addPolygon([
             [-3,5,2],
@@ -201,13 +215,13 @@ export default class Camera3D extends Camera2D {
             [-5,5,-3],
         ], [0,1,0]);
 
-        this.polygons[1] = [
-          [
-            [10, 0, 0],
-            [1, 1, 1],
-            [10]
-          ]
-        ]
+        // this.polygons[1] = [
+        //   [
+        //     [10, 0, 0],
+        //     [1, 1, 1],
+        //     [10]
+        //   ]
+        // ]
 
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {
@@ -251,7 +265,7 @@ export default class Camera3D extends Camera2D {
                 .setGraphical(true)
                 .setOutput([this.canvas.width, this.canvas.height]);
 
-            if (this.polygons[0].length) kernel(this.polygons);
+            if (this.polygons[0].length) kernel(this.polygons, this.op);
             this.ctx.drawImage(kernel.canvas, 0, 0);
 
         }, 1);

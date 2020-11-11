@@ -117,7 +117,7 @@ function getProjectionToPlane(plane, point) {
 }
 
 
-export function fKernel(_polygons) {
+export function fKernel(_polygons, _op) {
     const matrixTransform00 = this.constants.matrixTransform00;
     const matrixTransform10 = this.constants.matrixTransform10;
     const matrixTransform20 = this.constants.matrixTransform20;
@@ -178,10 +178,12 @@ export function fKernel(_polygons) {
      * x(t) = x + j2 * t = pRay2[2] + pRayN[2] * t
      */
 
-    // let pointFound;
-    // let pointFoundX;
-    // let pointFoundY;
-    // let pointFoundZ;
+    let pointFound = [
+      0,0,0
+    ];
+    let pointFoundX = 0;
+    let pointFoundY = 0;
+    let pointFoundZ = 0;
 
     let colorNowX = 1;
     let colorNowY = 1;
@@ -411,10 +413,14 @@ export function fKernel(_polygons) {
             colorNowY = color[1];
             colorNowZ = color[2];
 
-            // pointFoundX = crossPoint[0];
-            // pointFoundY = crossPoint[1];
-            // pointFoundZ = crossPoint[2];
-            // pointFound = crossPoint;
+            pointFoundX = crossPoint[0];
+            pointFoundY = crossPoint[1];
+            pointFoundZ = crossPoint[1];
+
+            pointFoundX = crossPoint[0];
+            pointFoundY = crossPoint[1];
+            pointFoundZ = crossPoint[2];
+            pointFound = crossPoint;
         }
 
         // console.log(v11,  _polygons[0][k][1], _polygons[0][k][0])
@@ -457,51 +463,49 @@ export function fKernel(_polygons) {
         // }
     }
 
+    const lightPos = [
+        _op[0][0][0][0],
+        _op[0][0][0][1],
+        _op[0][0][0][2],
+    ];
 
+    const lightColor = [
+        _op[0][0][1][0],
+        _op[0][0][1][1],
+        _op[0][0][1][2],
+    ];
 
-    // const lightPos = [
-    //     _polygons[1][0][0][0],
-    //     _polygons[1][0][0][1],
-    //     _polygons[1][0][0][2],
-    // ];
-    //
-    // const lightColor = [
-    //     _polygons[1][0][1][0],
-    //     _polygons[1][0][1][1],
-    //     _polygons[1][0][1][2],
-    // ];
+    const lightPower = _op[0][0][2][0];
 
-    // const lightPower = _polygons[1][0][2][0];
+    const _d = LengthFPTP(pointFound, lightPos)
 
-    // const _d = LengthFPTP(pointFound, lightPos)
+    if (_d > lightPower) {
+        this.color(
+          0,
+          0,
+          0
+        )
+    } else {
+
+        const koef = 2 * (lightPower - _d) / lightPower;
+
+        colorNowX*=koef;
+        colorNowY*=koef;
+        colorNowZ*=koef;
 
         this.color(
-          colorNowX,
-          colorNowY,
-          colorNowZ
+          colorNowX > 1 ? 1 : colorNowX,
+          colorNowY > 1 ? 1 : colorNowY,
+          colorNowZ > 1 ? 1 : colorNowZ
         );
+    }
 
-    // if (_d > lightPower) {
-    //     this.color(
-    //       0,
-    //       0,
-    //       0
-    //     )
-    // } else {
-    //
-    //     const koef = 2 * (lightPower - _d) / lightPower;
-    //
-    //     colorNowX*=koef;
-    //     colorNowY*=koef;
-    //     colorNowZ*=koef;
-    //
-    //     this.color(
-    //       colorNowX > 1 ? 1 : colorNowX,
-    //       colorNowY > 1 ? 1 : colorNowY,
-    //       colorNowZ > 1 ? 1 : colorNowZ
-    //     );
-    // }
 
+    // this.color(
+    //     colorNowX,
+    //     colorNowY,
+    //     colorNowZ
+    // );
 }
 
 
