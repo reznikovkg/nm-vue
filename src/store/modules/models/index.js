@@ -90,7 +90,7 @@ const mutations = {
 
 
 	removePointInModel(state, index) {
-		state.models[state.indexActiveModel].removePoint(index);
+		state.activeModel.removePoint(index);
 	},
 
 	setCountOfPoints(state, count) {

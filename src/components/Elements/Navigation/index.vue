@@ -46,6 +46,15 @@
                             </div>
                         </div>
                     </div>
+                    <hr>
+                    <div class="nav-tab">
+                        <h3>Wow:</h3>
+                        <hr>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}" icon="icon-done" @click="toggleRT">Toggle Ray Tracing</at-button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </transition>
@@ -77,7 +86,8 @@
         },
         computed: {
 			...mapGetters('scene', [
-				'getTypeScene'
+				'getTypeScene',
+                'getModeCameraRayTracing'
 			]),
 			...mapGetters('navigation', [
 				'getMainMenuShow',
@@ -102,9 +112,15 @@
 			...mapActions('models', [
 				'createModel',
 			]),
+            ...mapActions('scene', [
+                'cameraToggleRayTracing',
+            ]),
             createNewModel: function (model) {
                 this.createModel(model);
-			}
+			},
+            toggleRT: function () {
+			    this.cameraToggleRayTracing()
+            }
         }
 	}
 </script>

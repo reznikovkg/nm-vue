@@ -33,6 +33,10 @@ export default class Camera3D extends Camera2D {
             y: this.drag.y
 
         }
+
+        this.sizeOfPixel = 0.1;
+
+        this.rayTracing = false;
     }
 
 
@@ -80,6 +84,14 @@ export default class Camera3D extends Camera2D {
     }
 
     updateCamera() {
+        // const d1X = this.ScreenToWorldX(0);
+        // const d1Y = this.ScreenToWorldY(0);
+        //
+        // const d2X = this.ScreenToWorldX(2);
+        // const d2Y = this.ScreenToWorldY(0);
+        //
+        // this.sizeOfPixel = Math.sqrt((d2X-d1X) * (d2X-d1X) + (d2Y-d1Y) * (d2Y-d1Y));
+
         this.worldToView = null;
         this.viewToProject = null;
         this.worldToProject = null;
@@ -101,6 +113,7 @@ export default class Camera3D extends Camera2D {
         this.moveCamera.y = y;
         this.moveCamera.x = x;
     }
+
 
     moveCameraGo(e) {
         if (this.moveCamera.move) {
@@ -160,6 +173,17 @@ export default class Camera3D extends Camera2D {
         this.updateCamera();
     }
 
+    toggleRayTracing(_state = !this.rayTracing) {
+        this.rayTracing = _state;
+    }
+
+    /**
+     * Polygon [ point1, point2, ...]
+     * Options []
+     *
+     * @param polygon
+     * @param options
+     */
     addPolygon(polygon, options) {
         if (polygon.length === 3) {
             polygon[3] = options;
@@ -181,6 +205,16 @@ export default class Camera3D extends Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
+
+        const d1X = this.ScreenToWorldX(0);
+        const d1Y = this.ScreenToWorldY(0);
+
+        const d2X = this.ScreenToWorldX(2);
+        const d2Y = this.ScreenToWorldY(0);
+
+        this.sizeOfPixel = Math.sqrt((d2X-d1X) * (d2X-d1X) + (d2Y-d1Y) * (d2Y-d1Y));
+
+
         this.polygons = [
             [
 
@@ -189,13 +223,14 @@ export default class Camera3D extends Camera2D {
         this.op = [
             [
                 [
-                    [10, 0, 0],
-                    [1, 1, 1],
+                    [0, 0, 0],
+                    [1, 0, 0],
+                    [0.25, 0.25, 0.25],
                     [15, 0, 0]
                 ]
             ]
         ]
-        console.log(this.polygons)
+        /*console.log(this.polygons)
 
         this.addPolygon([
             [-3,5,2],
@@ -213,7 +248,7 @@ export default class Camera3D extends Camera2D {
             [5,-1,2],
             [4,-5,2],
             [-5,5,-3],
-        ], [0,1,0]);
+        ], [0,1,0]);*/
 
         // this.polygons[1] = [
         //   [
@@ -228,6 +263,8 @@ export default class Camera3D extends Camera2D {
             if (models[i].type === type) models[i].render(this, lights);
         }
 
+        console.log(this.polygons)
+        if (this.rayTracing)
         setTimeout(() => {
             const gpu = initGPU();
             // const gpu = new GPU();
@@ -260,7 +297,9 @@ export default class Camera3D extends Camera2D {
                     scalePx: this.scale.px,
                     scalePy: this.scale.py,
 
-                    countOfPolygons: this.polygons[0].length
+                    countOfPolygons: this.polygons[0].length,
+
+                    sizeOfPixel: this.sizeOfPixel
                 })
                 .setGraphical(true)
                 .setOutput([this.canvas.width, this.canvas.height]);

@@ -437,7 +437,13 @@ export default class KinematicModel extends BaseModel {
                         console.log(
                             r[0], r[1], 1000, r[0], r[1], 10
                         )
-                        let gradient = ctx.createRadialGradient(r[0], r[1], 1000, r[0], r[1], 10);
+                        let gradient = ctx.createRadialGradient(
+                          !r[0] || r[0] > 1000 ? 1000 : r[0],
+                          !r[1] || r[1] > 1000 ? 1000 : r[1],
+                          1000,
+                          !r[0] || r[0] > 1000 ? 1000 : r[0],
+                          !r[1] || r[1] > 1000 ? 1000 : r[1],
+                          10);
                         gradient.addColorStop(0, "red");
                         gradient.addColorStop(1, "white");
 
@@ -445,7 +451,7 @@ export default class KinematicModel extends BaseModel {
                         ctx.fill();
                         ctx.beginPath();
 
-                        camera.polygons.push(polygon);
+                        camera.addPolygon(polygon[0], [0,0,1]);
 
                     }
                 }

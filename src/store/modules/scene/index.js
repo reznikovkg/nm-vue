@@ -25,6 +25,9 @@ const getters = {
 	getTypeScene: (state) => {
 		return state.type;
 	},
+	getModeCameraRayTracing: (state) => {
+		return state.camera.rayTracing;
+	},
 };
 
 const mutations = {
@@ -80,7 +83,9 @@ const mutations = {
 	applyToCamera(state, at) {
 		state.camera.apply(at);
 	},
-
+	cameraToggleRayTracing(state, _state) {
+		state.camera.toggleRayTracing(_state);
+	},
 	reBuildCamera(state) {
 		state.build++;
 	}
@@ -126,6 +131,10 @@ const actions = {
 			commit('reBuildCamera');
 			dispatch('reRender');
 		}
+	},
+	cameraToggleRayTracing ({ commit, dispatch }, _state) {
+		commit('cameraToggleRayTracing', _state);
+		dispatch('reRender');
 	},
 };
 

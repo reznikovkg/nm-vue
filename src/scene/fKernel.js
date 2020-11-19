@@ -116,6 +116,17 @@ function getProjectionToPlane(plane, point) {
     return poi;
 }
 
+/**
+ * Получить длину высоты треугольника ABC из т. A  на BC
+ * @param a
+ * @param b
+ * @param c
+ * @returns {number}
+ */
+function heightToSegment(a, b, c) {
+    const pD2 = (a + b + c) / 2;
+    return 2 * Math.sqrt(pD2 * (pD2 - a) * (pD2 - b) * (pD2 - c)) / a;
+}
 
 export function fKernel(_polygons, _op) {
     const matrixTransform00 = this.constants.matrixTransform00;
@@ -141,6 +152,7 @@ export function fKernel(_polygons, _op) {
     const coordsZ = 0;
 
     const countOfPolygons = this.constants.countOfPolygons;
+    const sizeOfPixel = this.constants.sizeOfPixel;
 
 
 
@@ -191,7 +203,7 @@ export function fKernel(_polygons, _op) {
 
 
     let distance = 99999;
-
+    let isBorder = false;
 
 
     //цикл по полигонам
@@ -218,36 +230,6 @@ export function fKernel(_polygons, _op) {
         ];
 
 
-        // const tMatrix0 = [
-        //     - point0[0],
-        //     - point0[1],
-        //     - point0[2],
-        // ];
-
-        // const tMatrix1 = BuildVector(point0, point1);
-
-        // const tMatrix1 = [
-        //     _polygons[0][k][1][0] - _polygons[0][k][0][0],
-        //     _polygons[0][k][1][1] - _polygons[0][k][0][1],
-        //     _polygons[0][k][1][2] - _polygons[0][k][0][2]
-        // ];
-        // const tMatrix2 = BuildVector(point0, point2);
-
-        // const tMatrix2 = [
-        //     _polygons[0][k][2][0] - _polygons[0][k][0][0],
-        //     _polygons[0][k][2][1] - _polygons[0][k][0][1],
-        //     _polygons[0][k][2][2] - _polygons[0][k][0][2]
-        // ];
-
-        // const t1 = VectorCombine(tMatrix1, tMatrix2);
-
-        // Place
-        // const x = t1[0];
-        // const y = t1[1];
-        // const z = t1[2];
-        // const f = tMatrix0[0]*t1[0] + tMatrix0[1]*t1[1] + tMatrix0[2]*t1[2];
-
-
 
         // console.log([x, y, z, f])
         const plane = getPlaneByMatrixOfPoints(point0, point1, point2); // [x, y, z, f]
@@ -267,67 +249,6 @@ export function fKernel(_polygons, _op) {
             pRay2[1] + tByPlaneAndLine * pRayN[1],
             pRay2[2] + tByPlaneAndLine * pRayN[2],
         ]
-
-        // console.log(pT)
-
-        // const al = x*x + y*y + z*z;
-
-
-        // console.log(`${x}x+${y}y+${z}z+${f}=0`);
-
-
-        // const s1 = x*pRay1[0] + y*pRay1[1] + z*pRay1[2] + f;
-
-        // console.log(s1,al)
-        // let j1 = 9999;
-        // if (al !== 0) {
-        //     j1 = -s1/al;
-        // }
-        // const poi1 = [
-        //     pRay1[0] + x*j1,
-        //     pRay1[1] + y*j1,
-        //     pRay1[2] + z*j1,
-        // ];
-        // console.log(poi1)
-
-
-
-
-        // const s2 = x*pRay2[0] + y*pRay2[1] + z*pRay2[2] + f;
-
-        // let j2 = 9999;
-        // if (al !== 0) {
-        //     j2 = -s2/al;
-        // }
-        // const poi2 = [
-        //     pRay2[0] + x*j2,
-        //     pRay2[1] + y*j2,
-        //     pRay2[2] + z*j2,
-        // ];
-
-
-        // const d1 = LengthFPTP(poi1, pRay1);
-
-        // const d1 = Math.sqrt(
-        //     (poi1[0] - pRay1[0]) * (poi1[0] - pRay1[0]) +
-        //     (poi1[1] - pRay1[1]) * (poi1[1] - pRay1[1]) +
-        //     (poi1[2] - pRay1[2]) * (poi1[2] - pRay1[2])
-        // )
-
-        // const d2 = LengthFPTP(poi2, pRay2);
-        // const d2 = Math.sqrt(
-        //     (poi2[0] - pRay2[0]) * (poi2[0] - pRay2[0]) +
-        //     (poi2[1] - pRay2[1]) * (poi2[1] - pRay2[1]) +
-        //     (poi2[2] - pRay2[2]) * (poi2[2] - pRay2[2])
-        // )
-
-        // const ly = d1/d2;
-
-        // const crossPoint = [
-        //     (poi1[0]+ly*poi2[0])/(1+ly),
-        //     (poi1[1]+ly*poi2[1])/(1+ly),
-        //     (poi1[2]+ly*poi2[2])/(1+ly),
-        // ];
 
 
         const crossPoint = pT;
@@ -402,6 +323,10 @@ export function fKernel(_polygons, _op) {
             continue;
         }
 
+        /**
+         * Расстояние от камеры до точки пересечения
+         * @type {number}
+         */
         const d = Math.sqrt(
             (pT[0]-pRay2[0])*(pT[0]-pRay2[0]) +
             (pT[1]-pRay2[1])*(pT[1]-pRay2[1]) +
@@ -421,84 +346,115 @@ export function fKernel(_polygons, _op) {
             pointFoundY = crossPoint[1];
             pointFoundZ = crossPoint[2];
             pointFound = crossPoint;
+
+            isBorder = false;
+
+            /**
+             * Вычисление границ
+             * @type {number[]}
+             */
+            const dA = LengthFPTP(point0,point1);
+            const dCross0 = LengthFPTP(crossPoint, point0);
+            const dCross1 = LengthFPTP(crossPoint, point1);
+
+            const hA = heightToSegment(dA, dCross0, dCross1);
+
+            if (hA < sizeOfPixel) { isBorder = true; }
+            else {
+                const dB = LengthFPTP(point1, point2);
+                const dCross2 = LengthFPTP(crossPoint, point2);
+
+                const hB = heightToSegment(dB, dCross1, dCross2);
+
+                if (hB < sizeOfPixel) { isBorder = true; }
+                else {
+                    const dC = LengthFPTP(point2, point0);
+
+                    const hC = heightToSegment(dC, dCross0, dCross2);
+                    if (hC < sizeOfPixel) { isBorder = true; }
+                }
+            }
         }
 
-        // console.log(v11,  _polygons[0][k][1], _polygons[0][k][0])
-        // colorNowX = 0;
-
-
-        //     Math.abs(crossPoint[0]) > 255 ? 255: Math.abs(crossPoint[0]);
-        //
-        // colorNowY =
-        //     Math.abs(crossPoint[1]) > 255 ? 255: Math.abs(crossPoint[1]);
-        // colorNowZ =
-        //     Math.abs(crossPoint[2]) > 255 ? 255: Math.abs(crossPoint[2]);
-
-
-        //
-        // const n2 = VectorCombine(
-        //     BuildVector(_polygons[0][k][1], _polygons[0][k][2]),
-        //     BuildVector(_polygons[0][k][0], _polygons[0][k][1]),
-        //     // BuildVector(_polygons[0][k][1], crossPoint)
-        // );
-        //
-        // const n3 = VectorCombine(
-        //     BuildVector(_polygons[0][k][2], _polygons[0][k][0]),
-        //     BuildVector(_polygons[0][k][1], _polygons[0][k][2]),
-        //     // BuildVector(_polygons[0][k][2], crossPoint)
-        // );
-
-
-        //найти плоскость по точкам полигона
-
-        //найти точку пересечения ray и плоскости
-
-        //проверить точку на принадлежность полигону
-
-        //если принадлежит
-        // if (true) {
-
-        //вычислить расстояние от точки до камеры
-        //если меньше чем distance то заменить на цвет полигона и новое расстояние
-        // }
     }
 
-    const lightPos = [
-        _op[0][0][0][0],
-        _op[0][0][0][1],
-        _op[0][0][0][2],
-    ];
-
-    const lightColor = [
-        _op[0][0][1][0],
-        _op[0][0][1][1],
-        _op[0][0][1][2],
-    ];
-
-    const lightPower = _op[0][0][2][0];
-
-    const _d = LengthFPTP(pointFound, lightPos)
-
-    if (_d > lightPower) {
+    if (distance > 9999) {
         this.color(
-          0,
-          0,
-          0
+          1,
+          1,
+          1
         )
     } else {
+        if (isBorder) {
 
-        const koef = 2 * (lightPower - _d) / lightPower;
+            this.color(
+              0.1,
+              0.1,
+              0.1,
+            );
+        } else {
 
-        colorNowX*=koef;
-        colorNowY*=koef;
-        colorNowZ*=koef;
+            const lightPos = [
+                _op[0][0][0][0],
+                _op[0][0][0][1],
+                _op[0][0][0][2],
+            ];
 
-        this.color(
-          colorNowX > 1 ? 1 : colorNowX,
-          colorNowY > 1 ? 1 : colorNowY,
-          colorNowZ > 1 ? 1 : colorNowZ
-        );
+            /**
+             * Цвет точки света
+             * @type {*[]}
+             */
+            const lightColor = [
+                _op[0][0][1][0],
+                _op[0][0][1][1],
+                _op[0][0][1][2],
+            ];
+
+            /**
+             * Цвет точки тьмы
+             * @type {*[]}
+             */
+            const lightColor2 = [
+                _op[0][0][2][0],
+                _op[0][0][2][1],
+                _op[0][0][2][2],
+            ];
+
+            const lightPower = _op[0][0][3][0];
+
+            const _d = LengthFPTP(pointFound, lightPos)
+
+
+            if (_d > lightPower) {
+                this.color(
+                  lightColor2[0],
+                  lightColor2[1],
+                  lightColor2[2]
+                )
+            } else {
+                const koef = (lightPower / 2 - _d ) / (lightPower / 2);
+
+                colorNowX += koef * (
+                  (_d < (lightPower / 2) ? lightColor[0] - colorNowX : colorNowX - lightColor2[0])
+                );
+
+                colorNowY += koef * (
+                  (_d < (lightPower / 2) ? lightColor[1] - colorNowY : colorNowY - lightColor2[1])
+                );
+
+                colorNowZ += koef * (
+                  (_d < (lightPower / 2) ? lightColor[2] - colorNowZ : colorNowZ - lightColor2[0])
+                );
+
+                this.color(
+                  colorNowX > 1 ? 1 : colorNowX,
+                  colorNowY > 1 ? 1 : colorNowY,
+                  colorNowZ > 1 ? 1 : colorNowZ
+                );
+            }
+        }
     }
+
 
 
     // this.color(
@@ -514,9 +470,10 @@ export function initGPU() {
 
     gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
     gpu.addFunction(getTByPlateAndLine);
+    gpu.addFunction(heightToSegment);
     gpu.addFunction(LengthFPTP);
     gpu.addFunction(BuildVector);
-    gpu.addFunction(getPlaneByMatrixOfPoints)
+    gpu.addFunction(getPlaneByMatrixOfPoints);
 
     return gpu;
 }
