@@ -191,6 +191,33 @@ const actions = {
 					dispatch('scene/applyToCamera', AT3D.rotationXDeg(-deg), {root: true});
 					break;
 				}
+
+
+				case 37: {
+					dispatch('models/applyToModel', AT3D.translation(-1, 0,0), {root: true});
+					break;
+				}
+				case 38: {
+					dispatch('models/applyToModel', AT3D.translation(0, 1,0), {root: true});
+					break;
+				}
+				case 39: {
+					dispatch('models/applyToModel', AT3D.translation(1, 0,0), {root: true});
+					break;
+				}
+				case 40: {
+					dispatch('models/applyToModel', AT3D.translation(0, -1,0), {root: true});
+					break;
+				}
+				case 33: {
+					dispatch('models/applyToModel', AT3D.translation(0, 0,-1), {root: true});
+					break;
+				}
+				case 34: {
+					dispatch('models/applyToModel', AT3D.translation(0, 0,1), {root: true});
+					break;
+				}
+
 				default: {
 					break
 				}

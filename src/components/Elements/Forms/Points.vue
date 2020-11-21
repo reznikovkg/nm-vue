@@ -26,9 +26,9 @@
             </div>
         </div>
         <div class="rowFlex">
-            <input-custom v-model="p.x"/>
-            <input-custom v-model="p.y"/>
-            <input-custom v-model="p.z"/>
+            <InputCustom v-model="p.x"/>
+            <InputCustom v-model="p.y"/>
+            <InputCustom v-model="p.z"/>
 <!--            <at-button type="primary" size="small" @click="addPointFromInput">Add</at-button>-->
         </div>
     </div>

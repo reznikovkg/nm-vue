@@ -204,6 +204,19 @@ export default class Camera3D extends Camera2D {
         }
     }
 
+    /**
+     *
+     * @param light
+     */
+    addLigth(light) {
+        this.lights[0].push([
+            light.getPosition(),
+            light.cLight,
+            light.cDark,
+            [light.power, 0, 0]
+        ]);
+    }
+
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
 
         const d1X = this.ScreenToWorldX(0);
@@ -215,21 +228,8 @@ export default class Camera3D extends Camera2D {
         this.sizeOfPixel = Math.sqrt((d2X-d1X) * (d2X-d1X) + (d2Y-d1Y) * (d2Y-d1Y));
 
 
-        this.polygons = [
-            [
-
-            ]
-        ]
-        this.op = [
-            [
-                [
-                    [0, 0, 0],
-                    [1, 0, 0],
-                    [0.25, 0.25, 0.25],
-                    [15, 0, 0]
-                ]
-            ]
-        ]
+        this.polygons = [ [ ] ];
+        this.lights = [ [ ] ];
         /*console.log(this.polygons)
 
         this.addPolygon([
@@ -258,12 +258,14 @@ export default class Camera3D extends Camera2D {
         //   ]
         // ]
 
-        lights = models.find((item) => (item.code === "light" && item.show));
+        const lightsF = models.filter((item) => (item.code === "light" && item.show));
+        if (lightsF) lightsF.forEach((item) => { this.addLigth(item) })
+
         for (let i = 0; i < models.length; i++) {
-            if (models[i].type === type) models[i].render(this, lights);
+            if (models[i].type === type) models[i].render(this);
         }
 
-        console.log(this.polygons)
+        // console.log(this.polygons)
         if (this.rayTracing)
         setTimeout(() => {
             const gpu = initGPU();
@@ -304,15 +306,15 @@ export default class Camera3D extends Camera2D {
                 .setGraphical(true)
                 .setOutput([this.canvas.width, this.canvas.height]);
 
-            if (this.polygons[0].length) kernel(this.polygons, this.op);
+            if (this.polygons[0].length) kernel(this.polygons, this.lights);
             this.ctx.drawImage(kernel.canvas, 0, 0);
 
         }, 1);
     }
 
     reRender(models = []) {
-        this.clear();
-        this.axisPlot3D();
+        if (!this.rayTracing) this.clear();
+        if (!this.rayTracing) this.axisPlot3D();
         this.render(models, typesOfScene.SCENE3D);
     }
 

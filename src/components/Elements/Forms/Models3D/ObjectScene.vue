@@ -11,7 +11,6 @@
 </template>
 
 <script>
-    import InputCustom from './../Elements/InputCustom';
 	import { mapActions, mapGetters } from 'vuex';
 	import typesOfScene from "../../../../scene/typesOfScene";
 	import typesOfModels from "../../../../models/typesOfModels";
@@ -20,8 +19,7 @@
 	export default {
 		name: "ObjectScene",
         components: {
-			SelectModel,
-			InputCustom
+			SelectModel
         },
         props: {
 			model: {

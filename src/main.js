@@ -8,6 +8,8 @@ Vue.config.productionTip = false;
 
 Vue.use(AtComponents);
 
+import VueTouch from 'vue-touch';
+Vue.use(VueTouch, { name: 'v-touch' });
 
 
 import store from './store';

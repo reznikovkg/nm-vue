@@ -9,7 +9,7 @@
 <!--                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
 <!--                </at-select>-->
 <!--                <object-scene v-if="getActiveModel.guide" :model="getActiveModel.guide"/>-->
-                <select-model v-model="guide" :filterFunction="filterFunction"></select-model>
+                <SelectModel v-model="guide" :filterFunction="filterFunction"></SelectModel>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
                 <p>Form</p>
@@ -17,7 +17,7 @@
 <!--                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
 <!--                </at-select>-->
 <!--                <object-scene v-if="getActiveModel.form" :model="getActiveModel.form"/>-->
-                <select-model v-model="form" :filterFunction="filterFunction"></select-model>
+                <SelectModel v-model="form" :filterFunction="filterFunction"></SelectModel>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
 <!--                <p>AT</p>-->

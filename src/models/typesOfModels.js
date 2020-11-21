@@ -19,6 +19,8 @@ import LightForm from './../components/Elements/Forms/Models3D/Light';
 import ObjectScene from "./3d/ObjectScene";
 import ObjectSceneForm from './../components/Elements/Forms/Models3D/ObjectScene';
 
+import Sphere from "./3d/Sphere";
+import SphereForm from './../components/Elements/Forms/Models3D/Sphere';
 
 export const models2d = {
 	points: {
@@ -65,6 +67,12 @@ export const models3d = {
 		name: 'light',
 		class: Light,
 		form: LightForm
+	},
+	sphere: {
+		code: 'sphere',
+		name: 'sphere',
+		class: Sphere,
+		form: SphereForm
 	},
 };
 

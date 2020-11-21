@@ -5,6 +5,8 @@ import Points from "../../../models/Points";
 import base from "./includes/base";
 import objectScene from "./includes/objectScene";
 import kinematic from "./includes/kinematic";
+import light from "./includes/light";
+import sphere from "./includes/sphere";
 
 const state = {
 	models: [
@@ -19,6 +21,8 @@ const getters = {
 	...base.getters,
 	...objectScene.getters,
 	...kinematic.getters,
+	...light.getters,
+	...sphere.getters,
 
 	getLights:(state, getters, rootState) => {
 		return state.models;
@@ -53,6 +57,8 @@ const mutations = {
 	...base.mutations,
 	...objectScene.mutations,
 	...kinematic.mutations,
+	...light.mutations,
+	...sphere.mutations,
 
 	/**
 	 * STATUS: DONE
@@ -107,6 +113,8 @@ const actions = {
 	...base.actions,
 	...objectScene.actions,
 	...kinematic.actions,
+	...light.actions,
+	...sphere.actions,
 
 	/**
 	 * STATUS: DONE

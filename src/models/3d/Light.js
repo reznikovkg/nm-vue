@@ -7,6 +7,10 @@ export default class Light extends BaseModel {
         super();
 
         this.position = new Matrix([[3],[3],[3],[1]]);
+
+        this.cLight = [1,1,1];
+        this.cDark = [0.1,0.1,0.1];
+        this.power = 10;
     }
 
     apply(at) {
@@ -60,6 +64,25 @@ export default class Light extends BaseModel {
         );
 
         ctx.stroke();
+    }
+
+
+    setCDark(data) {
+        this.cDark = data;
+    }
+    setCLight(data) {
+        this.cLight = data;
+    }
+    setPower(data) {
+        this.power = data;
+    }
+
+    getPosition() {
+        return [
+            this.position.cells[0][0],
+            this.position.cells[1][0],
+            this.position.cells[2][0],
+        ]
     }
 
 }
