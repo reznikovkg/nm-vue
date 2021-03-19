@@ -434,9 +434,6 @@ export default class KinematicModel extends BaseModel {
 
                         let r = camera.getCoord(point[0], point[1], point[2]);
 
-                        console.log(
-                            r[0], r[1], 1000, r[0], r[1], 10
-                        )
                         let gradient = ctx.createRadialGradient(
                           !r[0] || r[0] > 1000 ? 1000 : r[0],
                           !r[1] || r[1] > 1000 ? 1000 : r[1],

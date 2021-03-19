@@ -1,7 +1,7 @@
 import typesOfScene from "./typesOfScene";
 import { GPU } from 'gpu.js';
 
-export default class Camera2D {
+class Camera2D {
 
     constructor(canvas = null) {
         this.canvas = canvas;
@@ -55,6 +55,9 @@ export default class Camera2D {
      */
     clear() {
         this.canvas.getContext("2d").clearRect(0,0,this.field.width,this.field.height);
+        this.ctx.fillStyle = "white";
+        this.ctx.rect(0,0,this.field.width,this.field.height);
+        this.ctx.fill();
     }
 
     /**
@@ -322,3 +325,6 @@ export default class Camera2D {
         return [this.WorldToScreenX(x), this.WorldToScreenY(y)];
     }
 }
+
+
+export default Camera2D;

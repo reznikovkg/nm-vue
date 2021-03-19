@@ -380,9 +380,9 @@ export function fKernel(_polygons, _op) {
 
     if (distance > 9999) {
         this.color(
-          1,
-          1,
-          1
+          0.5,
+          0.5,
+          0.5,
         )
     } else {
         if (isBorder) {
@@ -456,12 +456,6 @@ export function fKernel(_polygons, _op) {
     }
 
 
-
-    // this.color(
-    //     colorNowX,
-    //     colorNowY,
-    //     colorNowZ
-    // );
 }
 
 

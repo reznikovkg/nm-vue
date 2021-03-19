@@ -7,6 +7,7 @@ import typesOfScene from "./typesOfScene";
 import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
 import {fKernel, initGPU, VectorCombine,LengthFPTP} from "@/scene/fKernel";
 import {GPU} from "gpu.js";
+import lodash from 'lodash'
 
 const defaultParamsCamera = {
     vOv: new Vector([0,0,0]),
@@ -37,6 +38,12 @@ export default class Camera3D extends Camera2D {
         this.sizeOfPixel = 0.1;
 
         this.rayTracing = false;
+
+
+
+
+
+        this.reRender = lodash.throttle(this.reRender, 50)
     }
 
 
@@ -218,7 +225,6 @@ export default class Camera3D extends Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
-
         const d1X = this.ScreenToWorldX(0);
         const d1Y = this.ScreenToWorldY(0);
 
@@ -266,54 +272,58 @@ export default class Camera3D extends Camera2D {
         }
 
         // console.log(this.polygons)
-        if (this.rayTracing)
-        setTimeout(() => {
-            const gpu = initGPU();
-            // const gpu = new GPU();
-            //
-            // gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
-            // gpu.addFunction(LengthFPTP);
+        if (this.rayTracing) {
+            setTimeout(() => {
+                const gpu = initGPU();
+                // const gpu = new GPU();
+                //
+                // gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
+                // gpu.addFunction(LengthFPTP);
 
-            const matrixTransform = getMatrixToTransformPoint2D(
-                defaultParamsCamera,
-                this
-            ).cells;
+                const matrixTransform = getMatrixToTransformPoint2D(
+                  defaultParamsCamera,
+                  this
+                ).cells;
 
 
-            const kernel = gpu.createKernel(fKernel)
-                .setConstants({
-                    matrixTransform00: matrixTransform[0][0],
-                    matrixTransform10: matrixTransform[1][0],
-                    matrixTransform20: matrixTransform[2][0],
+                const kernel = gpu.createKernel(fKernel)
+                  .setConstants({
+                      matrixTransform00: matrixTransform[0][0],
+                      matrixTransform10: matrixTransform[1][0],
+                      matrixTransform20: matrixTransform[2][0],
 
-                    matrixTransform01: matrixTransform[0][1],
-                    matrixTransform11: matrixTransform[1][1],
-                    matrixTransform21: matrixTransform[2][1],
+                      matrixTransform01: matrixTransform[0][1],
+                      matrixTransform11: matrixTransform[1][1],
+                      matrixTransform21: matrixTransform[2][1],
 
-                    positionOfCamera0: (this.vN.cells[0]*this.d - this.vOv.cells[0]),
-                    positionOfCamera1: (this.vN.cells[1]*this.d - this.vOv.cells[1]),
-                    positionOfCamera2: (this.vN.cells[2]*this.d - this.vOv.cells[2]),
+                      positionOfCamera0: (this.vN.cells[0]*this.d - this.vOv.cells[0]),
+                      positionOfCamera1: (this.vN.cells[1]*this.d - this.vOv.cells[1]),
+                      positionOfCamera2: (this.vN.cells[2]*this.d - this.vOv.cells[2]),
 
-                    centerX: this.center.x,
-                    centerY: this.center.y,
-                    scalePx: this.scale.px,
-                    scalePy: this.scale.py,
+                      centerX: this.center.x,
+                      centerY: this.center.y,
+                      scalePx: this.scale.px,
+                      scalePy: this.scale.py,
 
-                    countOfPolygons: this.polygons[0].length,
+                      countOfPolygons: this.polygons[0].length,
 
-                    sizeOfPixel: this.sizeOfPixel
-                })
-                .setGraphical(true)
-                .setOutput([this.canvas.width, this.canvas.height]);
+                      sizeOfPixel: this.sizeOfPixel
+                  })
+                  .setGraphical(true)
+                  .setOutput([this.canvas.width, this.canvas.height]);
 
-            if (this.polygons[0].length) kernel(this.polygons, this.lights);
-            this.ctx.drawImage(kernel.canvas, 0, 0);
+                console.log(this.polygons)
+                if (this.polygons[0].length) kernel(this.polygons, this.lights);
+                this.ctx.drawImage(kernel.canvas, 0, 0);
 
-        }, 1);
+            }, 1);
+        } else {
+
+        }
     }
 
     reRender(models = []) {
-        if (!this.rayTracing) this.clear();
+        this.clear();
         if (!this.rayTracing) this.axisPlot3D();
         this.render(models, typesOfScene.SCENE3D);
     }
