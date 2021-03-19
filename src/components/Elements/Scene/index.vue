@@ -50,7 +50,11 @@
 				this.reRender();
 			}, false);
 		},
-		methods: {
+        beforeDestroy() {
+            clearInterval(this.interval)
+		    this.interval = null
+        },
+        methods: {
 			...mapActions('scene', [
 				'initScene',
 				'setSizeCanvas',

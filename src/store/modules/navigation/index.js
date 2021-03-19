@@ -118,17 +118,20 @@ const actions = {
 
 
 
-
-
-
 	mouseDown ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDown');
-		if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
-			dispatch('scene/cameraDragToStart', e, { root: true });
-		}
+		if (rootState.scene.type === typesOfScene.SCENE2D) {
+			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+				dispatch('scene/cameraDragToStart', e, { root: true });
+			}
 
-		if (state.navigation[typesOfScene.SCENE2D].addPoint.status) {
-			dispatch('models/addPointToActiveModel', e, { root: true });
+			if (state.navigation[typesOfScene.SCENE2D].addPoint.status) {
+				dispatch('models/addPointToActiveModel', e, { root: true });
+			}
+		} else if (rootState.scene.type === typesOfScene.SCENE3D) {
+			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+				dispatch('scene/cameraMoveCameraStart', e, { root: true });
+			}
 		}
 
 		// if (state.navigation.addComboPoints.status) {
@@ -137,18 +140,29 @@ const actions = {
 	},
 	mouseDrag ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDrag');
-		if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
-			dispatch('scene/cameraDragTo', e, { root: true });
+		if (rootState.scene.type === typesOfScene.SCENE2D) {
+			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+				dispatch('scene/cameraDragTo', e, {root: true});
+			}
+		} else if (rootState.scene.type === typesOfScene.SCENE3D) {
+			if (state.navigation[typesOfScene.SCENE3D].moveCenter.status) {
+				dispatch('scene/cameraMoveCameraGo', e, {root: true});
+			}
 		}
-
 		// if (state.navigation.addComboPoints.status) {
 		// 	commit('activeModelAddComboPointsDrag', e);
 		// }
 	},
 	mouseUp ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseUp');
-		if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
-			dispatch('scene/cameraDragToStop', e, { root: true });
+		if (rootState.scene.type === typesOfScene.SCENE2D) {
+			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+				dispatch('scene/cameraDragToStop', e, {root: true});
+			}
+		} else if (rootState.scene.type === typesOfScene.SCENE3D) {
+			if (state.navigation[typesOfScene.SCENE3D].moveCenter.status) {
+				dispatch('scene/cameraMoveCameraStop', e, {root: true});
+			}
 		}
 
 		// if (state.navigation.addComboPoints.status) {

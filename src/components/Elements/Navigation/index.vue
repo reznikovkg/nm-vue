@@ -54,6 +54,10 @@
                             <at-button
                                 :class="{ 'at-btn--primary': getModeCameraRayTracing}" icon="icon-done" @click="toggleRT">Toggle Ray Tracing</at-button>
                         </div>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraAnimate}" icon="icon-done" @click="toggleAM">Toggle Animate Mode</at-button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,7 +91,8 @@
         computed: {
 			...mapGetters('scene', [
 				'getTypeScene',
-                'getModeCameraRayTracing'
+                'getModeCameraRayTracing',
+                'getModeCameraAnimate'
 			]),
 			...mapGetters('navigation', [
 				'getMainMenuShow',
@@ -114,12 +119,16 @@
 			]),
             ...mapActions('scene', [
                 'cameraToggleRayTracing',
+                'cameraToggleAnimateMode'
             ]),
             createNewModel: function (model) {
                 this.createModel(model);
 			},
             toggleRT: function () {
 			    this.cameraToggleRayTracing()
+            },
+            toggleAM: function () {
+                this.cameraToggleAnimateMode()
             }
         }
 	}

@@ -9,7 +9,9 @@ import {fKernel, initGPU, VectorCombine,LengthFPTP} from "@/scene/fKernel";
 import {GPU} from "gpu.js";
 import lodash from 'lodash'
 
-const defaultParamsCamera = {
+import RayTracing from './render/RayTracing';
+
+export const defaultParamsCamera = {
     vOv: new Vector([0,0,0]),
     vT: new Vector([0,1,0]),
     vN: new Vector([0,0,1]),
@@ -39,12 +41,20 @@ export default class Camera3D extends Camera2D {
 
         this.rayTracing = false;
 
-
+        this.animateMode = false;
+        this.animateModeInterval = null;
 
 
 
         this.reRender = lodash.throttle(this.reRender, 50)
     }
+
+    destroy() {
+        clearInterval(this.animateModeInterval)
+        this.animateModeInterval = null;
+        this.isRender = false;
+    }
+
 
 
 
@@ -104,7 +114,10 @@ export default class Camera3D extends Camera2D {
         this.worldToProject = null;
 
         this.vK = this.vN.divWith(this.vN.norma(), true);
-        this.vI = (this.vT.scalarWith(this.vN,true)).divWith((this.vT.scalarWith(this.vN,true)).norma(), true);
+        this.vI = (this.vT.scalarWith(this.vN,true)).divWith(
+          (this.vT.scalarWith(this.vN,true)).norma(),
+          true
+        );
         this.vJ = this.vK.scalarWith(this.vI,true);
 
         this.worldToViewF();
@@ -127,11 +140,12 @@ export default class Camera3D extends Camera2D {
 
             let n = this.vN.cells;
             let t = this.vT.cells;
+            let ov = this.vOv.cells;
             let mat = new Matrix([
-                [ n[0], t[0] ],
-                [ n[1], t[1] ],
-                [ n[2], t[2] ],
-                [ 1, 1 ]
+                [ n[0], t[0], ov[0] ],
+                [ n[1], t[1], ov[1] ],
+                [ n[2], t[2], ov[2] ],
+                [ 1, 1, 1 ]
             ]);
 
             let x = e.clientX;
@@ -184,6 +198,18 @@ export default class Camera3D extends Camera2D {
         this.rayTracing = _state;
     }
 
+    toggleAnimateMode(_state = !this.animateMode, models = []) {
+        this.animateMode = _state;
+        if (this.animateMode) {
+            this.animateModeInterval = setInterval(() => {
+                this.reRender(models)
+            }, 50)
+        } else {
+            clearInterval(this.animateModeInterval)
+            this.animateModeInterval = null;
+        }
+    }
+
     /**
      * Polygon [ point1, point2, ...]
      * Options []
@@ -225,6 +251,7 @@ export default class Camera3D extends Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE2D, lights = null) {
+        console.log("HERE RERENDER")
         const d1X = this.ScreenToWorldX(0);
         const d1Y = this.ScreenToWorldY(0);
 
@@ -236,33 +263,6 @@ export default class Camera3D extends Camera2D {
 
         this.polygons = [ [ ] ];
         this.lights = [ [ ] ];
-        /*console.log(this.polygons)
-
-        this.addPolygon([
-            [-3,5,2],
-            [3,5,2],
-            [0,-5,-3],
-        ], [1,0,0]);
-
-        this.addPolygon([
-            [-4,-5,2],
-            [-5,-1,2],
-            [4,3,-3],
-        ], [0,0,1]);
-
-        this.addPolygon([
-            [5,-1,2],
-            [4,-5,2],
-            [-5,5,-3],
-        ], [0,1,0]);*/
-
-        // this.polygons[1] = [
-        //   [
-        //     [10, 0, 0],
-        //     [1, 1, 1],
-        //     [10]
-        //   ]
-        // ]
 
         const lightsF = models.filter((item) => (item.code === "light" && item.show));
         if (lightsF) lightsF.forEach((item) => { this.addLigth(item) })
@@ -272,58 +272,21 @@ export default class Camera3D extends Camera2D {
         }
 
         // console.log(this.polygons)
-        if (this.rayTracing) {
-            setTimeout(() => {
-                const gpu = initGPU();
-                // const gpu = new GPU();
-                //
-                // gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
-                // gpu.addFunction(LengthFPTP);
+        try {
+            if (this.rayTracing) {
+                RayTracing.call(this)
+            } else {
 
-                const matrixTransform = getMatrixToTransformPoint2D(
-                  defaultParamsCamera,
-                  this
-                ).cells;
-
-
-                const kernel = gpu.createKernel(fKernel)
-                  .setConstants({
-                      matrixTransform00: matrixTransform[0][0],
-                      matrixTransform10: matrixTransform[1][0],
-                      matrixTransform20: matrixTransform[2][0],
-
-                      matrixTransform01: matrixTransform[0][1],
-                      matrixTransform11: matrixTransform[1][1],
-                      matrixTransform21: matrixTransform[2][1],
-
-                      positionOfCamera0: (this.vN.cells[0]*this.d - this.vOv.cells[0]),
-                      positionOfCamera1: (this.vN.cells[1]*this.d - this.vOv.cells[1]),
-                      positionOfCamera2: (this.vN.cells[2]*this.d - this.vOv.cells[2]),
-
-                      centerX: this.center.x,
-                      centerY: this.center.y,
-                      scalePx: this.scale.px,
-                      scalePy: this.scale.py,
-
-                      countOfPolygons: this.polygons[0].length,
-
-                      sizeOfPixel: this.sizeOfPixel
-                  })
-                  .setGraphical(true)
-                  .setOutput([this.canvas.width, this.canvas.height]);
-
-                console.log(this.polygons)
-                if (this.polygons[0].length) kernel(this.polygons, this.lights);
-                this.ctx.drawImage(kernel.canvas, 0, 0);
-
-            }, 1);
-        } else {
-
+            }
+        } catch (e) {
+            this.destroy()
         }
     }
 
     reRender(models = []) {
-        this.clear();
+        if (this.isRender) return;
+
+        if (!this.rayTracing) this.clear();
         if (!this.rayTracing) this.axisPlot3D();
         this.render(models, typesOfScene.SCENE3D);
     }

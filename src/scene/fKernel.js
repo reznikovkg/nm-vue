@@ -149,7 +149,7 @@ export function fKernel(_polygons, _op) {
 
     const coordsX = (this.thread.x - centerX + 0.5) / scalePx;
     const coordsY = -(this.thread.y - centerY + 0.5) / scalePy;
-    const coordsZ = 0;
+    const coordsZ = 0; //TODO //IT IS A BIG PROBLEM
 
     const countOfPolygons = this.constants.countOfPolygons;
     const sizeOfPixel = this.constants.sizeOfPixel;
