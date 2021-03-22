@@ -6,7 +6,7 @@ import {defaultParamsCamera} from './../Camera3D'
 function rayTracing() {
   this.isRender = true;
 
-  setTimeout(() => {
+  // setTimeout(() => {
 
     const gpu = initGPU();
 
@@ -24,6 +24,10 @@ function rayTracing() {
         matrixTransform01: matrixTransform[0][1],
         matrixTransform11: matrixTransform[1][1],
         matrixTransform21: matrixTransform[2][1],
+
+        matrixTransform02: matrixTransform[0][2],
+        matrixTransform12: matrixTransform[1][2],
+        matrixTransform22: matrixTransform[2][2],
 
         positionOfCamera0: (this.vN.cells[0]*this.d - this.vOv.cells[0]),
         positionOfCamera1: (this.vN.cells[1]*this.d - this.vOv.cells[1]),
@@ -45,7 +49,7 @@ function rayTracing() {
     this.ctx.drawImage(kernel.canvas, 0, 0);
     this.isRender = false;
 
-  }, 0);
+  // }, 0);
 }
 
 export default rayTracing;

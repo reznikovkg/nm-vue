@@ -15,6 +15,8 @@
 <script>
     import { mapGetters, mapActions } from 'vuex';
 	import Navigation from "./../Navigation";
+    import typesOfModels from "../../../models/typesOfModels";
+    import * as AT3D from "@/scene/AffineTransform3D";
 
 	export default {
 		name: "Scene",
@@ -36,6 +38,7 @@
 		created: function() {
 			document.addEventListener('keydown', this.keyPress, false);
 			document.addEventListener('keypress', this.keyPress, false);
+
 		},
 		destroyed: function() {
 			document.removeEventListener('keydown', this.keyPress, false);
@@ -49,6 +52,8 @@
 			window.addEventListener(`resize`, event => {
 				this.reRender();
 			}, false);
+
+			this.crModels()
 		},
         beforeDestroy() {
             clearInterval(this.interval)
@@ -59,7 +64,13 @@
 				'initScene',
 				'setSizeCanvas',
 				'reRender',
+                'cameraToggleRayTracing',
 			]),
+            ...mapActions('models', [
+                'createModel',
+                'toggleShowModel',
+                'applyToModel'
+            ]),
 			...mapActions('navigation', [
 				'mouseDown',
 				'mouseDrag',
@@ -80,7 +91,16 @@
 			canvasMouseWheel: function (e) {
 				this.mouseWheel(e);
 			},
-
+            crModels: async function() {
+                let li =  await this.createModel(typesOfModels["3d"].light)
+                let sp = await this.createModel(typesOfModels["3d"].sphere)
+                let sp2 = await this.createModel(typesOfModels["3d"].sphere)
+                await this.applyToModel(AT3D.translation(10, 10,10));
+                this.toggleShowModel(li)
+                this.toggleShowModel(sp)
+                this.toggleShowModel(sp2)
+                this.cameraToggleRayTracing()
+            }
 		}
 	}
 </script>

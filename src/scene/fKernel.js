@@ -1,5 +1,14 @@
 import { GPU } from "gpu.js";
 
+function cosDegVectors3(a, b) {
+    const ab = a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+
+    const sqrtA = Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
+    const sqrtB = Math.sqrt(b[0]*b[0]+b[1]*b[1]+b[2]*b[2]);
+
+    return ab / (sqrtA*sqrtB);
+}
+
 /**
  * Растояние между двумя точками
  *
@@ -137,6 +146,9 @@ export function fKernel(_polygons, _op) {
     const matrixTransform11 = this.constants.matrixTransform11;
     const matrixTransform21 = this.constants.matrixTransform21;
 
+    const matrixTransform02 = this.constants.matrixTransform02;
+    const matrixTransform12 = this.constants.matrixTransform12;
+    const matrixTransform22 = this.constants.matrixTransform22;
 
     const positionOfCamera0 = this.constants.positionOfCamera0;
     const positionOfCamera1 = this.constants.positionOfCamera1;
@@ -167,9 +179,9 @@ export function fKernel(_polygons, _op) {
      * @type {number[]}
      */
     const pRay1 = [
-        matrixTransform00 * coordsX + matrixTransform01 * coordsY,
-        matrixTransform10 * coordsX + matrixTransform11 * coordsY,
-        matrixTransform20 * coordsX + matrixTransform21 * coordsY,
+        matrixTransform00 * coordsX + matrixTransform01 * coordsY + matrixTransform02 * coordsZ,
+        matrixTransform10 * coordsX + matrixTransform11 * coordsY + matrixTransform12 * coordsZ,
+        matrixTransform20 * coordsX + matrixTransform21 * coordsY + matrixTransform22 * coordsZ,
         1
     ];
     const pRay2 = [
@@ -306,17 +318,20 @@ export function fKernel(_polygons, _op) {
 
         // console.log('point')
 
-        const cos12 = ( n1[0]*n2[0]+n1[1]*n2[1]+n1[2]*n2[2]) / (
-                Math.sqrt(n1[0]*n1[0]+n1[1]*n1[1]+n1[2]*n1[2]) *
-                Math.sqrt(n2[0]*n2[0]+n2[1]*n2[1]+n2[2]*n2[2])
-            );
+        const cos12 = cosDegVectors3(n1, n2);
+
+        // const cos12 = ( n1[0]*n2[0]+n1[1]*n2[1]+n1[2]*n2[2]) / (
+        //         Math.sqrt(n1[0]*n1[0]+n1[1]*n1[1]+n1[2]*n1[2]) *
+        //         Math.sqrt(n2[0]*n2[0]+n2[1]*n2[1]+n2[2]*n2[2])
+        //     );
 
         // console.log(cos12)
         if (cos12 < 0 ) {
             continue;
         }
 
-        const cos13 = (n1[0]*n3[0]+n1[1]*n3[1]+n1[2]*n3[2])/(Math.sqrt(n1[0]*n1[0]+n1[1]*n1[1]+n1[2]*n1[2])*Math.sqrt(n3[0]*n3[0]+n3[1]*n3[1]+n3[2]*n3[2]));
+        const cos13 = cosDegVectors3(n1, n3);
+        // const cos13 = (n1[0]*n3[0]+n1[1]*n3[1]+n1[2]*n3[2])/(Math.sqrt(n1[0]*n1[0]+n1[1]*n1[1]+n1[2]*n1[2])*Math.sqrt(n3[0]*n3[0]+n3[1]*n3[1]+n3[2]*n3[2]));
 
         // console.log(cos13)
         if (cos13 < 0 ) {
@@ -462,6 +477,7 @@ export function fKernel(_polygons, _op) {
 export function initGPU() {
     const gpu = new GPU();
 
+    gpu.addFunction(cosDegVectors3);
     gpu.addFunction(VectorCombine, { argumentTypes: { a: 'Array(3)', b: 'Array(3)'}, returnType: 'Array(3)' });
     gpu.addFunction(getTByPlateAndLine);
     gpu.addFunction(heightToSegment);

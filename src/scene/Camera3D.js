@@ -37,7 +37,7 @@ export default class Camera3D extends Camera2D {
 
         }
 
-        this.sizeOfPixel = 0.1;
+        // this.sizeOfPixel = 100.01;
 
         this.rayTracing = false;
 
@@ -255,7 +255,7 @@ export default class Camera3D extends Camera2D {
         const d1X = this.ScreenToWorldX(0);
         const d1Y = this.ScreenToWorldY(0);
 
-        const d2X = this.ScreenToWorldX(2);
+        const d2X = this.ScreenToWorldX(0.5);
         const d2Y = this.ScreenToWorldY(0);
 
         this.sizeOfPixel = Math.sqrt((d2X-d1X) * (d2X-d1X) + (d2Y-d1Y) * (d2Y-d1Y));
@@ -279,6 +279,7 @@ export default class Camera3D extends Camera2D {
 
             }
         } catch (e) {
+            console.log(e)
             this.destroy()
         }
     }

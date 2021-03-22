@@ -1,6 +1,6 @@
 import Vector from "@/math/Vector";
 import Matrix from "@/math/Matrix";
-import { rotationXDeg, rotationYDeg, rotationZDeg } from '@/scene/AffineTransform3D';
+import { rotationXDeg, rotationYDeg, rotationZDeg, translation } from '@/scene/AffineTransform3D';
 import Camera3D from "@/scene/Camera3D";
 
 export function normalToPlane(ar, point) {
@@ -137,51 +137,222 @@ export function cosDegVectors(a, b) {
 	return ab / (sqrtA*sqrtB);
 }
 
+/**
+ *
+ * @param a = [ x, y, z ]
+ * @param b = [ x, y, z ]
+ */
+export function cosDegVectors3(a, b) {
+	const ab = a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+
+	const sqrtA = Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
+	const sqrtB = Math.sqrt(b[0]*b[0]+b[1]*b[1]+b[2]*b[2]);
+
+	return ab / (sqrtA*sqrtB);
+}
 
 export function getMatrixToTransformPoint2D(oldParams, newParams) {
+	let matrix = new Matrix();
+	matrix.IdentityCells(4);
+
+	const oldI = (oldParams.vT.scalarWith(oldParams.vN,true)).divWith(
+		(oldParams.vT.scalarWith(oldParams.vN,true)).norma(),
+		true
+	).cells;
+
+	const newI = (newParams.vT.scalarWith(newParams.vN,true)).divWith(
+		(newParams.vT.scalarWith(newParams.vN,true)).norma(),
+		true
+	).cells;
+
+
+
+	const oldV = [
+		oldParams.vOv.cells[0],
+		oldParams.vOv.cells[1],
+		oldParams.vOv.cells[2],
+	]
+	const newV = [
+		newParams.vOv.cells[0],
+		newParams.vOv.cells[1],
+		newParams.vOv.cells[2],
+	]
+
+	// const oldT = [
+	// 	oldParams.vT.cells[0] - oldParams.vOv.cells[0],
+	// 	oldParams.vT.cells[1] - oldParams.vOv.cells[1],
+	// 	oldParams.vT.cells[2] - oldParams.vOv.cells[2],
+	// ];
+	//
+	// const newT = [
+	// 	newParams.vT.cells[0] - newParams.vOv.cells[0],
+	// 	newParams.vT.cells[1] - newParams.vOv.cells[1],
+	// 	newParams.vT.cells[2] - newParams.vOv.cells[2],
+	// ];
+	const oldN = [
+		oldParams.vN.cells[0],
+		oldParams.vN.cells[1],
+		oldParams.vN.cells[2],
+	];
+
+	const newN = [
+		newParams.vN.cells[0],
+		newParams.vN.cells[1],
+		newParams.vN.cells[2],
+	];
+
 	const oldT = [
-		oldParams.vT.cells[0] - oldParams.vOv.cells[0],
-		oldParams.vT.cells[1] - oldParams.vOv.cells[1],
-		oldParams.vT.cells[2] - oldParams.vOv.cells[2],
+		oldParams.vT.cells[0],
+		oldParams.vT.cells[1],
+		oldParams.vT.cells[2],
 	];
 
 	const newT = [
-		newParams.vT.cells[0] - newParams.vOv.cells[0],
-		newParams.vT.cells[1] - newParams.vOv.cells[1],
-		newParams.vT.cells[2] - newParams.vOv.cells[2],
+		newParams.vT.cells[0],
+		newParams.vT.cells[1],
+		newParams.vT.cells[2],
 	];
 
-	const phi1 = cosDegVectors([
-		newT[1],
-		newT[2]
-	], [
+
+
+
+
+
+
+	const cosT = cosDegVectors3(newT, oldT)
+	const cosN = cosDegVectors3(newT, oldN)
+	const cosI = cosDegVectors3(newT, oldI)
+
+
+	// console.log(
+	// 	"newT:", newT,
+	// 	"\noldT:",oldT,
+	// 	"\noldN:",oldN,
+	// 	"\noldI:",oldI,
+	//
+	// 	"\n\ncosT:",cosT,
+	// 	"\ncosN:",cosN,
+	// 	"\ncosI:",cosI,
+	//
+	// );
+
+
+
+	// let t = new Matrix([
+	// 	[oldParams.vT.cells[0], oldParams.vN.cells[0]],
+	// 	[oldParams.vT.cells[1], oldParams.vN.cells[1]],
+	// 	[oldParams.vT.cells[2], oldParams.vN.cells[2]],
+	// 	[1, 1]
+	// ]);
+	//
+	//
+	// t.compWithLeft(matrix)
+	// console.dir("t:",t.cells)
+
+
+	const phiX = cosDegVectors([
 		oldT[1],
-		oldT[2]
-	]);
-
-	const phi2 = cosDegVectors([
-		newT[0],
-		newT[1]
+		oldT[2],
 	], [
-		oldT[0],
-		oldT[1]
+		newT[1],
+		Math.sqrt(newT[0]*newT[0] + newT[2]*newT[2])
 	]);
+	const arcCosPhiX = Math.acos(phiX);
 
-	const phi3 = cosDegVectors([
+	// console.dir("t:",t.cells)
+	matrix.compWithLeft(rotationXDeg(cosN >= 0 ? arcCosPhiX : -arcCosPhiX));
+
+	// t.compWithLeft(rotationXDeg(cosN >= 0 ? arcCosPhiX : -arcCosPhiX))
+	// console.dir("t:",t.cells)
+
+
+
+	const phiY = cosDegVectors([
+		oldT[0],
+		(cosN >= 0 ? 1 : -1) * Math.sqrt(newT[0]*newT[0] + newT[2]*newT[2])
+	], [
 		newT[0],
 		newT[2]
-	], [
-		oldT[0],
-		oldT[2]
 	]);
+	const arcCosPhiY = Math.acos(phiY);
 
-	const matrix = new Matrix();
-	matrix.IdentityCells(4);
+	matrix.compWithLeft(rotationYDeg(cosN >= 0 ? (
+		cosI >= 0 ? arcCosPhiY : -arcCosPhiY
+	) : (
+		cosI >= 0 ? - arcCosPhiY : arcCosPhiY
+	)
+	));
 
-	matrix.compWithLeft(rotationXDeg(Math.acos(phi1)));
-	matrix.compWithLeft(rotationZDeg(Math.acos(phi2)));
-	matrix.compWithLeft(rotationYDeg(Math.acos(phi3)));
 
+
+	// t.compWithLeft(rotationYDeg(cosN >= 0 ? (
+	// 		cosI >= 0 ? arcCosPhiY : -arcCosPhiY
+	// 	) : (
+	// 		cosI >= 0 ? -arcCosPhiY : arcCosPhiY
+	// 	)
+	// ))
+	// console.dir("t:",t.cells, cosN >= 0 ? (
+	// 		cosI >= 0 ? arcCosPhiY : -arcCosPhiY
+	// 	) : (
+	// 		cosI >= 0 ? -arcCosPhiY : arcCosPhiY
+	// 	)
+	// )
+
+
+
+
+
+	// const phiY2 = cosDegVectors([
+	// 	oldN[0],
+	// 	oldN[2],
+	// ], [
+	// 	newN[0],
+	// 	newN[2]
+	// ]);
+	// const arcCosPhiY2 = Math.acos(phiY2);
+	//
+	// matrix.compWithLeft(rotationYDeg(
+	// 	cosI >= 0 ? -arcCosPhiY2 : arcCosPhiY2
+	// ));
+	//
+	//
+	//
+	// t.compWithLeft(rotationYDeg(cosN >= 0 ? (
+	// 		cosI >= 0 ? arcCosPhiY : -arcCosPhiY
+	// 	) : (
+	// 		cosI >= 0 ? -arcCosPhiY : arcCosPhiY
+	// 	)
+	// ))
+	// console.dir("t:",t.cells, cosN >= 0 ? (
+	// 		cosI >= 0 ? arcCosPhiY : -arcCosPhiY
+	// 	) : (
+	// 		cosI >= 0 ? -arcCosPhiY : arcCosPhiY
+	// 	)
+	// )
+
+
+	matrix.compWithLeft(translation(
+		oldV[0] - newV[0],
+		oldV[1] - newV[1],
+		oldV[2] - newV[2]
+	));
+
+
+	// t.compWithLeft(translation(
+	// 	oldV[0] - newV[0],
+	// 	oldV[1] - newV[1],
+	// 	oldV[2] - newV[2]
+	// ))
+	// console.dir("t:",t.cells)
+	//
+	// console.log(
+	// 	"matrix:", matrix,
+	// 	"\nphiX:",phiX,
+	// 	"\nphiY:",phiY,
+	// 	"\nnewT:",newT,
+	// 	"\noldT:",oldT,
+	//
+	// );
 	return matrix;
 }
 

@@ -131,6 +131,7 @@ const actions = {
 		model.setDefaultParams(classObject, rootState.scene.type);
 		commit('addModel', model);
 		dispatch('scene/reRender', null, { root: true });
+		return model
 	},
 	/**
 	 * STATUS: DONE

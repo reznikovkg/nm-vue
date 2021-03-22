@@ -8,7 +8,7 @@ export default class Light extends BaseModel {
 
         this.position = new Matrix([[3],[3],[3],[1]]);
 
-        this.cLight = [1,1,1];
+        this.cLight = [2,2,2];
         this.cDark = [0.1,0.1,0.1];
         this.power = 10;
     }
