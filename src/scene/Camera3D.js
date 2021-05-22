@@ -43,10 +43,12 @@ export default class Camera3D extends Camera2D {
 
         this.animateMode = false;
         this.animateModeInterval = null;
+        this.animateFramerate = 24;
+        this.animateActiveFrame = 0;
 
 
 
-        this.reRender = lodash.throttle(this.reRender, 50)
+        this.reRender = lodash.throttle(this.reRender, 1000/this.animateFramerate)
     }
 
     destroy() {
@@ -196,18 +198,6 @@ export default class Camera3D extends Camera2D {
 
     toggleRayTracing(_state = !this.rayTracing) {
         this.rayTracing = _state;
-    }
-
-    toggleAnimateMode(_state = !this.animateMode, models = []) {
-        this.animateMode = _state;
-        if (this.animateMode) {
-            this.animateModeInterval = setInterval(() => {
-                this.reRender(models)
-            }, 50)
-        } else {
-            clearInterval(this.animateModeInterval)
-            this.animateModeInterval = null;
-        }
     }
 
     /**
@@ -365,6 +355,24 @@ export default class Camera3D extends Camera2D {
     }
 
 
+    // ANIMATIONS
+    toggleAnimateMode(_state = !this.animateMode, models = []) {
+        this.animateMode = _state;
+        if (this.animateMode) {
+            this.animateModeInterval = setInterval(() => {
+                this.nextFrame();
+                this.reRender(models);
+            }, 1000/this.animateFramerate)
+        } else {
+            clearInterval(this.animateModeInterval)
+            this.animateModeInterval = null;
+        }
+    }
+
+    nextFrame() {
+        this.animateActiveFrame++;
+        if (this.animateActiveFrame >= this.animateFramerate) this.animateActiveFrame = 0;
+    }
 
 
 }

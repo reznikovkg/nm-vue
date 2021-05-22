@@ -3,6 +3,8 @@ import typesOfScene from "../scene/typesOfScene";
 import typesOfModels from "./typesOfModels";
 import Matrix from "@/math/Matrix";
 
+import { scaling as ScalingAT3D } from './../scene/AffineTransform3D';
+
 export default class BaseModel {
 	constructor() {
 		this.show = false;
@@ -26,6 +28,48 @@ export default class BaseModel {
 		this.color = [
 			0.5,0.5,0.5
 		]
+
+		this.animateModel = false;
+		this.animation = {
+			name: 'pulse',
+			frames:[
+				new ScalingAT3D(1,1,1),
+				new ScalingAT3D(1.2,1.2,1.2),
+				new ScalingAT3D(1.4,1.4,1.4),
+				new ScalingAT3D(1.6,1.6,1.6),
+				new ScalingAT3D(1.8,1.8,1.8),
+				new ScalingAT3D(2,2,2),
+				new ScalingAT3D(1.8,1.8,1.8),
+				new ScalingAT3D(1.6,1.6,1.6),
+				new ScalingAT3D(1.4,1.4,1.4),
+				new ScalingAT3D(1.2,1.2,1.2),
+				new ScalingAT3D(1,1,1),
+			]
+		}
+	}
+
+	render() {
+		if (this.show) {
+			// TODO logic
+
+			return true;
+		}
+
+		return false
+	}
+
+	getAnimateFrameAT(camera) {
+		if (camera.animateMode) {
+			const frameNumber = Math.round(this.animation.frames.length * (camera.animateActiveFrame / camera.animateFramerate))
+
+			return this.animation.frames[frameNumber >= this.animation.frames.length ? this.animation.frames.length - 1 : frameNumber];
+		}
+
+		return false;
+	}
+
+	setAnimationOfModel(animate) {
+		this.animation = animate
 	}
 
 	toggleShow() {

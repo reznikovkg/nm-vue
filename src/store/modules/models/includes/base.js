@@ -49,6 +49,9 @@ export const mutations = {
 	setTitleOfModel(state, params) {
 		params.model.setTitle(params.title);
 	},
+	setAnimationOfModel(state, animate) {
+		state.activeModel.setAnimationOfModel(animate);
+	},
 	setColor(state, c) {
 		state.activeModel.setColor(c);
 	},
@@ -72,6 +75,10 @@ export const actions = {
 	},
 	setTitleOfModel({ commit, dispatch }, model) {
 		commit('setTitleOfModel', model);
+		commit('reBuildModels');
+	},
+	setAnimationOfModel({ commit, dispatch }, params) {
+		commit('setAnimationOfModel', params);
 		commit('reBuildModels');
 	},
 	setColor({ commit, dispatch }, c) {

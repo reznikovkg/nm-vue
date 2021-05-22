@@ -43,7 +43,6 @@ export default class Sphere extends BaseModel {
             )
         }
 
-        console.log(matForm)
         const degSegments = 2 * Math.PI/this.segments;
         for (let i = 0; i <= this.segments; i++) {
             const oldMatForm = new Matrix();
@@ -94,7 +93,6 @@ export default class Sphere extends BaseModel {
 
         }
 
-        console.log(camera.polygons)
     }
 
 

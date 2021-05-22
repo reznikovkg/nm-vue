@@ -47,12 +47,14 @@
                         </div>
                     </div>
                     <hr>
-                    <div class="nav-tab">
-                        <h3>Wow:</h3>
+                    <div v-if="scene === typesOfSceneShow.SCENE3D" class="nav-tab">
+                        <h3>Settings:</h3>
                         <hr>
                         <div class="nav-tab-new-models-list">
                             <at-button
-                                :class="{ 'at-btn--primary': getModeCameraRayTracing}" icon="icon-done" @click="toggleRT">Toggle Ray Tracing</at-button>
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}"
+                                icon="icon-done"
+                                @click="toggleRT">Toggle Ray Tracing</at-button>
                         </div>
                         <div class="nav-tab-new-models-list">
                             <at-button
@@ -161,6 +163,11 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+
+        margin-bottom: 5px;
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
 
     .nav-tab-new-models-item {

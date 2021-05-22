@@ -4,8 +4,9 @@ import typesOfScene from "../../scene/typesOfScene";
 import BaseModel from "./../BaseModel";
 
 export default class ObjectScene extends BaseModel {
-	constructor(model) {
-		super(model);
+	constructor() {
+		super();
+		this.animateModel = true;
 	}
 
 	setChildModel(model) {
@@ -61,8 +62,17 @@ export default class ObjectScene extends BaseModel {
 	}
 
 	render(camera) {
-		if (!this.show) {
+		if (!super.render()) {
 			return;
+		}
+
+		let matrixResult = this.matrixResult;
+
+		if (camera.animateMode) {
+			matrixResult = new Matrix();
+			matrixResult.AllocateCells(this.accumulationAP.getStrNum(), this.childModel.getMatrixOfPoints(this.countPoints).getColNum())
+			matrixResult.sumWith(this.matrixResult);
+			matrixResult.compWithLeft(this.getAnimateFrameAT(camera))
 		}
 
 		if (this.countPoints < 1) {
@@ -82,10 +92,10 @@ export default class ObjectScene extends BaseModel {
 		// 		camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
 		// 	}
 		// } else if (this.type === typesOfScene.SCENE3D) {
-			camera.moveTo(this.matrixResult.getStrFirst()[0], this.matrixResult.getStrSecond()[0], this.matrixResult.getStrThird()[0]);
-			for (let i = 0; i < this.matrixResult.getStrFirst().length - 1; i++) {
-				camera.lineTo(this.matrixResult.getStrFirst()[i], this.matrixResult.getStrSecond()[i], this.matrixResult.getStrThird()[i]);
-			}
+		camera.moveTo(matrixResult.getStrFirst()[0], matrixResult.getStrSecond()[0], matrixResult.getStrThird()[0]);
+		for (let i = 0; i < matrixResult.getStrFirst().length - 1; i++) {
+			camera.lineTo(matrixResult.getStrFirst()[i], matrixResult.getStrSecond()[i], matrixResult.getStrThird()[i]);
+		}
 		// }
 		ctx.stroke();
 
@@ -96,14 +106,14 @@ export default class ObjectScene extends BaseModel {
 		ctx.setLineDash([]);
 		ctx.lineWidth = 3;
 		camera.moveTo(
-			this.matrixResult.getStrFirst()[this.matrixResult.getStrFirst().length - 2],
-			this.matrixResult.getStrSecond()[this.matrixResult.getStrFirst().length - 2],
-			this.matrixResult.getStrThird()[this.matrixResult.getStrFirst().length - 2]
+			matrixResult.getStrFirst()[matrixResult.getStrFirst().length - 2],
+			matrixResult.getStrSecond()[matrixResult.getStrFirst().length - 2],
+			matrixResult.getStrThird()[matrixResult.getStrFirst().length - 2]
 		);
 		camera.lineTo(
-			this.matrixResult.getStrFirst()[this.matrixResult.getStrFirst().length - 1],
-			this.matrixResult.getStrSecond()[this.matrixResult.getStrFirst().length - 1],
-			this.matrixResult.getStrThird()[this.matrixResult.getStrFirst().length - 1]
+			matrixResult.getStrFirst()[matrixResult.getStrFirst().length - 1],
+			matrixResult.getStrSecond()[matrixResult.getStrFirst().length - 1],
+			matrixResult.getStrThird()[matrixResult.getStrFirst().length - 1]
 		);
 		ctx.stroke();
 	}

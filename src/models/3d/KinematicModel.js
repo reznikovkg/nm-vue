@@ -11,6 +11,7 @@ export default class KinematicModel extends BaseModel {
 
     constructor() {
         super();
+        this.animateModel = true;
 
         this.at = 'identity';
         this.atCustom = AT3D.identity();
@@ -29,7 +30,7 @@ export default class KinematicModel extends BaseModel {
     }
 
     getGuide() {
-        return this.guide.childModel;
+        return this.guide ? this.guide.childModel : null;
     }
 
     setForm(model) {
@@ -43,7 +44,7 @@ export default class KinematicModel extends BaseModel {
     }
 
     getForm() {
-        return this.form.childModel;
+        return this.form ? this.form.childModel: null;
     }
 
     // setPoints() {
@@ -262,26 +263,40 @@ export default class KinematicModel extends BaseModel {
 
 
     render(camera) {
-        if (!this.show) {
+        if (!super.render()) {
             return;
         }
 
         this.form.setMatrixOfPoints();
         this.guide.setMatrixOfPoints();
-        this.form.applyToAt(AT3D.translation(
-            -this.form.getMatrixOfPoints().getStrFirst()[0]
-            + this.guide.getMatrixOfPoints().getStrFirst()[0],
-            -this.form.getMatrixOfPoints().getStrSecond()[0]
-            + this.guide.getMatrixOfPoints().getStrSecond()[0],
-            -this.form.getMatrixOfPoints().getStrThird()[0]
-            + this.guide.getMatrixOfPoints().getStrThird()[0],
+
+        let _form = this.form;
+        let _guide = this.guide;
+
+        if (camera.animateMode) {
+            _form = new ObjectScene();
+            _form.setChildModel(this.form)
+            _form.apply(this.getAnimateFrameAT(camera))
+
+            _guide = new ObjectScene();
+            _guide.setChildModel(this.guide)
+            _guide.apply(this.getAnimateFrameAT(camera))
+        }
+
+        _form.applyToAt(AT3D.translation(
+            -_form.getMatrixOfPoints().getStrFirst()[0]
+            + _guide.getMatrixOfPoints().getStrFirst()[0],
+            -_form.getMatrixOfPoints().getStrSecond()[0]
+            + _guide.getMatrixOfPoints().getStrSecond()[0],
+            -_form.getMatrixOfPoints().getStrThird()[0]
+            + _guide.getMatrixOfPoints().getStrThird()[0],
         ));
 
         let matForm = new Matrix();
-        matForm.setMatrixForce(this.form.getMatrixOfPoints());
+        matForm.setMatrixForce(_form.getMatrixOfPoints());
 
 
-        for (let i = 0; i < this.guide.getMatrixOfPoints().getStrFirst().length; i++) {
+        for (let i = 0; i < _guide.getMatrixOfPoints().getStrFirst().length; i++) {
             for (let j = 0; j < matForm.getStrFirst().length; j++) {
 
                 if (j + 1 < matForm.getStrFirst().length) {
@@ -300,14 +315,14 @@ export default class KinematicModel extends BaseModel {
 
                     if (i + 1 < matForm.getStrFirst().length) {
                         polygon[0].push([
-                            matForm.getStrFirst()[j + 1] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
-                            matForm.getStrSecond()[j + 1] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
-                            matForm.getStrThird()[j + 1] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                            matForm.getStrFirst()[j + 1] + _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j + 1] + _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j + 1] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
                         ]);
                         polygon[0].push([
-                            matForm.getStrFirst()[j] + this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
-                            matForm.getStrSecond()[j] + this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
-                            matForm.getStrThird()[j] + this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i]
+                            matForm.getStrFirst()[j] + _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                            matForm.getStrSecond()[j] + _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                            matForm.getStrThird()[j] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
                         ]);
 
 
@@ -318,9 +333,9 @@ export default class KinematicModel extends BaseModel {
             }
 
             matForm.compWithLeft(AT3D.translation(
-                this.guide.getMatrixOfPoints().getStrFirst()[i + 1] - this.guide.getMatrixOfPoints().getStrFirst()[i],
-                this.guide.getMatrixOfPoints().getStrSecond()[i + 1] - this.guide.getMatrixOfPoints().getStrSecond()[i],
-                this.guide.getMatrixOfPoints().getStrThird()[i + 1] - this.guide.getMatrixOfPoints().getStrThird()[i],
+                _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i],
             ));
         }
 

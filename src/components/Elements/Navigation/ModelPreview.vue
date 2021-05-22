@@ -17,6 +17,16 @@
         </div>
         <div class="model-body" v-if="isActive">
             <component :is="formModel" :model="model"/>
+            <div v-if="model.animateModel">
+                <h3>Animations:</h3>
+                <at-select v-model="animation" :placeholder="'Animation'">
+                    <at-option v-for="modelChoice in getAnimationsForChoice"
+                               :value="modelChoice.name"
+                               :key="modelChoice.name">
+                        {{ modelChoice.name }}
+                    </at-option>
+                </at-select>
+            </div>
         </div>
     </div>
 </template>
@@ -25,6 +35,8 @@
 	import typesOfModels from "./../../../models/typesOfModels";
 
     import { mapGetters, mapActions } from 'vuex';
+    import {scaling as ScalingAT3D, translation as TranslationAT3D } from "@/scene/AffineTransform3D";
+    import {Animations} from "@/scene/Animations";
 
 	export default {
 		name: "ModelPreview",
@@ -47,13 +59,25 @@
 			formModel: function () {
 				return typesOfModels[this.model.type][this.model.code].form;
 			},
+            animation: {
+                get() {
+                    return this.model.animation.name
+                },
+                set(v) {
+                    this.setAnimationOfModel(this.getAnimationsForChoice.find(item => item.name === v))
+                }
+            },
+            getAnimationsForChoice: function () {
+                return Animations
+            }
         },
         methods: {
 			...mapActions('models', [
 				'setActiveModel',
 				'toggleShowModel',
 				'removeModel',
-                'setTitleOfModel'
+                'setTitleOfModel',
+                'setAnimationOfModel'
 			]),
 			choiceModelActive: function () {
 				if (!this.isActive) this.setActiveModel(this.model);
