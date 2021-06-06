@@ -8,7 +8,7 @@ import SphereForm from './../../components/Elements/Forms/Models3D/Sphere';
 export default class Sphere extends BaseModel {
     code = 'sphere'
     name = 'sphere'
-    form = SphereForm
+    formEdit = SphereForm
 
     constructor() {
         super();
@@ -100,6 +100,7 @@ export default class Sphere extends BaseModel {
 
         }
 
+        console.log(camera.polygons)
     }
 
 

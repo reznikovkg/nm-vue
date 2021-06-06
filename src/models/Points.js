@@ -5,10 +5,12 @@ import typesOfModels from "./../models/typesOfModels";
 import { getArrayWithAllocateCells } from "./../functions/array";
 import PointsForm from './../components/Elements/Forms/Points';
 
+export const CODE = 'points'
+
 export default class Points extends BaseModel {
-    code = 'points'
+    code = CODE
     name = 'Points'
-    form = PointsForm
+    formEdit = PointsForm
 
     constructor(
         // x = [], y = [], z = []
@@ -57,7 +59,7 @@ export default class Points extends BaseModel {
     addPoint(x = 0, y = 0, z = 0) {
         this.x.push(x);
         this.y.push(y);
-        this.z.push(z);
+        this.z.push(z || 0);
         this.identity.push(1);
 
         if (this.x.length > 1) {
@@ -162,7 +164,7 @@ export default class Points extends BaseModel {
 
         let ctx = camera.canvas.getContext("2d");
         ctx.beginPath();
-        ctx.strokeStyle = '#107e00';
+        ctx.strokeStyle = this.getColorRGB();
         ctx.setLineDash([]);
         ctx.lineWidth = 3;
         let s = Math.abs(
@@ -189,6 +191,7 @@ export default class Points extends BaseModel {
             }
         }
         ctx.stroke();
+        ctx.closePath();
     }
 
     getCountPoints() {
@@ -208,5 +211,21 @@ export default class Points extends BaseModel {
         this.y.splice(index, 1);
         this.z.splice(index, 1);
         this.setH();
+    }
+
+    getFirstPoint() {
+        return {
+            x: this.x[0],
+            y: this.y[0],
+            z: this.z[0],
+        }
+    }
+
+    getLastPoint() {
+        return {
+            x: this.x[this.x.length - 1],
+            y: this.y[this.y.length - 1],
+            z: this.z[this.z.length - 1],
+        }
     }
 }

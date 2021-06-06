@@ -8,7 +8,7 @@ import SplineForm from './../../components/Elements/Forms/Models2D/Spline';
 export default class Spline extends BaseModel {
     code = 'spline'
     name = 'Spline'
-    form = SplineForm
+    formEdit = SplineForm
 
     constructor() {
         super();
@@ -239,7 +239,7 @@ export default class Spline extends BaseModel {
 
         let ctx = camera.canvas.getContext("2d");
         ctx.beginPath();
-        ctx.strokeStyle = '#ff0012';
+        ctx.strokeStyle = this.getColorRGB();
         ctx.setLineDash([]);
         ctx.lineWidth = 2;
         let start = this.getStart();
@@ -271,5 +271,6 @@ export default class Spline extends BaseModel {
         //     }
         // }
         ctx.stroke();
+        ctx.closePath();
     }
 }

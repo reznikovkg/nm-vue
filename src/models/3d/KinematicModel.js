@@ -12,7 +12,7 @@ import KinematicForm from './../../components/Elements/Forms/Models3D/Kinematic'
 export default class KinematicModel extends BaseModel {
     code = 'kinematic'
     name = 'Kinematic'
-    form = KinematicForm
+    formEdit = KinematicForm
 
     constructor() {
         super();
@@ -276,6 +276,8 @@ export default class KinematicModel extends BaseModel {
         this.form.setMatrixOfPoints();
         this.guide.setMatrixOfPoints();
 
+        console.log(this.form, this.guide)
+
         let _form = this.form;
         let _guide = this.guide;
 
@@ -345,5 +347,6 @@ export default class KinematicModel extends BaseModel {
         }
 
 
+        console.log(camera.polygons)
     }
 }

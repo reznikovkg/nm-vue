@@ -5,10 +5,12 @@ import BaseModel from "./../BaseModel";
 import {TypeModelsByScene} from "@/models/typesOfModels";
 import ObjectSceneForm from './../../components/Elements/Forms/Models3D/ObjectScene';
 
+export const CODE = 'object'
+
 export default class ObjectScene extends BaseModel {
-	code = 'object'
+	code = CODE
 	name = 'Object'
-	form = ObjectSceneForm
+	formEdit = ObjectSceneForm
 
 	constructor() {
 		super();
@@ -105,6 +107,7 @@ export default class ObjectScene extends BaseModel {
 		}
 		// }
 		ctx.stroke();
+		ctx.closePath();
 
 
 
@@ -123,6 +126,7 @@ export default class ObjectScene extends BaseModel {
 			matrixResult.getStrThird()[matrixResult.getStrFirst().length - 1]
 		);
 		ctx.stroke();
+		ctx.closePath();
 	}
 
 }

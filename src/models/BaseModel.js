@@ -104,4 +104,8 @@ export default class BaseModel {
 
 		return this;
 	}
+
+	getColorRGB() {
+		return `rgb(${this.color[0] * 255},${this.color[1] * 255},${this.color[2] * 255})`
+	}
 }

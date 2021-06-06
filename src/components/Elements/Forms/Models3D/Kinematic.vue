@@ -72,9 +72,10 @@
 
 	import { mapGetters, mapActions } from 'vuex';
 	import typesOfScene from "../../../../scene/typesOfScene";
-	import ObjectScene from "./ObjectScene";
 	import SelectModel from "../Elements/SelectModel";
 	import typesOfModels from "../../../../models/typesOfModels";
+    import Points, { CODE as Points_CODE } from "@/models/Points";
+    import ObjectScene, { CODE as ObjectScene_CODE } from "@/models/3d/ObjectScene";
 
 	export default {
 		name: "Kinematic",
@@ -106,8 +107,8 @@
             filterFunction: function () {
             	return (item) => {
                     if (item.type === typesOfScene.SCENE_2D) return true;
-                    if (item.code === typesOfModels.SCENE_3D.points.code) return true;
-					if (item.code === typesOfModels.SCENE_3D.object.code) return true;
+                    if (item.code === Points_CODE) return true;
+					if (item.code === ObjectScene_CODE) return true;
 
 					return false;
                 }

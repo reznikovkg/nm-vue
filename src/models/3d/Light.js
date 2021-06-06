@@ -4,10 +4,12 @@ import BaseModel from "./../BaseModel";
 import {TypeModelsByScene} from "@/models/typesOfModels";
 import LightForm from './../../components/Elements/Forms/Models3D/Light';
 
+export const CODE = 'light'
+
 export default class Light extends BaseModel {
-    code = 'light'
+    code = CODE
     name = 'light'
-    form = LightForm
+    formEdit = LightForm
 
     constructor() {
         super();
@@ -73,6 +75,7 @@ export default class Light extends BaseModel {
         );
 
         ctx.stroke();
+        ctx.closePath();
     }
 
 

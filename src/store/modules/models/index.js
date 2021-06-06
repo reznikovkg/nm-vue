@@ -1,16 +1,23 @@
 import typesOfModels from "../../../models/typesOfModels";
 import typesOfScene from "../../../scene/typesOfScene";
 import Points from "../../../models/Points";
+import Sphere from "../../../models/3d/Sphere";
+import Light from "../../../models/3d/Light";
 
 import base from "./includes/base";
 import objectScene from "./includes/objectScene";
 import kinematic from "./includes/kinematic";
 import light from "./includes/light";
 import sphere from "./includes/sphere";
+import * as AT3D from "@/scene/AffineTransform3D";
+
 
 const state = {
 	models: [
-		(new Points().setTypeForce(typesOfModels.SCENE_2D))
+		new Points().setTypeForce(typesOfModels.SCENE_2D),
+		new Points().setTypeForce(typesOfModels.SCENE_3D),
+		new Sphere(),
+		new Light(),
 	],
 	activeModelHash: null,
 };
@@ -46,7 +53,8 @@ const mutations = {
 	addPointToActiveModel(state, point) {
 		state.models.find(item => item.hash === state.activeModelHash).addPoint(
 			point.x,
-			point.y
+			point.y,
+			point.z
 		);
 	},
 	setChoiceTypeModel(state, t) {
@@ -83,6 +91,10 @@ const actions = {
 			x: rootState.scene.camera.ScreenToWorldX(e.clientX),
 			y: rootState.scene.camera.ScreenToWorldY(e.clientY)
 		});
+		dispatch('scene/reRender', null, { root: true });
+	},
+	addPoint({ commit, rootState, dispatch }, point) {
+		commit('addPointToActiveModel', point);
 		dispatch('scene/reRender', null, { root: true });
 	},
 	setChoiceTypeModel({ commit, state }, typeModel) {
@@ -122,16 +134,39 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
-	setCountOfPoints({commit, dispatch}, index) {
-		commit('setCountOfPoints', index);
+
+
+	activeModelAddComboPointsStart({ commit, rootState, dispatch }, e) {
+		commit('addPointToActiveModel', {
+			x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+			y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		});
 		dispatch('scene/reRender', null, { root: true });
 	},
 
+	activeModelAddComboPointsDrag({state, commit, rootState, dispatch }, e) {
+		const model = state.models.find(item => item.hash === state.activeModelHash)
+		const point = model.getLastPoint();
+
+		const newPoint = {
+			x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+			y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		}
+
+		if (newPoint.x - point.x > 1) {
+			commit('addPointToActiveModel', newPoint);
+			dispatch('scene/reRender', null, { root: true });
+		}
+	},
 
 
-
-
-
+	activeModelAddComboPointsStop({ commit, rootState, dispatch }, e) {
+		// commit('addPointToActiveModel', {
+		// 	x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+		// 	y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		// });
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 
 

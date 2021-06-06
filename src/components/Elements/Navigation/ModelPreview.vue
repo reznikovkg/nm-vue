@@ -21,7 +21,7 @@
                 <ColorPicker :value="color" @change="handlerColor" title="Color"></ColorPicker>
             </div>
 
-            <component :is="model.form" :model="model"/>
+            <component :is="model.formEdit" :model="model"/>
 
             <div v-if="model.animateModel">
                 <h3>Animations:</h3>

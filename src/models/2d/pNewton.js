@@ -4,7 +4,7 @@ import pNewtonForm from './../../components/Elements/Forms/Models2D/pNewton';
 export default class pNewton {
     name = 'pNewton'
     code = 'pnewton'
-    form = pNewtonForm
+    formEdit = pNewtonForm
 
     constructor(points = null) {
         this.points = null;

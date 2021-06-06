@@ -55,7 +55,7 @@ class Camera2D {
      */
     clear() {
         this.canvas.getContext("2d").clearRect(0,0,this.field.width,this.field.height);
-        this.ctx.fillStyle = "white";
+        this.ctx.fillStyle = "#FFFFFF";
         this.ctx.rect(0,0,this.field.width,this.field.height);
         this.ctx.fill();
     }
@@ -185,6 +185,7 @@ class Camera2D {
                 this.ctx.lineTo(i, this.field.height);
             }
             this.ctx.stroke();
+            this.ctx.closePath();
         }
 
 
@@ -204,12 +205,14 @@ class Camera2D {
             this.ctx.lineTo(this.field.width, this.center.y);
 
             this.ctx.stroke();
+            this.ctx.closePath();
         }
 
 
         if (this.grid.serifs) {
             this.ctx.beginPath();
             this.ctx.strokeStyle = '#058600';
+            this.ctx.fillStyle = '#888888'
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([]);
 
@@ -284,6 +287,7 @@ class Camera2D {
                 }
             }
             this.ctx.stroke();
+            this.ctx.closePath();
         }
     }
 
@@ -295,10 +299,20 @@ class Camera2D {
         }
     }
 
+    forceStopPath() {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0,0)
+        this.ctx.lineTo(1,0)
+        this.ctx.lineTo(0,1)
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+
     reRender(models = []) {
         this.clear();
         this.axisPlot();
         this.render(models);
+        this.forceStopPath();
     }
 
     setSizeCanvas(size = null) {

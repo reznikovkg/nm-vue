@@ -9,6 +9,8 @@ import {VectorCombine,LengthFPTP} from "@/scene/fKernel";
 import {GPU} from "gpu.js";
 import lodash from 'lodash'
 
+import Light, { CODE as Light_CODE } from "@/models/3d/Light";
+
 import RayTracing from './render/RayTracing';
 
 export const defaultParamsCamera = {
@@ -253,7 +255,7 @@ export default class Camera3D extends Camera2D {
         this.polygons = [ [ ] ];
         this.lights = [ [ ] ];
 
-        const lightsF = models.filter((item) => (item.code === "light" && item.show));
+        const lightsF = models.filter((item) => (item.code === Light_CODE && item.show));
         if (lightsF) lightsF.forEach((item) => { this.addLigth(item) })
 
         for (let i = 0; i < models.length; i++) {
@@ -293,6 +295,7 @@ export default class Camera3D extends Camera2D {
         this.moveTo(0,0,0);
         this.lineTo(1,0,0);
         this.ctx.stroke();
+        this.ctx.closePath();
         /**
          * axis Y
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
@@ -304,6 +307,7 @@ export default class Camera3D extends Camera2D {
         this.moveTo(0,0,0);
         this.lineTo(0,1,0);
         this.ctx.stroke();
+        this.ctx.closePath();
         /**
          * axis Z
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
@@ -315,6 +319,7 @@ export default class Camera3D extends Camera2D {
         this.moveTo(0,0,0);
         this.lineTo(0,0,1);
         this.ctx.stroke();
+        this.ctx.closePath();
     }
 
     moveTo(x, y, z) {

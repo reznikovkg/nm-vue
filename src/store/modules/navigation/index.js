@@ -128,15 +128,15 @@ const actions = {
 			if (state.navigation[typesOfScene.SCENE_2D].addPoint.status) {
 				dispatch('models/addPointToActiveModel', e, { root: true });
 			}
+
+			if (state.navigation[typesOfScene.SCENE_2D].addComboPoints.status) {
+				dispatch('models/activeModelAddComboPointsStart', e, { root: true });
+			}
 		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
 			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraMoveCameraStart', e, { root: true });
 			}
 		}
-
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsStart', e);
-		// }
 	},
 	mouseDrag ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDrag');
@@ -144,14 +144,15 @@ const actions = {
 			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraDragTo', e, {root: true});
 			}
+
+			if (state.navigation[typesOfScene.SCENE_2D].addComboPoints.status) {
+				dispatch('models/activeModelAddComboPointsDrag', e, { root: true });
+			}
 		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
 			if (state.navigation[typesOfScene.SCENE_3D].moveCenter.status) {
 				dispatch('scene/cameraMoveCameraGo', e, {root: true});
 			}
 		}
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsDrag', e);
-		// }
 	},
 	mouseUp ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseUp');
@@ -159,15 +160,15 @@ const actions = {
 			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraDragToStop', e, {root: true});
 			}
+
+			if (state.navigation[typesOfScene.SCENE_2D].addComboPoints.status) {
+				dispatch('models/activeModelAddComboPointsStop', e, { root: true });
+			}
 		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
 			if (state.navigation[typesOfScene.SCENE_3D].moveCenter.status) {
 				dispatch('scene/cameraMoveCameraStop', e, {root: true});
 			}
 		}
-
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsStop', e);
-		// }
 	},
 	mouseWheel ({ commit, state, dispatch }, e) {
 		commit('mouseWheel');

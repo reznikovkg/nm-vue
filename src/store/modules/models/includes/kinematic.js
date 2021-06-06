@@ -8,6 +8,7 @@ export const mutations = {
 		state.models.find((item) => (item.hash === data.hash)).setGuide(data.model);
 	},
 	setFormByHash(state, data) {
+		console.log(data)
 		state.models.find((item) => (item.hash === data.hash)).setForm(data.model);
 	},
 };

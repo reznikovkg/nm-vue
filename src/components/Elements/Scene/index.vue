@@ -52,8 +52,6 @@
 			window.addEventListener(`resize`, event => {
 				this.reRender();
 			}, false);
-
-			this.crModels()
 		},
         beforeDestroy() {
             clearInterval(this.interval)
@@ -90,23 +88,7 @@
 			},
 			canvasMouseWheel: function (e) {
 				this.mouseWheel(e);
-			},
-            crModels: async function() {
-
-
-                let li = new typesOfModels.SCENE_3D.light.class()
-                await this.addModel(li)
-                let sp = new typesOfModels.SCENE_3D.sphere.class()
-                await this.addModel(sp)
-                let sp2 = new typesOfModels.SCENE_3D.sphere.class()
-                await this.addModel(sp2)
-
-                await this.applyToModel(AT3D.translation(10, 10,10));
-                this.toggleShowModel(li)
-                this.toggleShowModel(sp)
-                this.toggleShowModel(sp2)
-                this.cameraToggleRayTracing()
-            }
+			}
 		}
 	}
 </script>
