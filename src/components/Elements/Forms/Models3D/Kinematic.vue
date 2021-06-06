@@ -4,31 +4,22 @@
 
 <!--        <div class="rowFlex">-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
-                <p>Guide</p>
-<!--                <at-select v-model="guide" :placeholder="'Guide'">-->
-<!--                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
-<!--                </at-select>-->
-<!--                <object-scene v-if="getActiveModel.guide" :model="getActiveModel.guide"/>-->
-                <SelectModel v-model="guide" :filterFunction="filterFunction"></SelectModel>
+        <p>Form</p>
+        <SelectModel v-model="form" :filterFunction="filterFunction"></SelectModel>
+
+        <p>Guide</p>
+        <SelectModel v-model="guide" :filterFunction="filterFunction"></SelectModel>
 <!--            </div>-->
 <!--            <div class="row-fix-width" style="width: 100px">-->
-                <p>Form</p>
-<!--                <at-select v-model="form" :placeholder="'Guide'">-->
-<!--                    <at-option v-for="(model, index) in getModelsForChoice" :value="index" :key="index">{{ model.name }} {{ index }}</at-option>-->
-<!--                </at-select>-->
-<!--                <object-scene v-if="getActiveModel.form" :model="getActiveModel.form"/>-->
-                <SelectModel v-model="form" :filterFunction="filterFunction"></SelectModel>
 <!--            </div>-->
-<!--            <div class="row-fix-width" style="width: 100px">-->
-<!--                <p>AT</p>-->
-<!--                <at-select v-model="kinematicModel.selectAT" :placeholder="'Form'">-->
-<!--                    <at-option :value="'identity'">Identity</at-option>-->
-<!--                    <at-option :value="'rotationXDeg'">Rotation X</at-option>-->
-<!--                    <at-option :value="'rotationYDeg'">Rotation Y</at-option>-->
-<!--                    <at-option :value="'rotationZDeg'">Rotation Z</at-option>-->
-<!--                    <at-option :value="'custom'">Custom</at-option>-->
-<!--                </at-select>-->
-<!--            </div>-->
+        <div>
+            <p>Guide Mapping</p>
+            <at-select v-model="guideMapping" :placeholder="'Guide Mapping'">
+                <at-option v-for="item in MappingAT" :value="item.name" :key="item.name">{{ item.name }}</at-option>
+            </at-select>
+
+            <InputCustom v-model="guideMappingCountSteps"/>
+        </div>
 <!--        </div>-->
 <!--        <at-button type="primary" size="small" @click="setKitematicGuideForm">Set</at-button>-->
 
@@ -76,10 +67,14 @@
 	import typesOfModels from "../../../../models/typesOfModels";
     import Points, { CODE as Points_CODE } from "@/models/Points";
     import ObjectScene, { CODE as ObjectScene_CODE } from "@/models/3d/ObjectScene";
+    import MappingAT from "@/scene/MappingAT";
+    import InputCustom from "@/components/Elements/Forms/Elements/InputCustom";
+
 
 	export default {
 		name: "Kinematic",
         components: {
+            InputCustom,
 			SelectModel,
 			ObjectScene
         },
@@ -154,14 +149,35 @@
 				// set(index){
 				// 	this.setFormOfModel(this.getModelsForChoice[index])
 				// }
-            }
+            },
+            guideMapping: {
+                get() {
+                    const gM = this.model.getGuideMapping();
+                    return gM ? gM.name : '';
+                },
+                set(guideMappingName) {
+                    const t = MappingAT.find(item => item.name === guideMappingName)
+                    this.setGuideMappingByHash({ guideMapping: t, hash: this.model.hash })
+                }
+            },
+            MappingAT: function () {
+                return MappingAT;
+            },
+            guideMappingCountSteps: {
+                get() {
+                    return this.model.guideMappingCountSteps;
+                },
+                set(guideMappingCountSteps) {
+                    this.setGuideMappingCountStepsByHash({ guideMappingCountSteps: parseInt(guideMappingCountSteps), hash: this.model.hash })
+                }
+            },
         },
         methods: {
 			...mapActions('models', [
-				'setFormOfModel',
-                'setGuideOfModel',
                 'setGuideByHash',
-                'setFormByHash'
+                'setFormByHash',
+                'setGuideMappingByHash',
+                'setGuideMappingCountStepsByHash'
             ])
         }
 	}

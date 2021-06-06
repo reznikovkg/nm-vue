@@ -24,6 +24,10 @@ export default class KinematicModel extends BaseModel {
         this.guideAT3D = true;
         this.formAT3D = true;
         this.type = TypeModelsByScene.SCENE_3D
+
+        this.guideMappingCountSteps = 0;
+        this.guideMapping = null;
+        this.guideMappingSteps = [];
     }
 
     setGuide(model) {
@@ -53,117 +57,16 @@ export default class KinematicModel extends BaseModel {
         return this.form ? this.form.childModel: null;
     }
 
-    // setPoints() {
-    //     /**
-    //      * Направляющая основана на точках
-    //      */
-    //     if (this.guide instanceof Points) {
-    //         this.guidePointsInit = this.guide;
-    //     }
-    //
-    //     /**
-    //      * Образуюущая основана на точках
-    //      */
-    //     if (this.form instanceof Points) {
-    //         this.formPointsInit = this.form;
-    //     }
-    //
-    //     /**
-    //      * Направляющая основана на сплайне
-    //      */
-    //     if (this.guide instanceof Spline) {
-    //         let start = this.guide.x[0];
-    //         let finish = this.guide.x[this.guide.x.length-1];
-    //
-    //         let step = (finish-start)/(this.guideNumberPoints-1);
-    //
-    //         this.guidePointsInit = new Points();
-    //
-    //         for (let i = start; i < finish; i+=step) {
-    //             this.guidePointsInit.addPoint(i, this.guide.pointSpline(i));
-    //         }
-    //     }
-    //
-    //     /**
-    //      * Образуюущая основана на сплайне
-    //      */
-    //     if (this.form instanceof Spline) {
-    //         let start = this.form.x[0];
-    //         let finish = this.form.x[this.form.x.length-1];
-    //
-    //         let step = (finish-start)/(this.formNumberPoints-1);
-    //
-    //         this.formPointsInit = new Points();
-    //
-    //         for (let i = start; i < finish; i+=step) {
-    //             this.formPointsInit.addPoint(i, this.form.pointSpline(i));
-    //         }
-    //     }
-    //
-    //     /**
-    //      * Направляющая основана на полиноме Ньютона
-    //      */
-    //     if (this.guide instanceof pNewton) {
-    //         let start = this.guide.start;
-    //         let finish = this.guide.finish;
-    //
-    //         let step = (finish-start)/(this.guideNumberPoints-1);
-    //
-    //         this.guidePointsInit = new Points();
-    //
-    //         for (let i = start; i < finish; i+=step) {
-    //             this.guidePointsInit.addPoint(i, this.guide.pointPolynom(i));
-    //         }
-    //     }
-    //     /**
-    //      * Образуюущая основана на полиноме Ньютона
-    //      */
-    //     if (this.form instanceof pNewton) {
-    //         let start = this.form.start;
-    //         let finish = this.form.finish;
-    //
-    //         let step = (finish-start)/(this.formNumberPoints-1);
-    //
-    //         this.formPointsInit = new Points();
-    //
-    //         for (let i = start; i < finish; i+=step) {
-    //             this.formPointsInit.addPoint(i, this.form.pointPolynom(i));
-    //         }
-    //     }
-    //
-    //     if (this.guide === "rotation") {
-    //         this.guidePointsInit = new Points();
-    //
-    //         for (let i = 0; i <= this.guideNumberPoints; i++) {
-    //             this.guidePointsInit.addPoint(0, 0);
-    //         }
-    //     }
-    //
-    //     this.defATForm();
-    //     this.defATGuide();
-    // }
+    setGuideMappingCountSteps(cS) {
+        this.guideMappingCountSteps = cS;
+    }
+    setGuideMapping(gM) {
+        this.guideMapping = gM;
+    }
+    getGuideMapping() {
+        return this.guideMapping
+    }
 
-    // defATForm() {
-    //     let t = new Points();
-    //     t.copy(this.formPointsInit);
-    //     t.applyAT3D( AT3D.translation(
-    //         -t.x[0],
-    //         -t.y[0],
-    //         -t.z[0]
-    //         ));
-    //     this.formPoints = t;
-    // }
-    //
-    // defATGuide() {
-    //     let k = new Points();
-    //     k.copy(this.guidePointsInit);
-    //     k.applyAT3D( AT3D.translation(
-    //         -k.x[0],
-    //         -k.y[0],
-    //         -k.z[0]
-    //     ));
-    //     this.guidePoints = k;
-    // }
 
     // plotDefault() {
     //     this.matrixPoints = [];
@@ -273,10 +176,10 @@ export default class KinematicModel extends BaseModel {
             return;
         }
 
+        if (this.guideMappingCountSteps > 1) this.guideMappingSteps = this.guideMapping.mapping(this.guideMappingCountSteps)
+
         this.form.setMatrixOfPoints();
         this.guide.setMatrixOfPoints();
-
-        console.log(this.form, this.guide)
 
         let _form = this.form;
         let _guide = this.guide;
@@ -304,7 +207,9 @@ export default class KinematicModel extends BaseModel {
         matForm.setMatrixForce(_form.getMatrixOfPoints());
 
 
-        for (let i = 0; i < _guide.getMatrixOfPoints().getStrFirst().length; i++) {
+        const limitSteps = this.guideMappingCountSteps > 1 ? this.guideMappingCountSteps : _guide.getMatrixOfPoints().getStrFirst().length
+
+        for (let i = 0; i < limitSteps; i++) {
             for (let j = 0; j < matForm.getStrFirst().length; j++) {
 
                 if (j + 1 < matForm.getStrFirst().length) {
@@ -339,14 +244,15 @@ export default class KinematicModel extends BaseModel {
                 }
             }
 
-            matForm.compWithLeft(AT3D.translation(
-                _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
-                _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
-                _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i],
-            ));
+            if (this.guideMappingCountSteps > 1) {
+                matForm.compWithLeft(this.guideMappingSteps[i]);
+            } else {
+                matForm.compWithLeft(AT3D.translation(
+                  _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                  _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                  _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i],
+                ));
+            }
         }
-
-
-        console.log(camera.polygons)
     }
 }

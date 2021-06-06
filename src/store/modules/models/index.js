@@ -105,14 +105,6 @@ const actions = {
 	},
 
 
-	setGuideOfModel({ commit, dispatch }, model) {
-		commit('setGuideOfModel', model);
-		dispatch('scene/reRender', null, { root: true });
-	},
-	setFormOfModel({ commit, dispatch }, model) {
-		commit('setFormOfModel', model);
-		dispatch('scene/reRender', null, { root: true });
-	},
 	setChildModel({ commit, dispatch }, model) {
 		commit('setChildModel', model);
 		commit('resetIndexActiveModel');
