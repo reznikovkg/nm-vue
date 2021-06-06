@@ -54,7 +54,6 @@
             title: String,
         },
         mounted() {
-            console.log(this.value)
             this.setFromValue();
         },
         computed: {

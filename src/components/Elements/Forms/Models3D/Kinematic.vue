@@ -101,13 +101,13 @@
                 'getActiveModel'
             ]),
             getModelsForChoice: function () {
-                return this.getModels.filter((item) => (item.type === typesOfScene.SCENE2D))
+                return this.getModels.filter((item) => (item.type === typesOfScene.SCENE_2D))
 			},
             filterFunction: function () {
             	return (item) => {
-                    if (item.type === typesOfScene.SCENE2D) return true;
-                    if (item.code === typesOfModels["3d"].points.code) return true;
-					if (item.code === typesOfModels["3d"].object.code) return true;
+                    if (item.type === typesOfScene.SCENE_2D) return true;
+                    if (item.code === typesOfModels.SCENE_3D.points.code) return true;
+					if (item.code === typesOfModels.SCENE_3D.object.code) return true;
 
 					return false;
                 }

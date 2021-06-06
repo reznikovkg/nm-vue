@@ -287,7 +287,7 @@ class Camera2D {
         }
     }
 
-    render(models = [], type = typesOfScene.SCENE2D, lights = null) {
+    render(models = [], type = typesOfScene.SCENE_2D, lights = null) {
         this.polygons = [1];
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {

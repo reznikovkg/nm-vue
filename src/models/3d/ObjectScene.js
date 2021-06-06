@@ -2,11 +2,18 @@ import Matrix from './../../math/Matrix';
 import * as AT3D from './../../scene/AffineTransform3D';
 import typesOfScene from "../../scene/typesOfScene";
 import BaseModel from "./../BaseModel";
+import {TypeModelsByScene} from "@/models/typesOfModels";
+import ObjectSceneForm from './../../components/Elements/Forms/Models3D/ObjectScene';
 
 export default class ObjectScene extends BaseModel {
+	code = 'object'
+	name = 'Object'
+	form = ObjectSceneForm
+
 	constructor() {
 		super();
 		this.animateModel = true;
+		this.type = TypeModelsByScene.SCENE_3D
 	}
 
 	setChildModel(model) {

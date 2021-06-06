@@ -42,9 +42,9 @@ const mutations = {
 	 */
 	initScene(state, data) {
 		state.type = data.type;
-		if (data.type === typesOfScene.SCENE2D) {
+		if (data.type === typesOfScene.SCENE_2D) {
 			state.camera = new Camera2D(data.canvas);
-		} else if (data.type === typesOfScene.SCENE3D) {
+		} else if (data.type === typesOfScene.SCENE_3D) {
 			state.camera = new Camera3D(data.canvas);
 		}
 	},

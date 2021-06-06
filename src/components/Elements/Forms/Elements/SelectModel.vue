@@ -42,7 +42,6 @@
 			]),
 			childModel: {
 				get() {
-                    console.log(this.value)
 					if (this.value && this.getModelsForChoice.find((item) => (item.hash === this.value.hash))) {
 						return this.getModelsForChoice.find((item) => (item.hash === this.value.hash)).hash;
 					} else {

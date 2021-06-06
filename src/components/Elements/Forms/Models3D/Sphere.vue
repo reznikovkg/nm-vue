@@ -1,9 +1,6 @@
 <template>
     <div>
         <h3>Sphere</h3>
-
-        <ColorPicker :value="color" @change="handlerColor" title="Color"></ColorPicker>
-
         <InputCustom :value="radius" @change="handlerRadius" title="radius"></InputCustom>
         <InputCustom :value="intervals" @change="handlerIntervals" title="intervals"></InputCustom>
         <InputCustom :value="segments" @change="handlerSegments" title="segments"></InputCustom>
@@ -21,7 +18,6 @@
 	export default {
 		name: "Sphere",
         components: {
-            ColorPicker,
             InputCustom
         },
         props: {
@@ -35,7 +31,6 @@
             	'getModels',
                 'getActiveModel'
             ]),
-
 
             radius: {
                 get() {
@@ -61,21 +56,12 @@
                     this.setIntervals(v)
                 }
             },
-            color: {
-                get() {
-                    return this.getActiveModel.color
-                },
-                set(v) {
-                    this.setColor(v)
-                }
-            }
         },
         methods: {
 			...mapActions('models', [
 				'setSegments',
                 'setIntervals',
                 'setRadius',
-                'setColor',
             ]),
 
             handlerRadius: function (v) {
@@ -86,9 +72,6 @@
             },
             handlerSegments: function (v) {
                 this.segments = v;
-            },
-            handlerColor: function (v) {
-                this.color = v;
             }
         }
 	}

@@ -2,8 +2,14 @@ import Matrix from './../../math/Matrix';
 import typesOfScene from "../../scene/typesOfScene";
 import BaseModel from "./../BaseModel";
 import * as AT3D from './../../scene/AffineTransform3D';
+import {TypeModelsByScene} from "@/models/typesOfModels";
+import SphereForm from './../../components/Elements/Forms/Models3D/Sphere';
 
 export default class Sphere extends BaseModel {
+    code = 'sphere'
+    name = 'sphere'
+    form = SphereForm
+
     constructor() {
         super();
 
@@ -12,6 +18,7 @@ export default class Sphere extends BaseModel {
         this.radius = 10;
         this.segments = 4;
         this.intervals = 4;
+        this.type = TypeModelsByScene.SCENE_3D
     }
 
     apply(at) {

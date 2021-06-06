@@ -5,13 +5,13 @@ export const getters = {
 
 export const mutations = {
 	setCLight(state, data) {
-		state.activeModel.setCLight(data);
+		state.models.find(item => item.hash === state.activeModelHash).setCLight(data);
 	},
 	setCDark(state, data) {
-		state.activeModel.setCDark(data);
+		state.models.find(item => item.hash === state.activeModelHash).setCDark(data);
 	},
 	setPower(state, data) {
-		state.activeModel.setPower(data);
+		state.models.find(item => item.hash === state.activeModelHash).setPower(data);
 	},
 };
 

@@ -1,4 +1,5 @@
 import Matrix from './../math/Matrix';
+import {TypeModelsByScene} from "@/models/typesOfModels";
 
 export default class Model3D {
 
@@ -14,6 +15,7 @@ export default class Model3D {
         this._Edges = null;
 
         this.edges = new Matrix();
+        this.type = TypeModelsByScene.SCENE_3D
     }
 
     setVertices(matr) {

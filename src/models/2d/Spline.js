@@ -1,10 +1,14 @@
 import BaseModel from "./../BaseModel";
 import typesOfScene from "../../scene/typesOfScene";
-import typesOfModels from "./../typesOfModels";
+import typesOfModels, {TypeModelsByScene} from "./../typesOfModels";
 import tMatrix from "./../../math/tMatrix";
 import Matrix from "../../math/Matrix";
+import SplineForm from './../../components/Elements/Forms/Models2D/Spline';
 
 export default class Spline extends BaseModel {
+    code = 'spline'
+    name = 'Spline'
+    form = SplineForm
 
     constructor() {
         super();
@@ -26,6 +30,7 @@ export default class Spline extends BaseModel {
         this.degFinish = 0;
 
         this.points = {};
+        this.type = TypeModelsByScene.SCENE_2D
     }
 
     setPoints(points) {

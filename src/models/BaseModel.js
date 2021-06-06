@@ -46,6 +46,8 @@ export default class BaseModel {
 				new ScalingAT3D(1,1,1),
 			]
 		}
+
+		this.commonFields = true
 	}
 
 	render() {
@@ -76,14 +78,6 @@ export default class BaseModel {
 		this.show = !this.show;
 	}
 
-	setDefaultParams(params, type) {
-		this.type = type;
-		this.name = params.name;
-		this.code = params.code;
-
-		return this;
-	}
-
 	setTitle(title) {
 		this.title = title;
 	}
@@ -103,5 +97,11 @@ export default class BaseModel {
 
 	alignByPivot() {
 		this.pivotPosition.compWithLeft(at);
+	}
+
+	setTypeForce(type) {
+		this.type = type
+
+		return this;
 	}
 }

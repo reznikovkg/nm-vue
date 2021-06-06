@@ -3,7 +3,7 @@ export const getters = {
 		return state.models;
 	},
 	getActiveModel: (state, getters, rootState) => {
-		return state.activeModel;
+		return state.models.find(item => item.hash === state.activeModelHash);
 	},
 	getModelByHash: (state) => {
 		return (hash) => {
@@ -21,7 +21,7 @@ export const mutations = {
 	 */
 	addModel(state, model) {
 		state.models.push(model);
-		state.activeModel = model;
+		state.activeModelHash = model.hash;
 	},
 	removeModel(state, model) {
 		state.models.splice(
@@ -30,7 +30,7 @@ export const mutations = {
 		);
 	},
 	setActiveModel(state, model) {
-		state.activeModel = model;
+		state.activeModelHash = model.hash;
 	},
 	toggleShowModel(state, model) {
 		model.toggleShow();
@@ -44,46 +44,56 @@ export const mutations = {
 	},
 
 	reBuildModels(state) {
-		state.build++;
+		state.models = [...(state.models)];
+		state.buildCount++;
 	},
 	setTitleOfModel(state, params) {
 		params.model.setTitle(params.title);
 	},
 	setAnimationOfModel(state, animate) {
-		state.activeModel.setAnimationOfModel(animate);
+		state.models.find(item => item.hash === state.activeModelHash).setAnimationOfModel(animate);
 	},
 	setColor(state, c) {
-		state.activeModel.setColor(c);
+		state.models.find(item => item.hash === state.activeModelHash).setColor(c);
 	},
 };
 
 export const actions = {
 	toggleShowModel({ commit, dispatch }, model) {
 		commit('toggleShowModel', model);
-		dispatch('scene/reRender', null, { root: true });
+		dispatch('reBuildModels');
 	},
 
 
 	toggleShowModelByHash({ commit, dispatch }, index) {
 		commit('toggleShowModelByHash', index);
-		dispatch('scene/reRender', null, { root: true });
+		dispatch('reBuildModels');
+	},
+
+	addModel({ commit, dispatch }, model) {
+		commit('addModel', model);
+		dispatch('reBuildModels');
 	},
 
 	removeModel({ commit, dispatch }, model) {
 		commit('removeModel', model);
-		dispatch('scene/reRender', null, { root: true });
+		dispatch('reBuildModels');
 	},
 	setTitleOfModel({ commit, dispatch }, model) {
 		commit('setTitleOfModel', model);
-		commit('reBuildModels');
+		dispatch('reBuildModels');
 	},
 	setAnimationOfModel({ commit, dispatch }, params) {
 		commit('setAnimationOfModel', params);
-		commit('reBuildModels');
+		dispatch('reBuildModels');
 	},
 	setColor({ commit, dispatch }, c) {
 		commit('setColor', c);
+		dispatch('reBuildModels');
+	},
+	reBuildModels({ commit, dispatch }) {
 		commit('reBuildModels');
+		dispatch('scene/reRender', null, { root: true });
 	},
 };
 

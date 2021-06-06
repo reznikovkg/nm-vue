@@ -67,7 +67,7 @@
                 'cameraToggleRayTracing',
 			]),
             ...mapActions('models', [
-                'createModel',
+                'addModel',
                 'toggleShowModel',
                 'applyToModel'
             ]),
@@ -92,9 +92,15 @@
 				this.mouseWheel(e);
 			},
             crModels: async function() {
-                let li =  await this.createModel(typesOfModels["3d"].light)
-                let sp = await this.createModel(typesOfModels["3d"].sphere)
-                let sp2 = await this.createModel(typesOfModels["3d"].sphere)
+
+
+                let li = new typesOfModels.SCENE_3D.light.class()
+                await this.addModel(li)
+                let sp = new typesOfModels.SCENE_3D.sphere.class()
+                await this.addModel(sp)
+                let sp2 = new typesOfModels.SCENE_3D.sphere.class()
+                await this.addModel(sp2)
+
                 await this.applyToModel(AT3D.translation(10, 10,10));
                 this.toggleShowModel(li)
                 this.toggleShowModel(sp)

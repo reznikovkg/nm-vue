@@ -2,12 +2,17 @@ import Matrix from './../../math/Matrix';
 import * as AT3D from './../../scene/AffineTransform3D';
 
 import typesOfScene from "./../../scene/typesOfScene";
+import TypesOfModels, {TypeModelsByScene} from "./../../models/typesOfModels";
 
 import ObjectScene from './ObjectScene';
 import {normalToPlane} from "../../math/AnalitycGeometry";
 import BaseModel from "./../BaseModel";
+import KinematicForm from './../../components/Elements/Forms/Models3D/Kinematic';
 
 export default class KinematicModel extends BaseModel {
+    code = 'kinematic'
+    name = 'Kinematic'
+    form = KinematicForm
 
     constructor() {
         super();
@@ -18,11 +23,12 @@ export default class KinematicModel extends BaseModel {
 
         this.guideAT3D = true;
         this.formAT3D = true;
+        this.type = TypeModelsByScene.SCENE_3D
     }
 
     setGuide(model) {
         let ob = new ObjectScene();
-        ob.type = typesOfScene.SCENE3D;
+        ob.type = typesOfScene.SCENE_3D;
         ob.setChildModel(model);
         this.guide = ob;
         // this.guide = new ObjectScene();
@@ -35,7 +41,7 @@ export default class KinematicModel extends BaseModel {
 
     setForm(model) {
         let ob = new ObjectScene();
-        ob.type = typesOfScene.SCENE3D;
+        ob.type = typesOfScene.SCENE_3D;
         ob.setChildModel(model);
         this.form = ob;
         // this.form = new ObjectScene();
@@ -325,8 +331,7 @@ export default class KinematicModel extends BaseModel {
                             matForm.getStrThird()[j] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
                         ]);
 
-
-                        camera.addPolygon(polygon[0], [0,0,1]);
+                        camera.addPolygon(polygon[0], this.color);
 
                     }
                 }

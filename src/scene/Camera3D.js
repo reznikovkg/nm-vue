@@ -5,7 +5,7 @@ import Camera2D from './Camera2D';
 import * as AT3D from './AffineTransform3D';
 import typesOfScene from "./typesOfScene";
 import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
-import {fKernel, initGPU, VectorCombine,LengthFPTP} from "@/scene/fKernel";
+import {VectorCombine,LengthFPTP} from "@/scene/fKernel";
 import {GPU} from "gpu.js";
 import lodash from 'lodash'
 
@@ -240,8 +240,7 @@ export default class Camera3D extends Camera2D {
         ]);
     }
 
-    render(models = [], type = typesOfScene.SCENE2D, lights = null) {
-        console.log("HERE RERENDER")
+    render(models = [], type = typesOfScene.SCENE_3D, lights = null) {
         const d1X = this.ScreenToWorldX(0);
         const d1Y = this.ScreenToWorldY(0);
 
@@ -279,7 +278,7 @@ export default class Camera3D extends Camera2D {
 
         if (!this.rayTracing) this.clear();
         if (!this.rayTracing) this.axisPlot3D();
-        this.render(models, typesOfScene.SCENE3D);
+        this.render(models, typesOfScene.SCENE_3D);
     }
 
     axisPlot3D () {

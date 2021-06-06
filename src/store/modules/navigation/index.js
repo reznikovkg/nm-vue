@@ -1,7 +1,7 @@
 import Camera from './../../../scene/Camera2D'
 import { mutations as mutationsOfInteraction } from "./interaction";
 
-import typesOfModels from "./../../../models/typesOfModels";
+import typesOfModels, {TypeModelsByScene} from "./../../../models/typesOfModels";
 import typesOfScene from "./../../../scene/typesOfScene";
 
 import * as AT3D from './../../../scene/AffineTransform3D';
@@ -10,7 +10,7 @@ import * as AT2D from './../../../scene/AffineTransform2D';
 const state = {
 	mainMenuShow: false,
 	navigation: {
-		"2d": {
+		SCENE_2D: {
 			moveCenter: {
 				status: true,
 				title: 'moveCenter',
@@ -27,7 +27,7 @@ const state = {
 				icon: 'icon-trending-up'
 			},
 		},
-		"3d": {
+		SCENE_3D: {
 			moveCenter: {
 				status: true,
 				title: 'moveCenter',
@@ -120,16 +120,16 @@ const actions = {
 
 	mouseDown ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDown');
-		if (rootState.scene.type === typesOfScene.SCENE2D) {
-			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraDragToStart', e, { root: true });
 			}
 
-			if (state.navigation[typesOfScene.SCENE2D].addPoint.status) {
+			if (state.navigation[typesOfScene.SCENE_2D].addPoint.status) {
 				dispatch('models/addPointToActiveModel', e, { root: true });
 			}
-		} else if (rootState.scene.type === typesOfScene.SCENE3D) {
-			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraMoveCameraStart', e, { root: true });
 			}
 		}
@@ -140,12 +140,12 @@ const actions = {
 	},
 	mouseDrag ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDrag');
-		if (rootState.scene.type === typesOfScene.SCENE2D) {
-			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraDragTo', e, {root: true});
 			}
-		} else if (rootState.scene.type === typesOfScene.SCENE3D) {
-			if (state.navigation[typesOfScene.SCENE3D].moveCenter.status) {
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			if (state.navigation[typesOfScene.SCENE_3D].moveCenter.status) {
 				dispatch('scene/cameraMoveCameraGo', e, {root: true});
 			}
 		}
@@ -155,12 +155,12 @@ const actions = {
 	},
 	mouseUp ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseUp');
-		if (rootState.scene.type === typesOfScene.SCENE2D) {
-			if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
 				dispatch('scene/cameraDragToStop', e, {root: true});
 			}
-		} else if (rootState.scene.type === typesOfScene.SCENE3D) {
-			if (state.navigation[typesOfScene.SCENE3D].moveCenter.status) {
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			if (state.navigation[typesOfScene.SCENE_3D].moveCenter.status) {
 				dispatch('scene/cameraMoveCameraStop', e, {root: true});
 			}
 		}
@@ -182,7 +182,7 @@ const actions = {
 	keyPress ({ commit, state, dispatch, rootState }, e) {
 		commit('keyPress', e.keyCode);
 
-		if (rootState.scene.type === typesOfScene.SCENE3D) {
+		if (rootState.scene.type === typesOfScene.SCENE_3D) {
 			const deg = Math.PI / 36;
 			switch (e.keyCode) {
 				case 98: {
@@ -236,7 +236,7 @@ const actions = {
 					break
 				}
 			}
-		} else if (rootState.scene.type === typesOfScene.SCENE2D) {
+		} else if (rootState.scene.type === typesOfScene.SCENE_2D) {
 			switch (e.keyCode) {
 				case 37: {
 					dispatch('models/applyToModel', AT2D.translation(-1, 0), {root: true});

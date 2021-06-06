@@ -15,7 +15,7 @@
 		},
 		computed: {
 			typesOfScene3d: function () {
-				return typesOfScene.SCENE3D;
+				return typesOfScene.SCENE_3D;
 			}
 		}
 	}

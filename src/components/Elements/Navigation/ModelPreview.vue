@@ -16,7 +16,13 @@
             </div>
         </div>
         <div class="model-body" v-if="isActive">
-            <component :is="formModel" :model="model"/>
+            <div v-if="model.commonFields">
+                <h3>Common:</h3>
+                <ColorPicker :value="color" @change="handlerColor" title="Color"></ColorPicker>
+            </div>
+
+            <component :is="model.form" :model="model"/>
+
             <div v-if="model.animateModel">
                 <h3>Animations:</h3>
                 <at-select v-model="animation" :placeholder="'Animation'">
@@ -35,11 +41,12 @@
 	import typesOfModels from "./../../../models/typesOfModels";
 
     import { mapGetters, mapActions } from 'vuex';
-    import {scaling as ScalingAT3D, translation as TranslationAT3D } from "@/scene/AffineTransform3D";
     import {Animations} from "@/scene/Animations";
+    import ColorPicker from "@/components/Elements/Forms/Elements/ColorPicker";
 
 	export default {
 		name: "ModelPreview",
+        components: {ColorPicker},
         props: {
 			model: {
 				type: Object,
@@ -56,9 +63,6 @@
             isActive: function () {
 				return (this.getActiveModel && (this.model.hash === this.getActiveModel.hash));
             },
-			formModel: function () {
-				return typesOfModels[this.model.type][this.model.code].form;
-			},
             animation: {
                 get() {
                     return this.model.animation.name
@@ -69,6 +73,14 @@
             },
             getAnimationsForChoice: function () {
                 return Animations
+            },
+            color: {
+                get() {
+                    return this.getActiveModel.color
+                },
+                set(v) {
+                    this.setColor(v)
+                }
             }
         },
         methods: {
@@ -77,7 +89,8 @@
 				'toggleShowModel',
 				'removeModel',
                 'setTitleOfModel',
-                'setAnimationOfModel'
+                'setAnimationOfModel',
+                'setColor'
 			]),
 			choiceModelActive: function () {
 				if (!this.isActive) this.setActiveModel(this.model);
@@ -95,9 +108,12 @@
 				}).catch(() => {
 
 				})
-			}
+			},
+            handlerColor: function (v) {
+                this.color = v;
+            }
         }
-	}
+    }
 </script>
 
 <style scoped lang="less">

@@ -1,10 +1,10 @@
 <template>
     <div>
-        <router-link :to="{ name: 'Scene3D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE2D">
+        <router-link :to="{ name: 'Scene3D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE_2D">
             <at-button type="primary" size="large" icon="icon-box" circle/>
         </router-link>
 
-        <router-link :to="{ name: 'Scene2D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE3D">
+        <router-link :to="{ name: 'Scene2D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE_3D">
             <at-button type="primary" size="large" icon="icon-square" circle/>
         </router-link>
 
@@ -42,12 +42,12 @@
     <!--                    </at-select>-->
                         <div class="nav-tab-new-models-list">
                             <div v-for="(type, index) in typesOfModelsShow" class="nav-tab-new-models-item">
-                                <at-button  type="primary" icon="icon-plus" @click="createNewModel(type)">{{ type.name }}</at-button>
+                                <at-button  type="primary" icon="icon-plus" @click="createNewModel(type)">{{ type.class.name }}</at-button>
                             </div>
                         </div>
                     </div>
                     <hr>
-                    <div v-if="scene === typesOfSceneShow.SCENE3D" class="nav-tab">
+                    <div v-if="scene === typesOfSceneShow.SCENE_3D" class="nav-tab">
                         <h3>Settings:</h3>
                         <hr>
                         <div class="nav-tab-new-models-list">
@@ -87,7 +87,7 @@
         props: {
 			scene: {
 				type: String,
-                default: typesOfScene.SCENE2D
+                default: typesOfScene.SCENE_2D
             }
         },
         computed: {
@@ -117,14 +117,16 @@
                 'choiceNavigation'
 			]),
 			...mapActions('models', [
-				'createModel',
+				'addModel',
 			]),
             ...mapActions('scene', [
                 'cameraToggleRayTracing',
                 'cameraToggleAnimateMode'
             ]),
-            createNewModel: function (model) {
-                this.createModel(model);
+            createNewModel: function (modelClass) {
+			    const model = new modelClass.class();
+			    if (!model.type) model.setTypeForce(this.getTypeScene)
+                this.addModel(model);
 			},
             toggleRT: function () {
 			    this.cameraToggleRayTracing()

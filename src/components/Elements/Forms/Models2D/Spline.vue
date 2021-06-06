@@ -27,7 +27,7 @@
                 'getModelByHash'
 			]),
 			getModelsForChoice: function () {
-				return this.getModels.filter((item) => (item.code === typesOfModels[typesOfScene.SCENE2D].points.code))
+				return this.getModels.filter((item) => (item.code === typesOfModels[typesOfScene.SCENE_2D].points.code))
 			},
 			points: {
 				get() {

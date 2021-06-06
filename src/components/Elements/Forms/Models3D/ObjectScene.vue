@@ -60,7 +60,7 @@
                 }
             },
             disableCountPoints: function () {
-                return (this.childModel && this.childModel.code === typesOfModels[typesOfScene.SCENE2D].points.code);
+                return (this.childModel && this.childModel.code === typesOfModels[typesOfScene.SCENE_2D].points.code);
 			},
 			childModel: {
 				get() {
@@ -76,8 +76,8 @@
 			filterFunction: function () {
                 return (item) => {
                     if (item.hash === this.model.hash) return false;
-                    if (item.type === typesOfScene.SCENE2D) return true;
-                    if (item.code === typesOfModels["3d"].object.code) return true;
+                    if (item.type === typesOfScene.SCENE_2D) return true;
+                    if (item.code === typesOfModels.SCENE_3D.object.code) return true;
 
                     return false
                 }

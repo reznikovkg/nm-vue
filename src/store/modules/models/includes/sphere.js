@@ -5,13 +5,13 @@ export const getters = {
 
 export const mutations = {
 	setRadius(state, data) {
-		state.activeModel.setRadius(data);
+		state.models.find(item => item.hash === state.activeModelHash).setRadius(data);
 	},
 	setSegments(state, data) {
-		state.activeModel.setSegments(data);
+		state.models.find(item => item.hash === state.activeModelHash).setSegments(data);
 	},
 	setIntervals(state, data) {
-		state.activeModel.setIntervals(data);
+		state.models.find(item => item.hash === state.activeModelHash).setIntervals(data);
 	},
 };
 

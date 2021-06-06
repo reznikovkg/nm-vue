@@ -2,6 +2,6 @@
  * STATUS: DONE
  */
 export default {
-	SCENE2D: '2d',
-	SCENE3D: '3d'
+	SCENE_2D: 'SCENE_2D',
+	SCENE_3D: 'SCENE_3D'
 }

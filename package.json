@@ -8,7 +8,8 @@
     "build": "node build/build.js",
     "test:unit": "vue-cli-service test:unit",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "buildKernel": "webpack --config build/buildKernel.js"
   },
   "dependencies": {
     "@vue/cli-service": "^4.5.6",
@@ -53,6 +54,7 @@
     "rimraf": "^2.6.0",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",
+    "terser-webpack-plugin": "^3.1.0",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",

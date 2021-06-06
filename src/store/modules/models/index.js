@@ -10,11 +10,9 @@ import sphere from "./includes/sphere";
 
 const state = {
 	models: [
-		(new Points()).setDefaultParams(typesOfModels[typesOfScene.SCENE2D].points, typesOfScene.SCENE2D)
+		(new Points().setTypeForce(typesOfModels.SCENE_2D))
 	],
-	activeModel: null,
-
-	buildCount: 0
+	activeModelHash: null,
 };
 
 const getters = {
@@ -29,27 +27,6 @@ const getters = {
 	},
 	getChoiceTypeModel: (state, getters, rootState) => {
 		return state.choiceTypeModel;
-	},
-	getFormOfModel: (state, getters, rootState) => {
-		if (state.models[state.indexActiveModel].form) {
-			return state.models[state.indexActiveModel].form.model;
-		} else {
-			return null
-		}
-	},
-	getGuideOfModel: (state, getters, rootState) => {
-		if (state.models[state.indexActiveModel].guide) {
-			return state.models[state.indexActiveModel].guide.model;
-		} else {
-			return null
-		}
-	},
-	getChildModel: (state, getters, rootState) => {
-		return state.models[state.indexActiveModel].childModel;
-		// if (state.models[state.indexActiveModel].childModel) {
-		// } else {
-		// 	return null
-		// }
 	},
 };
 
@@ -67,7 +44,7 @@ const mutations = {
 	 * @param point
 	 */
 	addPointToActiveModel(state, point) {
-		state.activeModel.addPoint(
+		state.models.find(item => item.hash === state.activeModelHash).addPoint(
 			point.x,
 			point.y
 		);
@@ -75,38 +52,15 @@ const mutations = {
 	setChoiceTypeModel(state, t) {
 		state.choiceTypeModel = t;
 	},
-
-	setGuideOfModel(state, model) {
-		state.models[state.indexActiveModel].setGuide(model);
-	},
-	setFormOfModel(state, model) {
-		state.models[state.indexActiveModel].setForm(model);
-	},
-	setChildModel(state, model) {
-		state.models[state.indexActiveModel].setChildModel(model);
-	},
 	applyToModel(state, at) {
-		state.activeModel.apply(at);
+		state.models.find(item => item.hash === state.activeModelHash).apply(at);
 	},
-
-
 	setPointsOfModel(state, points) {
-		state.activeModel.setPoints(points);
+		state.models.find(item => item.hash === state.activeModelHash).setPoints(points);
 	},
-
-
 	removePointInModel(state, index) {
-		state.activeModel.removePoint(index);
+		state.models.find(item => item.hash === state.activeModelHash).removePoint(index);
 	},
-
-	setCountOfPoints(state, count) {
-		if (count <= 500)
-		state.models[state.indexActiveModel].setCountPoints(count);
-	},
-
-
-
-
 };
 
 const actions = {
@@ -116,23 +70,6 @@ const actions = {
 	...light.actions,
 	...sphere.actions,
 
-	/**
-	 * STATUS: DONE
-	 *
-	 * @param commit
-	 * @param state
-	 * @param rootState
-	 * @param dispatch
-	 * @param e
-	 */
-	createModel({ commit, state, rootState, dispatch }, classObject) {
-		//TODO write default params of models to model
-		let model = new classObject.class();
-		model.setDefaultParams(classObject, rootState.scene.type);
-		commit('addModel', model);
-		dispatch('scene/reRender', null, { root: true });
-		return model
-	},
 	/**
 	 * STATUS: DONE
 	 *
@@ -174,8 +111,8 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
-	applyToModel({ state, commit, dispatch }, at) {
-		if (state.activeModel) commit('applyToModel', at);
+	applyToModel({ state, commit, dispatch, getters }, at) {
+		if (getters.getActiveModel) commit('applyToModel', at);
 		dispatch('scene/reRender', null, { root: true });
 	},
 

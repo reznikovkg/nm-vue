@@ -1,8 +1,14 @@
 import Matrix from './../../math/Matrix';
 import typesOfScene from "../../scene/typesOfScene";
 import BaseModel from "./../BaseModel";
+import {TypeModelsByScene} from "@/models/typesOfModels";
+import LightForm from './../../components/Elements/Forms/Models3D/Light';
 
 export default class Light extends BaseModel {
+    code = 'light'
+    name = 'light'
+    form = LightForm
+
     constructor() {
         super();
 
@@ -11,6 +17,9 @@ export default class Light extends BaseModel {
         this.cLight = [2,2,2];
         this.cDark = [0.1,0.1,0.1];
         this.power = 10;
+
+        this.commonFields = false
+        this.type = TypeModelsByScene.SCENE_3D
     }
 
     apply(at) {
