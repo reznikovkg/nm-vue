@@ -14,8 +14,8 @@ import * as AT3D from "@/scene/AffineTransform3D";
 
 const state = {
 	models: [
-		new Points().setTypeForce(typesOfModels.SCENE_2D),
-		new Points().setTypeForce(typesOfModels.SCENE_3D),
+		new Points().setTypeForce(typesOfScene.SCENE_2D),
+		new Points().setTypeForce(typesOfScene.SCENE_3D),
 		new Sphere(),
 		new Light(),
 	],

@@ -125,6 +125,7 @@
             ]),
             createNewModel: function (modelClass) {
 			    const model = new modelClass.class();
+                console.log(this.getTypeScene)
 			    if (!model.type) model.setTypeForce(this.getTypeScene)
                 this.addModel(model);
 			},

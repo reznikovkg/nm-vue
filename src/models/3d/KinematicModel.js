@@ -176,43 +176,71 @@ export default class KinematicModel extends BaseModel {
             return;
         }
 
-        if (this.guideMappingCountSteps > 1) this.guideMappingSteps = this.guideMapping.mapping(this.guideMappingCountSteps)
+        let isGuideMapping = false;
+        if (this.guideMappingCountSteps > 1) {
+            this.guideMappingSteps = this.guideMapping.mapping(this.guideMappingCountSteps)
+            isGuideMapping = true
+        }
+
 
         this.form.setMatrixOfPoints();
-        this.guide.setMatrixOfPoints();
-
         let _form = this.form;
-        let _guide = this.guide;
-
         if (camera.animateMode) {
             _form = new ObjectScene();
             _form.setChildModel(this.form)
             _form.apply(this.getAnimateFrameAT(camera))
+        }
 
+        this.guide.setMatrixOfPoints();
+        let _guide = this.guide;
+        if (camera.animateMode) {
             _guide = new ObjectScene();
             _guide.setChildModel(this.guide)
             _guide.apply(this.getAnimateFrameAT(camera))
         }
 
-        _form.applyToAt(AT3D.translation(
-            -_form.getMatrixOfPoints().getStrFirst()[0]
-            + _guide.getMatrixOfPoints().getStrFirst()[0],
-            -_form.getMatrixOfPoints().getStrSecond()[0]
-            + _guide.getMatrixOfPoints().getStrSecond()[0],
-            -_form.getMatrixOfPoints().getStrThird()[0]
-            + _guide.getMatrixOfPoints().getStrThird()[0],
-        ));
+        if (isGuideMapping) {
+            // _form.applyToAt(AT3D.translation(
+            //   - _form.getMatrixOfPoints().getStrFirst()[0],
+            //   - _form.getMatrixOfPoints().getStrSecond()[0],
+            //   - _form.getMatrixOfPoints().getStrThird()[0],
+            // ));
+        } else {
+            _form.applyToAt(AT3D.translation(
+              - _form.getMatrixOfPoints().getStrFirst()[0] + _guide.getMatrixOfPoints().getStrFirst()[0],
+              - _form.getMatrixOfPoints().getStrSecond()[0] + _guide.getMatrixOfPoints().getStrSecond()[0],
+              - _form.getMatrixOfPoints().getStrThird()[0] + _guide.getMatrixOfPoints().getStrThird()[0],
+            ));
+        }
 
         let matForm = new Matrix();
         matForm.setMatrixForce(_form.getMatrixOfPoints());
 
+        let backStepMathForm = new Matrix();
+        backStepMathForm.setMatrixForce(matForm);
 
-        const limitSteps = this.guideMappingCountSteps > 1 ? this.guideMappingCountSteps : _guide.getMatrixOfPoints().getStrFirst().length
+
+        const limitSteps = isGuideMapping ? this.guideMappingCountSteps : _guide.getMatrixOfPoints().getStrFirst().length
+
 
         for (let i = 0; i < limitSteps; i++) {
-            for (let j = 0; j < matForm.getStrFirst().length; j++) {
 
-                if (j + 1 < matForm.getStrFirst().length) {
+            backStepMathForm.setMatrixForce(matForm)
+            if (isGuideMapping) {
+                matForm = new Matrix();
+                matForm.setMatrixForce(_form.getMatrixOfPoints());
+                matForm.compWithLeft(this.guideMappingSteps[i]);
+            } else {
+                matForm.compWithLeft(AT3D.translation(
+                  _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                  _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                  _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i],
+                ));
+            }
+
+            for (let j = 0; j < matForm.getStrFirst().length - 1; j++) {
+
+                // if (j + 1 < matForm.getStrFirst().length) {
 
                     const polygon = [[],[]];
                     polygon[0].push([
@@ -226,33 +254,44 @@ export default class KinematicModel extends BaseModel {
                         matForm.getStrThird()[j + 1]
                     ]);
 
-                    if (i + 1 < matForm.getStrFirst().length) {
-                        polygon[0].push([
-                            matForm.getStrFirst()[j + 1] + _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
-                            matForm.getStrSecond()[j + 1] + _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
-                            matForm.getStrThird()[j + 1] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
-                        ]);
-                        polygon[0].push([
-                            matForm.getStrFirst()[j] + _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
-                            matForm.getStrSecond()[j] + _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
-                            matForm.getStrThird()[j] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
-                        ]);
+                    polygon[0].push([
+                        backStepMathForm.getStrFirst()[j + 1],
+                        backStepMathForm.getStrSecond()[j + 1],
+                        backStepMathForm.getStrThird()[j + 1]
+                    ]);
+                    polygon[0].push([
+                        backStepMathForm.getStrFirst()[j],
+                        backStepMathForm.getStrSecond()[j],
+                        backStepMathForm.getStrThird()[j]
+                    ]);
 
-                        camera.addPolygon(polygon[0], this.color);
+                    camera.addPolygon(polygon[0], this.color);
 
-                    }
-                }
+                    // if (i + 1 < matForm.getStrFirst().length) {
+                        // polygon[0].push([
+                        //     matForm.getStrFirst()[j + 1] + _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                        //     matForm.getStrSecond()[j + 1] + _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                        //     matForm.getStrThird()[j + 1] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
+                        // ]);
+                        // polygon[0].push([
+                        //     matForm.getStrFirst()[j] + _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+                        //     matForm.getStrSecond()[j] + _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+                        //     matForm.getStrThird()[j] + _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i]
+                        // ]);
+                    // }
+                // }
             }
 
-            if (this.guideMappingCountSteps > 1) {
-                matForm.compWithLeft(this.guideMappingSteps[i]);
-            } else {
-                matForm.compWithLeft(AT3D.translation(
-                  _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
-                  _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
-                  _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i],
-                ));
-            }
+            // backStepMathForm.setMatrixForce(matForm)
+            // if (this.guideMappingCountSteps > 1) {
+            //     matForm.compWithLeft(this.guideMappingSteps[i]);
+            // } else {
+            //     matForm.compWithLeft(AT3D.translation(
+            //       _guide.getMatrixOfPoints().getStrFirst()[i + 1] - _guide.getMatrixOfPoints().getStrFirst()[i],
+            //       _guide.getMatrixOfPoints().getStrSecond()[i + 1] - _guide.getMatrixOfPoints().getStrSecond()[i],
+            //       _guide.getMatrixOfPoints().getStrThird()[i + 1] - _guide.getMatrixOfPoints().getStrThird()[i],
+            //     ));
+            // }
         }
     }
 }
