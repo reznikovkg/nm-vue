@@ -5,9 +5,12 @@ import tMatrix from "./../../math/tMatrix";
 import Matrix from "../../math/Matrix";
 import SplineForm from './../../components/Elements/Forms/Models2D/Spline';
 
+export const CODE = 'spline'
+export const NAME = 'Spline'
+
 export default class Spline extends BaseModel {
-    code = 'spline'
-    name = 'Spline'
+    code = CODE
+    name = NAME
     formEdit = SplineForm
 
     constructor() {

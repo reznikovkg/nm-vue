@@ -6,10 +6,11 @@ import {TypeModelsByScene} from "@/models/typesOfModels";
 import ObjectSceneForm from './../../components/Elements/Forms/Models3D/ObjectScene';
 
 export const CODE = 'object'
+export const NAME = 'Object'
 
 export default class ObjectScene extends BaseModel {
 	code = CODE
-	name = 'Object'
+	name = NAME
 	formEdit = ObjectSceneForm
 
 	constructor() {

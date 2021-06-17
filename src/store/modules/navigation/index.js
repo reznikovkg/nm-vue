@@ -170,9 +170,14 @@ const actions = {
 			}
 		}
 	},
-	mouseWheel ({ commit, state, dispatch }, e) {
+	mouseWheel ({ commit, state, dispatch, rootState }, e) {
 		commit('mouseWheel');
-		dispatch('scene/cameraWheelSize', e, { root: true });
+
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			dispatch('scene/cameraWheelSize', e, { root: true });
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			dispatch('scene/cameraChangeD', e, { root: true });
+		}
 	},
 
 

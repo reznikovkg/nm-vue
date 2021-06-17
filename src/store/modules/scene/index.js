@@ -83,6 +83,9 @@ const mutations = {
 	cameraWheelSize(state, e) {
 		state.camera.wheelSize(e);
 	},
+	cameraChangeD(state, e) {
+		state.camera.setDbyE(e);
+	},
 	cameraMoveCameraStart(state, e) {
 		state.camera.moveCameraStart(e);
 	},
@@ -138,6 +141,10 @@ const actions = {
 	},
 	cameraWheelSize ({ commit, dispatch }, e) {
 		commit('cameraWheelSize', e);
+		dispatch('reRender');
+	},
+	cameraChangeD({ commit, dispatch }, e) {
+		commit('cameraChangeD', e);
 		dispatch('reRender');
 	},
 	cameraMoveCameraStart ({ commit, dispatch }, e) {

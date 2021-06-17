@@ -46,6 +46,8 @@ function rayTracing() {
       .setOutput([this.canvas.width, this.canvas.height]);
 
     if (this.polygons[0].length) kernel(this.polygons, this.lights);
+    this.timeRendering = new Date().getTime() - this.timeRendering;
+    this.timeRenderingLog.push(this.timeRendering)
     this.ctx.drawImage(kernel.canvas, 0, 0);
     this.isRender = false;
 

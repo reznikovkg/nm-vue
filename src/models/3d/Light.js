@@ -5,10 +5,11 @@ import {TypeModelsByScene} from "@/models/typesOfModels";
 import LightForm from './../../components/Elements/Forms/Models3D/Light';
 
 export const CODE = 'light'
+export const NAME = 'light'
 
 export default class Light extends BaseModel {
     code = CODE
-    name = 'light'
+    name = NAME
     formEdit = LightForm
 
     constructor() {

@@ -5,9 +5,12 @@ import * as AT3D from './../../scene/AffineTransform3D';
 import {TypeModelsByScene} from "@/models/typesOfModels";
 import SphereForm from './../../components/Elements/Forms/Models3D/Sphere';
 
+export const CODE = 'sphere'
+export const NAME = 'Sphere'
+
 export default class Sphere extends BaseModel {
-    code = 'sphere'
-    name = 'sphere'
+    code = CODE
+    name = NAME
     formEdit = SphereForm
 
     constructor() {
@@ -99,8 +102,6 @@ export default class Sphere extends BaseModel {
 
 
         }
-
-        console.log(camera.polygons)
     }
 
 

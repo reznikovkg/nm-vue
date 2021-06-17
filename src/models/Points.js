@@ -6,10 +6,11 @@ import { getArrayWithAllocateCells } from "./../functions/array";
 import PointsForm from './../components/Elements/Forms/Points';
 
 export const CODE = 'points'
+export const NAME = 'Points'
 
 export default class Points extends BaseModel {
     code = CODE
-    name = 'Points'
+    name = NAME
     formEdit = PointsForm
 
     constructor(

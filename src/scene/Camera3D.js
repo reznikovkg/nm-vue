@@ -48,7 +48,8 @@ export default class Camera3D extends Camera2D {
         this.animateFramerate = 24;
         this.animateActiveFrame = 0;
 
-
+        this.timeRendering = 0
+        this.timeRenderingLog = []
 
         this.reRender = lodash.throttle(this.reRender, 1000/this.animateFramerate)
     }
@@ -193,6 +194,20 @@ export default class Camera3D extends Camera2D {
         }
     }
 
+    setDbyE(e) {
+        let k = 1;
+        if (e.deltaY < 0) { k = 1.1; } else { k = 0.9; }
+
+        if (this.d * k > 0) {
+            this.d *= k;
+        }
+
+        if ((this.scale.px * k > 0) && (this.scale.py * k > 0)) {
+            this.scale.px *= k;
+            this.scale.py *= k;
+        }
+    }
+
     moveCameraStop() {
         this.moveCamera.move = false;
         this.updateCamera();
@@ -243,6 +258,7 @@ export default class Camera3D extends Camera2D {
     }
 
     render(models = [], type = typesOfScene.SCENE_3D, lights = null) {
+        this.timeRendering = new Date().getTime();
         const d1X = this.ScreenToWorldX(0);
         const d1Y = this.ScreenToWorldY(0);
 

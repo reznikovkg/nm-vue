@@ -1,9 +1,12 @@
 import {TypeModelsByScene} from "@/models/typesOfModels";
 import pNewtonForm from './../../components/Elements/Forms/Models2D/pNewton';
 
+export const CODE = 'pnewton'
+export const NAME = 'pNewton'
+
 export default class pNewton {
-    name = 'pNewton'
-    code = 'pnewton'
+    name = NAME
+    code = CODE
     formEdit = pNewtonForm
 
     constructor(points = null) {

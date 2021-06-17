@@ -42,7 +42,7 @@
     <!--                    </at-select>-->
                         <div class="nav-tab-new-models-list">
                             <div v-for="(type, index) in typesOfModelsShow" class="nav-tab-new-models-item">
-                                <at-button  type="primary" icon="icon-plus" @click="createNewModel(type)">{{ type.class.name }}</at-button>
+                                <at-button  type="primary" icon="icon-plus" @click="createNewModel(type)">{{ getNameOfModel(index) }}</at-button>
                             </div>
                         </div>
                     </div>
@@ -59,6 +59,26 @@
                         <div class="nav-tab-new-models-list">
                             <at-button
                                 :class="{ 'at-btn--primary': getModeCameraAnimate}" icon="icon-done" @click="toggleAM">Toggle Animate Mode</at-button>
+                        </div>
+                    </div>
+                    <div v-if="scene === typesOfSceneShow.SCENE_3D" class="nav-tab">
+                        <h3>Statistics:</h3>
+                        <hr>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}"
+                                icon="icon-done"
+                                @click="rerendering">Rerendering</at-button>
+                        </div>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}"
+                                icon="icon-done"
+                                @click="printTimeLogs">Print Time Logs</at-button>
+                        </div>
+                        <div class="nav-tab-new-models-list left">
+                            Polygons: {{ getPolygons }} <br>
+                            TimeRendering: {{ getTimeRendering }}
                         </div>
                     </div>
                 </div>
@@ -93,6 +113,7 @@
         computed: {
 			...mapGetters('scene', [
 				'getTypeScene',
+                'getCamera',
                 'getModeCameraRayTracing',
                 'getModeCameraAnimate'
 			]),
@@ -110,6 +131,12 @@
 			typesOfSceneShow: function () {
 				return typesOfScene;
 			},
+            getPolygons: function () {
+                return this.getCamera.polygons[0] && this.getCamera.polygons[0].length
+            },
+            getTimeRendering: function () {
+                return this.getCamera.timeRendering
+            }
         },
         methods: {
 			...mapActions('navigation', [
@@ -121,11 +148,14 @@
 			]),
             ...mapActions('scene', [
                 'cameraToggleRayTracing',
-                'cameraToggleAnimateMode'
+                'cameraToggleAnimateMode',
+                'reRender'
             ]),
+            getNameOfModel: function (typeIndex) {
+                return this.typesOfModelsShow[typeIndex].name
+            },
             createNewModel: function (modelClass) {
 			    const model = new modelClass.class();
-                console.log(this.getTypeScene)
 			    if (!model.type) model.setTypeForce(this.getTypeScene)
                 this.addModel(model);
 			},
@@ -134,7 +164,13 @@
             },
             toggleAM: function () {
                 this.cameraToggleAnimateMode()
-            }
+            },
+            rerendering: function () {
+                this.reRender()
+            },
+            printTimeLogs: function () {
+                console.log(this.getCamera.timeRenderingLog)
+            },
         }
 	}
 </script>
@@ -170,6 +206,10 @@
         margin-bottom: 5px;
         &:last-child {
             margin-bottom: 0;
+        }
+
+        &.left {
+            align-items: flex-start;
         }
     }
 

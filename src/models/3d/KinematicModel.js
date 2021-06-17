@@ -4,14 +4,16 @@ import * as AT3D from './../../scene/AffineTransform3D';
 import typesOfScene from "./../../scene/typesOfScene";
 import TypesOfModels, {TypeModelsByScene} from "./../../models/typesOfModels";
 
-import ObjectScene from './ObjectScene';
-import {normalToPlane} from "../../math/AnalitycGeometry";
+import ObjectScene from './ObjectScene'
 import BaseModel from "./../BaseModel";
 import KinematicForm from './../../components/Elements/Forms/Models3D/Kinematic';
 
+export const CODE = 'kinematic'
+export const NAME = 'Kinematic'
+
 export default class KinematicModel extends BaseModel {
-    code = 'kinematic'
-    name = 'Kinematic'
+    code = CODE
+    name = NAME
     formEdit = KinematicForm
 
     constructor() {
