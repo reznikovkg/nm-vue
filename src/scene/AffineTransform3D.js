@@ -19,6 +19,9 @@ function translation(x, y, z) {
 }
 
 function rotationXDeg(phi) {
+    if (isNaN(phi)) {
+        return identity();
+    }
     return new Matrix([
         [1, 0, 0, 0],
         [0, Math.cos(phi), -Math.sin(phi), 0],
@@ -28,6 +31,9 @@ function rotationXDeg(phi) {
 }
 
 function rotationYDeg(phi) {
+    if (isNaN(phi)) {
+        return identity();
+    }
     return new Matrix([
         [Math.cos(phi), 0, Math.sin(phi), 0],
         [0, 1, 0, 0],
@@ -37,6 +43,10 @@ function rotationYDeg(phi) {
 }
 
 function rotationZDeg(phi) {
+    if (isNaN(phi)) {
+        return identity();
+    }
+
     return new Matrix([
         [Math.cos(phi), -Math.sin(phi), 0, 0],
         [Math.sin(phi), Math.cos(phi), 0, 0],

@@ -1,11 +1,9 @@
 <template>
     <div>
-        <h3>Light</h3>
-
-
-        <ColorPicker :value="cLight" @change="handlerCLight" title="cLight"></ColorPicker>
-        <ColorPicker :value="cDark" @change="handlerCDark" title="cDark"></ColorPicker>
-        <InputCustom :value="power" @change="handlerPower"></InputCustom>
+        <h3>Sphere</h3>
+        <InputCustom :value="radius" @change="handlerRadius" title="radius"></InputCustom>
+        <InputCustom :value="intervals" @change="handlerIntervals" title="intervals"></InputCustom>
+        <InputCustom :value="segments" @change="handlerSegments" title="segments"></InputCustom>
     </div>
 </template>
 
@@ -18,9 +16,8 @@
     import InputCustom from "@/components/Elements/Forms/Elements/InputCustom";
 
 	export default {
-		name: "Light",
+		name: "Sphere",
         components: {
-            ColorPicker,
             InputCustom
         },
         props: {
@@ -35,46 +32,46 @@
                 'getActiveModel'
             ]),
 
-            cLight: {
+            radius: {
                 get() {
-                    return this.getActiveModel.cLight
+                    return this.getActiveModel.radius
                 },
                 set(v) {
-                    this.setCLight(v)
+                    this.setRadius(v)
                 }
             },
-            cDark: {
+            segments: {
                 get() {
-                    return this.getActiveModel.cDark
+                    return this.getActiveModel.segments
                 },
                 set(v) {
-                    this.setCDark(v)
+                    this.setSegments(v)
                 }
             },
-            power: {
+            intervals: {
                 get() {
-                    return this.getActiveModel.power
+                    return this.getActiveModel.intervals
                 },
                 set(v) {
-                    this.setPower(v)
+                    this.setIntervals(v)
                 }
             },
         },
         methods: {
 			...mapActions('models', [
-				'setCLight',
-                'setCDark',
-                'setPower'
+				'setSegments',
+                'setIntervals',
+                'setRadius',
             ]),
 
-            handlerCLight: function (v) {
-			    this.cLight = v;
+            handlerRadius: function (v) {
+			    this.radius = v;
             },
-            handlerCDark: function (v) {
-                this.cDark = v;
+            handlerIntervals: function (v) {
+                this.intervals = v;
             },
-            handlerPower: function (v) {
-                this.power = v;
+            handlerSegments: function (v) {
+                this.segments = v;
             }
         }
 	}

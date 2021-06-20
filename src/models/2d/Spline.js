@@ -1,10 +1,17 @@
 import BaseModel from "./../BaseModel";
 import typesOfScene from "../../scene/typesOfScene";
-import typesOfModels from "./../typesOfModels";
+import typesOfModels, {TypeModelsByScene} from "./../typesOfModels";
 import tMatrix from "./../../math/tMatrix";
 import Matrix from "../../math/Matrix";
+import SplineForm from './../../components/Elements/Forms/Models2D/Spline';
+
+export const CODE = 'spline'
+export const NAME = 'Spline'
 
 export default class Spline extends BaseModel {
+    code = CODE
+    name = NAME
+    formEdit = SplineForm
 
     constructor() {
         super();
@@ -26,6 +33,7 @@ export default class Spline extends BaseModel {
         this.degFinish = 0;
 
         this.points = {};
+        this.type = TypeModelsByScene.SCENE_2D
     }
 
     setPoints(points) {
@@ -234,7 +242,7 @@ export default class Spline extends BaseModel {
 
         let ctx = camera.canvas.getContext("2d");
         ctx.beginPath();
-        ctx.strokeStyle = '#ff0012';
+        ctx.strokeStyle = this.getColorRGB();
         ctx.setLineDash([]);
         ctx.lineWidth = 2;
         let start = this.getStart();
@@ -266,5 +274,6 @@ export default class Spline extends BaseModel {
         //     }
         // }
         ctx.stroke();
+        ctx.closePath();
     }
 }

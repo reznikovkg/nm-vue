@@ -1,7 +1,7 @@
 import Camera from './../../../scene/Camera2D'
 import { mutations as mutationsOfInteraction } from "./interaction";
 
-import typesOfModels from "./../../../models/typesOfModels";
+import typesOfModels, {TypeModelsByScene} from "./../../../models/typesOfModels";
 import typesOfScene from "./../../../scene/typesOfScene";
 
 import * as AT3D from './../../../scene/AffineTransform3D';
@@ -10,7 +10,7 @@ import * as AT2D from './../../../scene/AffineTransform2D';
 const state = {
 	mainMenuShow: false,
 	navigation: {
-		"2d": {
+		SCENE_2D: {
 			moveCenter: {
 				status: true,
 				title: 'moveCenter',
@@ -27,7 +27,7 @@ const state = {
 				icon: 'icon-trending-up'
 			},
 		},
-		"3d": {
+		SCENE_3D: {
 			moveCenter: {
 				status: true,
 				title: 'moveCenter',
@@ -118,46 +118,66 @@ const actions = {
 
 
 
-
-
-
 	mouseDown ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDown');
-		if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
-			dispatch('scene/cameraDragToStart', e, { root: true });
-		}
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
+				dispatch('scene/cameraDragToStart', e, { root: true });
+			}
 
-		if (state.navigation[typesOfScene.SCENE2D].addPoint.status) {
-			dispatch('models/addPointToActiveModel', e, { root: true });
-		}
+			if (state.navigation[typesOfScene.SCENE_2D].addPoint.status) {
+				dispatch('models/addPointToActiveModel', e, { root: true });
+			}
 
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsStart', e);
-		// }
+			if (state.navigation[typesOfScene.SCENE_2D].addComboPoints.status) {
+				dispatch('models/activeModelAddComboPointsStart', e, { root: true });
+			}
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
+				dispatch('scene/cameraMoveCameraStart', e, { root: true });
+			}
+		}
 	},
 	mouseDrag ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseDrag');
-		if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
-			dispatch('scene/cameraDragTo', e, { root: true });
-		}
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
+				dispatch('scene/cameraDragTo', e, {root: true});
+			}
 
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsDrag', e);
-		// }
+			if (state.navigation[typesOfScene.SCENE_2D].addComboPoints.status) {
+				dispatch('models/activeModelAddComboPointsDrag', e, { root: true });
+			}
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			if (state.navigation[typesOfScene.SCENE_3D].moveCenter.status) {
+				dispatch('scene/cameraMoveCameraGo', e, {root: true});
+			}
+		}
 	},
 	mouseUp ({ commit, state, rootState, dispatch }, e) {
 		commit('mouseUp');
-		if (state.navigation[typesOfScene.SCENE2D].moveCenter.status) {
-			dispatch('scene/cameraDragToStop', e, { root: true });
-		}
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			if (state.navigation[typesOfScene.SCENE_2D].moveCenter.status) {
+				dispatch('scene/cameraDragToStop', e, {root: true});
+			}
 
-		// if (state.navigation.addComboPoints.status) {
-		// 	commit('activeModelAddComboPointsStop', e);
-		// }
+			if (state.navigation[typesOfScene.SCENE_2D].addComboPoints.status) {
+				dispatch('models/activeModelAddComboPointsStop', e, { root: true });
+			}
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			if (state.navigation[typesOfScene.SCENE_3D].moveCenter.status) {
+				dispatch('scene/cameraMoveCameraStop', e, {root: true});
+			}
+		}
 	},
-	mouseWheel ({ commit, state, dispatch }, e) {
+	mouseWheel ({ commit, state, dispatch, rootState }, e) {
 		commit('mouseWheel');
-		dispatch('scene/cameraWheelSize', e, { root: true });
+
+		if (rootState.scene.type === typesOfScene.SCENE_2D) {
+			dispatch('scene/cameraWheelSize', e, { root: true });
+		} else if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			dispatch('scene/cameraChangeD', e, { root: true });
+		}
 	},
 
 
@@ -168,34 +188,61 @@ const actions = {
 	keyPress ({ commit, state, dispatch, rootState }, e) {
 		commit('keyPress', e.keyCode);
 
-
-		if (rootState.scene.type === typesOfScene.SCENE3D) {
+		if (rootState.scene.type === typesOfScene.SCENE_3D) {
+			const deg = Math.PI / 36;
 			switch (e.keyCode) {
 				case 98: {
-					dispatch('models/applyToModel', AT3D.rotationXDeg(Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationXDeg(Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationXDeg(deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationXDeg(deg), {root: true});
 					break;
 				}
 				case 100: {
-					dispatch('models/applyToModel', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationYDeg(-Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationYDeg(-deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationYDeg(-deg), {root: true});
 					break;
 				}
 				case 102: {
-					dispatch('models/applyToModel', AT3D.rotationYDeg(Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationYDeg(Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationYDeg(deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationYDeg(deg), {root: true});
 					break;
 				}
 				case 104: {
-					dispatch('models/applyToModel', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
-					dispatch('scene/applyToCamera', AT3D.rotationXDeg(-Math.PI / 18), {root: true});
+					dispatch('models/applyToModel', AT3D.rotationXDeg(-deg), {root: true});
+					dispatch('scene/applyToCamera', AT3D.rotationXDeg(-deg), {root: true});
 					break;
 				}
+
+
+				case 37: {
+					dispatch('models/applyToModel', AT3D.translation(-1, 0,0), {root: true});
+					break;
+				}
+				case 38: {
+					dispatch('models/applyToModel', AT3D.translation(0, 1,0), {root: true});
+					break;
+				}
+				case 39: {
+					dispatch('models/applyToModel', AT3D.translation(1, 0,0), {root: true});
+					break;
+				}
+				case 40: {
+					dispatch('models/applyToModel', AT3D.translation(0, -1,0), {root: true});
+					break;
+				}
+				case 33: {
+					dispatch('models/applyToModel', AT3D.translation(0, 0,-1), {root: true});
+					break;
+				}
+				case 34: {
+					dispatch('models/applyToModel', AT3D.translation(0, 0,1), {root: true});
+					break;
+				}
+
 				default: {
 					break
 				}
 			}
-		} else if (rootState.scene.type === typesOfScene.SCENE2D) {
+		} else if (rootState.scene.type === typesOfScene.SCENE_2D) {
 			switch (e.keyCode) {
 				case 37: {
 					dispatch('models/applyToModel', AT2D.translation(-1, 0), {root: true});

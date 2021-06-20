@@ -1,35 +1,27 @@
 <template>
     <div>
         <h3>Points</h3>
-        <div class="rowFlex">
-            <div class="row-fix-width">
-                <p>x</p>
-                <p v-for="item in model.x">{{ item.toFixed(2) }}</p>
-            </div>
-            <div class="row-fix-width">
-                <p>y</p>
-                <p v-for="item in model.y">{{ item.toFixed(2) }}</p>
-            </div>
-            <div class="row-fix-width">
-                <p>z</p>
-                <p v-for="item in model.z">{{ item.toFixed(2) }}</p>
-            </div>
-            <div class="row-fix-width">
-                <p>h</p>
-                <p v-for="item in model.h">{{ item.toFixed(3) }}</p>
-            </div>
-            <div class="row-fix-width">
-                <p>A</p>
-                <p v-for="(item, index) in model.x">
+        <div class="points-grid">
+            <p>x</p>
+            <p>y</p>
+            <p>z</p>
+            <p>h</p>
+            <p>A</p>
+            <template  v-for="(item, index) in model.x">
+                <p>{{ model.x[index].toFixed(2) }}</p>
+                <p>{{ model.y[index].toFixed(2) }}</p>
+                <p>{{ model.z[index].toFixed(2) }}</p>
+                <p>{{ model.h[index] ? model.h[index].toFixed(2) : '-' }}</p>
+                <p>
                     <at-button type="error" icon="icon-trash-2" circle size="smaller" title="Remove" @click="removePointInModel(index)"/>
                 </p>
-            </div>
+            </template>
         </div>
         <div class="rowFlex">
-            <input-custom v-model="p.x"/>
-            <input-custom v-model="p.y"/>
-            <input-custom v-model="p.z"/>
-<!--            <at-button type="primary" size="small" @click="addPointFromInput">Add</at-button>-->
+            <InputCustom v-model="p.x"/>
+            <InputCustom v-model="p.y"/>
+            <InputCustom v-model="p.z"/>
+            <at-button type="primary" size="small" @click="addPointFromInput">Add</at-button>
         </div>
     </div>
 </template>
@@ -46,9 +38,9 @@
         data () {
 			return {
 				p: {
-					x: null,
-                    y: null,
-					z: null
+					x: 0,
+                    y: 0,
+					z: 0
                 }
             }
         },
@@ -63,12 +55,23 @@
         },
         methods: {
 			...mapActions('models', [
-				'removePointInModel'
-            ])
+				'removePointInModel',
+                'addPoint'
+            ]),
+            addPointFromInput: function () {
+                this.addPoint({
+                    x: parseFloat(this.p.x),
+                    y: parseFloat(this.p.y),
+                    z: parseFloat(this.p.z),
+                })
+            }
         }
 	}
 </script>
 
-<style scoped>
-
+<style lang="less">
+ .points-grid {
+     display: grid;
+     grid-template-columns: repeat(5, 1fr);
+ }
 </style>

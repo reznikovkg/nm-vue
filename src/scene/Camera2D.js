@@ -1,23 +1,29 @@
 import typesOfScene from "./typesOfScene";
+import { GPU } from 'gpu.js';
 
-export default class Camera2D {
+class Camera2D {
 
     constructor(canvas = null) {
         this.canvas = canvas;
-        this.setSizeCanvas();
+        this.setSizeCanvas({
+            width: 720,
+            height: 360,
+        });
+
+        this.polygons = [];
 
         if (canvas) {
             this.ctx = this.canvas.getContext("2d");
         }
 
         this.center = {
-            x: document.body.clientWidth/2,
-            y: document.body.clientHeight/2
+            x: this.field.width/2,
+            y: this.field.height/2
         };
 
         this.scale = {
-            px: 50,
-            py: 50
+            px: 10,
+            py: 10
         };
 
         this.drag = {
@@ -49,6 +55,9 @@ export default class Camera2D {
      */
     clear() {
         this.canvas.getContext("2d").clearRect(0,0,this.field.width,this.field.height);
+        this.ctx.fillStyle = "#FFFFFF";
+        this.ctx.rect(0,0,this.field.width,this.field.height);
+        this.ctx.fill();
     }
 
     /**
@@ -176,6 +185,7 @@ export default class Camera2D {
                 this.ctx.lineTo(i, this.field.height);
             }
             this.ctx.stroke();
+            this.ctx.closePath();
         }
 
 
@@ -195,12 +205,14 @@ export default class Camera2D {
             this.ctx.lineTo(this.field.width, this.center.y);
 
             this.ctx.stroke();
+            this.ctx.closePath();
         }
 
 
         if (this.grid.serifs) {
             this.ctx.beginPath();
             this.ctx.strokeStyle = '#058600';
+            this.ctx.fillStyle = '#888888'
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([]);
 
@@ -275,20 +287,32 @@ export default class Camera2D {
                 }
             }
             this.ctx.stroke();
+            this.ctx.closePath();
         }
     }
 
-    render(models = [], type = typesOfScene.SCENE2D, lights = null) {
+    render(models = [], type = typesOfScene.SCENE_2D, lights = null) {
+        this.polygons = [1];
         lights = models.find((item) => (item.code === "light" && item.show));
         for (let i = 0; i < models.length; i++) {
             if (models[i].type === type) models[i].render(this, lights);
         }
     }
 
+    forceStopPath() {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0,0)
+        this.ctx.lineTo(1,0)
+        this.ctx.lineTo(0,1)
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+
     reRender(models = []) {
         this.clear();
         this.axisPlot();
         this.render(models);
+        this.forceStopPath();
     }
 
     setSizeCanvas(size = null) {
@@ -315,3 +339,6 @@ export default class Camera2D {
         return [this.WorldToScreenX(x), this.WorldToScreenY(y)];
     }
 }
+
+
+export default Camera2D;

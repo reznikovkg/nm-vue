@@ -25,6 +25,12 @@ const getters = {
 	getTypeScene: (state) => {
 		return state.type;
 	},
+	getModeCameraRayTracing: (state) => {
+		return state.camera.rayTracing;
+	},
+	getModeCameraAnimate: (state) => {
+		return state.camera.animateMode;
+	},
 };
 
 const mutations = {
@@ -36,9 +42,9 @@ const mutations = {
 	 */
 	initScene(state, data) {
 		state.type = data.type;
-		if (data.type === typesOfScene.SCENE2D) {
+		if (data.type === typesOfScene.SCENE_2D) {
 			state.camera = new Camera2D(data.canvas);
-		} else if (data.type === typesOfScene.SCENE3D) {
+		} else if (data.type === typesOfScene.SCENE_3D) {
 			state.camera = new Camera3D(data.canvas);
 		}
 	},
@@ -77,10 +83,27 @@ const mutations = {
 	cameraWheelSize(state, e) {
 		state.camera.wheelSize(e);
 	},
+	cameraChangeD(state, e) {
+		state.camera.setDbyE(e);
+	},
+	cameraMoveCameraStart(state, e) {
+		state.camera.moveCameraStart(e);
+	},
+	cameraMoveCameraGo(state, e) {
+		state.camera.moveCameraGo(e);
+	},
+	cameraMoveCameraStop(state, e) {
+		state.camera.moveCameraStop(e);
+	},
 	applyToCamera(state, at) {
 		state.camera.apply(at);
 	},
-
+	cameraToggleRayTracing(state, _state) {
+		state.camera.toggleRayTracing(_state);
+	},
+	cameraToggleAnimateMode(state, { _state, models }) {
+		state.camera.toggleAnimateMode(_state, models);
+	},
 	reBuildCamera(state) {
 		state.build++;
 	}
@@ -120,12 +143,38 @@ const actions = {
 		commit('cameraWheelSize', e);
 		dispatch('reRender');
 	},
+	cameraChangeD({ commit, dispatch }, e) {
+		commit('cameraChangeD', e);
+		dispatch('reRender');
+	},
+	cameraMoveCameraStart ({ commit, dispatch }, e) {
+		commit('cameraMoveCameraStart', e);
+	},
+	cameraMoveCameraGo ({ commit, state, dispatch }, e) {
+		if (state.camera.moveCamera.move) {
+			commit('cameraMoveCameraGo', e);
+			dispatch('reRender');
+		}
+	},
+	cameraMoveCameraStop ({ commit, dispatch }, e) {
+		if (state.camera.moveCamera.move) {
+			commit('cameraMoveCameraStop', e);
+			dispatch('reRender');
+		}
+	},
 	applyToCamera({ commit, dispatch, rootGetters }, at) {
 		if (rootGetters['navigation/getNavigation'].moveCamera.status) {
 			commit('applyToCamera', at);
 			commit('reBuildCamera');
 			dispatch('reRender');
 		}
+	},
+	cameraToggleRayTracing ({ commit, dispatch }, _state) {
+		commit('cameraToggleRayTracing', _state);
+		dispatch('reRender');
+	},
+	cameraToggleAnimateMode ({ commit, dispatch, rootState }, _state) {
+		commit('cameraToggleAnimateMode', { _state, models: rootState.models.models });
 	},
 };
 

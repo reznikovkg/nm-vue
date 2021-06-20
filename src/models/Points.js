@@ -3,8 +3,16 @@ import Matrix from './../math/Matrix';
 import typesOfScene from "./../scene/typesOfScene";
 import typesOfModels from "./../models/typesOfModels";
 import { getArrayWithAllocateCells } from "./../functions/array";
+import PointsForm from './../components/Elements/Forms/Points';
+
+export const CODE = 'points'
+export const NAME = 'Points'
 
 export default class Points extends BaseModel {
+    code = CODE
+    name = NAME
+    formEdit = PointsForm
+
     constructor(
         // x = [], y = [], z = []
         x= [1,2,3,4,5],
@@ -52,7 +60,7 @@ export default class Points extends BaseModel {
     addPoint(x = 0, y = 0, z = 0) {
         this.x.push(x);
         this.y.push(y);
-        this.z.push(z);
+        this.z.push(z || 0);
         this.identity.push(1);
 
         if (this.x.length > 1) {
@@ -142,9 +150,9 @@ export default class Points extends BaseModel {
     }
 
     apply( at ){
-        if (this.type === typesOfScene.SCENE2D) {
+        if (this.type === typesOfScene.SCENE_2D) {
             this.applyAT2D(at);
-        } else if (this.type === typesOfScene.SCENE3D) {
+        } else if (this.type === typesOfScene.SCENE_3D) {
             this.applyAT3D(at);
         }
     }
@@ -157,21 +165,21 @@ export default class Points extends BaseModel {
 
         let ctx = camera.canvas.getContext("2d");
         ctx.beginPath();
-        ctx.strokeStyle = '#107e00';
+        ctx.strokeStyle = this.getColorRGB();
         ctx.setLineDash([]);
         ctx.lineWidth = 3;
         let s = Math.abs(
             camera.ScreenToWorldY(0) -
             camera.ScreenToWorldY(camera.grid.serifsSize)
         );
-        if (this.type === typesOfScene.SCENE2D) {
+        if (this.type === typesOfScene.SCENE_2D) {
             for (let i = 0; i < this.x.length; i++) {
                 camera.moveTo(this.x[i]+(s/2), this.y[i]-(s/2));
                 camera.lineTo(this.x[i]-(s/2), this.y[i]+(s/2));
                 camera.moveTo(this.x[i]+(s/2), this.y[i]+(s/2));
                 camera.lineTo(this.x[i]-(s/2), this.y[i]-(s/2));
             }
-        } else if (this.type === typesOfScene.SCENE3D) {
+        } else if (this.type === typesOfScene.SCENE_3D) {
             for (let i = 0; i < this.x.length; i++) {
                 camera.moveTo(this.x[i]+(s/2), this.y[i], this.z[i]);
                 camera.lineTo(this.x[i]-(s/2), this.y[i], this.z[i]);
@@ -184,6 +192,7 @@ export default class Points extends BaseModel {
             }
         }
         ctx.stroke();
+        ctx.closePath();
     }
 
     getCountPoints() {
@@ -203,5 +212,21 @@ export default class Points extends BaseModel {
         this.y.splice(index, 1);
         this.z.splice(index, 1);
         this.setH();
+    }
+
+    getFirstPoint() {
+        return {
+            x: this.x[0],
+            y: this.y[0],
+            z: this.z[0],
+        }
+    }
+
+    getLastPoint() {
+        return {
+            x: this.x[this.x.length - 1],
+            y: this.y[this.y.length - 1],
+            z: this.z[this.z.length - 1],
+        }
     }
 }

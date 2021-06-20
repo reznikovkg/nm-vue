@@ -1,3 +1,5 @@
+import { GPU } from 'gpu.js';
+
 /**
  * Class Matrix
  * Algebra
@@ -63,9 +65,14 @@ export default class Matrix {
         for (let i = 0; i < strNum; i++) {
             this.cells.push([]);
             for (let j = 0; j < colNum; j++ ) {
-                this.cells[i].push(1);
+                if (i===j) {
+                    this.cells[i].push(1);
+                } else {
+                    this.cells[i].push(0);
+                }
             }
         }
+
     }
 
     /**
@@ -183,6 +190,30 @@ export default class Matrix {
 
         var m = new Matrix();
         m.AllocateCells(this.getStrNum(), matrix.getColNum());
+
+
+      /**
+       *
+       * @type {GPU<ThreadKernelVariable[]>}
+       */
+      // const gpu = new GPU();
+      // const kernel = gpu.createKernel(function(a, b) {
+      //   const len  = this.constants.len;
+      //
+      //   let cell = 0;
+      //
+      //   for (let k = 0; k < len; k++) {
+      //     cell += a[this.thread.x][k]*b[k][this.thread.y];
+      //   }
+      //   return cell;
+      // })
+      //   .setConstants({
+      //     len: this.getColNum()
+      //   })
+      //   .setOutput([this.cells.length, this.cells[0].length]);
+      //
+      // console.log(kernel(this.cells,matrix.cells));
+
 
         for (let i = 0; i < this.getStrNum(); i++) {
             for (let j = 0; j < matrix.getColNum(); j++)

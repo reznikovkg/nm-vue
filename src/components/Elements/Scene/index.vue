@@ -15,6 +15,8 @@
 <script>
     import { mapGetters, mapActions } from 'vuex';
 	import Navigation from "./../Navigation";
+    import typesOfModels from "../../../models/typesOfModels";
+    import * as AT3D from "@/scene/AffineTransform3D";
 
 	export default {
 		name: "Scene",
@@ -36,6 +38,7 @@
 		created: function() {
 			document.addEventListener('keydown', this.keyPress, false);
 			document.addEventListener('keypress', this.keyPress, false);
+
 		},
 		destroyed: function() {
 			document.removeEventListener('keydown', this.keyPress, false);
@@ -47,16 +50,25 @@
 				type: this.type
 			});
 			window.addEventListener(`resize`, event => {
-				this.setSizeCanvas();
 				this.reRender();
 			}, false);
 		},
-		methods: {
+        beforeDestroy() {
+            clearInterval(this.interval)
+		    this.interval = null
+        },
+        methods: {
 			...mapActions('scene', [
 				'initScene',
 				'setSizeCanvas',
 				'reRender',
+                'cameraToggleRayTracing',
 			]),
+            ...mapActions('models', [
+                'addModel',
+                'toggleShowModel',
+                'applyToModel'
+            ]),
 			...mapActions('navigation', [
 				'mouseDown',
 				'mouseDrag',
@@ -76,8 +88,7 @@
 			},
 			canvasMouseWheel: function (e) {
 				this.mouseWheel(e);
-			},
-
+			}
 		}
 	}
 </script>

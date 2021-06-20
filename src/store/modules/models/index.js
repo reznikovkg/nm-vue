@@ -1,24 +1,33 @@
 import typesOfModels from "../../../models/typesOfModels";
 import typesOfScene from "../../../scene/typesOfScene";
 import Points from "../../../models/Points";
+import Sphere from "../../../models/3d/Sphere";
+import Light from "../../../models/3d/Light";
 
 import base from "./includes/base";
 import objectScene from "./includes/objectScene";
 import kinematic from "./includes/kinematic";
+import light from "./includes/light";
+import sphere from "./includes/sphere";
+import * as AT3D from "@/scene/AffineTransform3D";
+
 
 const state = {
 	models: [
-		(new Points()).setDefaultParams(typesOfModels[typesOfScene.SCENE2D].points, typesOfScene.SCENE2D)
+		new Points().setTypeForce(typesOfScene.SCENE_2D),
+		new Points().setTypeForce(typesOfScene.SCENE_3D),
+		new Sphere(),
+		new Light(),
 	],
-	activeModel: null,
-
-	buildCount: 0
+	activeModelHash: null,
 };
 
 const getters = {
 	...base.getters,
 	...objectScene.getters,
 	...kinematic.getters,
+	...light.getters,
+	...sphere.getters,
 
 	getLights:(state, getters, rootState) => {
 		return state.models;
@@ -26,33 +35,14 @@ const getters = {
 	getChoiceTypeModel: (state, getters, rootState) => {
 		return state.choiceTypeModel;
 	},
-	getFormOfModel: (state, getters, rootState) => {
-		if (state.models[state.indexActiveModel].form) {
-			return state.models[state.indexActiveModel].form.model;
-		} else {
-			return null
-		}
-	},
-	getGuideOfModel: (state, getters, rootState) => {
-		if (state.models[state.indexActiveModel].guide) {
-			return state.models[state.indexActiveModel].guide.model;
-		} else {
-			return null
-		}
-	},
-	getChildModel: (state, getters, rootState) => {
-		return state.models[state.indexActiveModel].childModel;
-		// if (state.models[state.indexActiveModel].childModel) {
-		// } else {
-		// 	return null
-		// }
-	},
 };
 
 const mutations = {
 	...base.mutations,
 	...objectScene.mutations,
 	...kinematic.mutations,
+	...light.mutations,
+	...sphere.mutations,
 
 	/**
 	 * STATUS: DONE
@@ -61,69 +51,33 @@ const mutations = {
 	 * @param point
 	 */
 	addPointToActiveModel(state, point) {
-		state.activeModel.addPoint(
+		state.models.find(item => item.hash === state.activeModelHash).addPoint(
 			point.x,
-			point.y
+			point.y,
+			point.z
 		);
 	},
 	setChoiceTypeModel(state, t) {
 		state.choiceTypeModel = t;
 	},
-
-	setGuideOfModel(state, model) {
-		state.models[state.indexActiveModel].setGuide(model);
-	},
-	setFormOfModel(state, model) {
-		state.models[state.indexActiveModel].setForm(model);
-	},
-	setChildModel(state, model) {
-		state.models[state.indexActiveModel].setChildModel(model);
-	},
 	applyToModel(state, at) {
-		state.activeModel.apply(at);
+		state.models.find(item => item.hash === state.activeModelHash).apply(at);
 	},
-
-
 	setPointsOfModel(state, points) {
-		state.activeModel.setPoints(points);
+		state.models.find(item => item.hash === state.activeModelHash).setPoints(points);
 	},
-
-
 	removePointInModel(state, index) {
-		state.models[state.indexActiveModel].removePoint(index);
+		state.models.find(item => item.hash === state.activeModelHash).removePoint(index);
 	},
-
-	setCountOfPoints(state, count) {
-		if (count <= 500)
-		state.models[state.indexActiveModel].setCountPoints(count);
-	},
-
-
-
-
 };
 
 const actions = {
 	...base.actions,
 	...objectScene.actions,
 	...kinematic.actions,
+	...light.actions,
+	...sphere.actions,
 
-	/**
-	 * STATUS: DONE
-	 *
-	 * @param commit
-	 * @param state
-	 * @param rootState
-	 * @param dispatch
-	 * @param e
-	 */
-	createModel({ commit, state, rootState, dispatch }, classObject) {
-		//TODO write default params of models to model
-		let model = new classObject.class();
-		model.setDefaultParams(classObject, rootState.scene.type);
-		commit('addModel', model);
-		dispatch('scene/reRender', null, { root: true });
-	},
 	/**
 	 * STATUS: DONE
 	 *
@@ -139,6 +93,10 @@ const actions = {
 		});
 		dispatch('scene/reRender', null, { root: true });
 	},
+	addPoint({ commit, rootState, dispatch }, point) {
+		commit('addPointToActiveModel', point);
+		dispatch('scene/reRender', null, { root: true });
+	},
 	setChoiceTypeModel({ commit, state }, typeModel) {
 		commit('setChoiceTypeModel', typeModel);
 	},
@@ -147,14 +105,6 @@ const actions = {
 	},
 
 
-	setGuideOfModel({ commit, dispatch }, model) {
-		commit('setGuideOfModel', model);
-		dispatch('scene/reRender', null, { root: true });
-	},
-	setFormOfModel({ commit, dispatch }, model) {
-		commit('setFormOfModel', model);
-		dispatch('scene/reRender', null, { root: true });
-	},
 	setChildModel({ commit, dispatch }, model) {
 		commit('setChildModel', model);
 		commit('resetIndexActiveModel');
@@ -165,8 +115,8 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
-	applyToModel({ state, commit, dispatch }, at) {
-		if (state.activeModel) commit('applyToModel', at);
+	applyToModel({ state, commit, dispatch, getters }, at) {
+		if (getters.getActiveModel) commit('applyToModel', at);
 		dispatch('scene/reRender', null, { root: true });
 	},
 
@@ -176,16 +126,39 @@ const actions = {
 		dispatch('scene/reRender', null, { root: true });
 	},
 
-	setCountOfPoints({commit, dispatch}, index) {
-		commit('setCountOfPoints', index);
+
+
+	activeModelAddComboPointsStart({ commit, rootState, dispatch }, e) {
+		commit('addPointToActiveModel', {
+			x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+			y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		});
 		dispatch('scene/reRender', null, { root: true });
 	},
 
+	activeModelAddComboPointsDrag({state, commit, rootState, dispatch }, e) {
+		const model = state.models.find(item => item.hash === state.activeModelHash)
+		const point = model.getLastPoint();
+
+		const newPoint = {
+			x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+			y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		}
+
+		if (newPoint.x - point.x > 1) {
+			commit('addPointToActiveModel', newPoint);
+			dispatch('scene/reRender', null, { root: true });
+		}
+	},
 
 
-
-
-
+	activeModelAddComboPointsStop({ commit, rootState, dispatch }, e) {
+		// commit('addPointToActiveModel', {
+		// 	x: rootState.scene.camera.ScreenToWorldX(e.clientX),
+		// 	y: rootState.scene.camera.ScreenToWorldY(e.clientY)
+		// });
+		dispatch('scene/reRender', null, { root: true });
+	},
 
 
 

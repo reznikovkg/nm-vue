@@ -4,6 +4,21 @@ import Matrix from './../math/Matrix';
 import Camera2D from './Camera2D';
 import * as AT3D from './AffineTransform3D';
 import typesOfScene from "./typesOfScene";
+import {getMatrixToTransformPoint2D} from "@/math/AnalitycGeometry";
+import {VectorCombine,LengthFPTP} from "@/scene/fKernel";
+import {GPU} from "gpu.js";
+import lodash from 'lodash'
+
+import Light, { CODE as Light_CODE } from "@/models/3d/Light";
+
+import RayTracing from './render/RayTracing';
+
+export const defaultParamsCamera = {
+    vOv: new Vector([0,0,0]),
+    vT: new Vector([0,1,0]),
+    vN: new Vector([0,0,1]),
+    d: 100
+}
 
 export default class Camera3D extends Camera2D {
 
@@ -12,9 +27,8 @@ export default class Camera3D extends Camera2D {
 
         this.vOv = new Vector([0,0,0]);
         this.vT = new Vector([0,1,0]);
-        this.vN = new Vector([-1,1,1]);
-        console.log(this.vN)
-        this.d = 30;
+        this.vN = new Vector([0,0,1]);
+        this.d = 100;
 
         this.updateCamera();
 
@@ -24,7 +38,28 @@ export default class Camera3D extends Camera2D {
             y: this.drag.y
 
         }
+
+        // this.sizeOfPixel = 100.01;
+
+        this.rayTracing = false;
+
+        this.animateMode = false;
+        this.animateModeInterval = null;
+        this.animateFramerate = 24;
+        this.animateActiveFrame = 0;
+
+        this.timeRendering = 0
+        this.timeRenderingLog = []
+
+        this.reRender = lodash.throttle(this.reRender, 1000/this.animateFramerate)
     }
+
+    destroy() {
+        clearInterval(this.animateModeInterval)
+        this.animateModeInterval = null;
+        this.isRender = false;
+    }
+
 
 
 
@@ -71,12 +106,23 @@ export default class Camera3D extends Camera2D {
     }
 
     updateCamera() {
+        // const d1X = this.ScreenToWorldX(0);
+        // const d1Y = this.ScreenToWorldY(0);
+        //
+        // const d2X = this.ScreenToWorldX(2);
+        // const d2Y = this.ScreenToWorldY(0);
+        //
+        // this.sizeOfPixel = Math.sqrt((d2X-d1X) * (d2X-d1X) + (d2Y-d1Y) * (d2Y-d1Y));
+
         this.worldToView = null;
         this.viewToProject = null;
         this.worldToProject = null;
 
         this.vK = this.vN.divWith(this.vN.norma(), true);
-        this.vI = (this.vT.scalarWith(this.vN,true)).divWith((this.vT.scalarWith(this.vN,true)).norma(), true);
+        this.vI = (this.vT.scalarWith(this.vN,true)).divWith(
+          (this.vT.scalarWith(this.vN,true)).norma(),
+          true
+        );
         this.vJ = this.vK.scalarWith(this.vI,true);
 
         this.worldToViewF();
@@ -93,16 +139,18 @@ export default class Camera3D extends Camera2D {
         this.moveCamera.x = x;
     }
 
+
     moveCameraGo(e) {
         if (this.moveCamera.move) {
 
             let n = this.vN.cells;
             let t = this.vT.cells;
+            let ov = this.vOv.cells;
             let mat = new Matrix([
-                [ n[0], t[0] ],
-                [ n[1], t[1] ],
-                [ n[2], t[2] ],
-                [ 1, 1 ]
+                [ n[0], t[0], ov[0] ],
+                [ n[1], t[1], ov[1] ],
+                [ n[2], t[2], ov[2] ],
+                [ 1, 1, 1 ]
             ]);
 
             let x = e.clientX;
@@ -146,18 +194,109 @@ export default class Camera3D extends Camera2D {
         }
     }
 
+    setDbyE(e) {
+        let k = 1;
+        if (e.deltaY < 0) { k = 1.1; } else { k = 0.9; }
+
+        if (this.d * k > 0) {
+            this.d *= k;
+        }
+
+        if ((this.scale.px * k > 0) && (this.scale.py * k > 0)) {
+            this.scale.px *= k;
+            this.scale.py *= k;
+        }
+    }
+
     moveCameraStop() {
         this.moveCamera.move = false;
         this.updateCamera();
     }
 
+    toggleRayTracing(_state = !this.rayTracing) {
+        this.rayTracing = _state;
+    }
+
+    /**
+     * Polygon [ point1, point2, ...]
+     * Options []
+     *
+     * @param polygon
+     * @param options
+     */
+    addPolygon(polygon, options) {
+        if (polygon.length === 3) {
+            polygon[3] = options;
+            this.polygons[0].push(polygon)
+        } else if (polygon.length === 4) {
+            this.polygons[0].push([
+                polygon[0],
+                polygon[1],
+                polygon[3],
+                options
+            ])
+            this.polygons[0].push([
+                polygon[1],
+                polygon[2],
+                polygon[3],
+                options
+            ])
+        }
+    }
+
+    /**
+     *
+     * @param light
+     */
+    addLigth(light) {
+        this.lights[0].push([
+            light.getPosition(),
+            light.cLight,
+            light.cDark,
+            [light.power, 0, 0]
+        ]);
+    }
+
+    render(models = [], type = typesOfScene.SCENE_3D, lights = null) {
+        this.timeRendering = new Date().getTime();
+        const d1X = this.ScreenToWorldX(0);
+        const d1Y = this.ScreenToWorldY(0);
+
+        const d2X = this.ScreenToWorldX(0.5);
+        const d2Y = this.ScreenToWorldY(0);
+
+        this.sizeOfPixel = Math.sqrt((d2X-d1X) * (d2X-d1X) + (d2Y-d1Y) * (d2Y-d1Y));
+
+
+        this.polygons = [ [ ] ];
+        this.lights = [ [ ] ];
+
+        const lightsF = models.filter((item) => (item.code === Light_CODE && item.show));
+        if (lightsF) lightsF.forEach((item) => { this.addLigth(item) })
+
+        for (let i = 0; i < models.length; i++) {
+            if (models[i].type === type) models[i].render(this);
+        }
+
+        // console.log(this.polygons)
+        try {
+            if (this.rayTracing) {
+                RayTracing.call(this)
+            } else {
+
+            }
+        } catch (e) {
+            console.log(e)
+            this.destroy()
+        }
+    }
 
     reRender(models = []) {
+        if (this.isRender) return;
 
-        console.log(this.vN)
-        this.clear();
-        this.axisPlot3D();
-        this.render(models, typesOfScene.SCENE3D);
+        if (!this.rayTracing) this.clear();
+        if (!this.rayTracing) this.axisPlot3D();
+        this.render(models, typesOfScene.SCENE_3D);
     }
 
     axisPlot3D () {
@@ -172,6 +311,7 @@ export default class Camera3D extends Camera2D {
         this.moveTo(0,0,0);
         this.lineTo(1,0,0);
         this.ctx.stroke();
+        this.ctx.closePath();
         /**
          * axis Y
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
@@ -183,6 +323,7 @@ export default class Camera3D extends Camera2D {
         this.moveTo(0,0,0);
         this.lineTo(0,1,0);
         this.ctx.stroke();
+        this.ctx.closePath();
         /**
          * axis Z
          * @type {CanvasRenderingContext2D | WebGLRenderingContext}
@@ -194,6 +335,7 @@ export default class Camera3D extends Camera2D {
         this.moveTo(0,0,0);
         this.lineTo(0,0,1);
         this.ctx.stroke();
+        this.ctx.closePath();
     }
 
     moveTo(x, y, z) {
@@ -231,4 +373,26 @@ export default class Camera3D extends Camera2D {
 
         this.updateCamera();
     }
+
+
+    // ANIMATIONS
+    toggleAnimateMode(_state = !this.animateMode, models = []) {
+        this.animateMode = _state;
+        if (this.animateMode) {
+            this.animateModeInterval = setInterval(() => {
+                this.nextFrame();
+                this.reRender(models);
+            }, 1000/this.animateFramerate)
+        } else {
+            clearInterval(this.animateModeInterval)
+            this.animateModeInterval = null;
+        }
+    }
+
+    nextFrame() {
+        this.animateActiveFrame++;
+        if (this.animateActiveFrame >= this.animateFramerate) this.animateActiveFrame = 0;
+    }
+
+
 }

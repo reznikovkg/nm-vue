@@ -1,6 +1,7 @@
 <template>
     <div>
-        <at-input v-model="text" placeholder="Please input"></at-input>
+        {{ title }}
+        <at-input v-model="text" placeholder="Please input" @change="setValue"></at-input>
         <!--<input type="text" class="input-float-type" v-model="text">-->
     </div>
 </template>
@@ -18,25 +19,16 @@
             event: 'change'
         },
         props: {
-            value: Number
+            value: Number,
+            title: String
+        },
+        mounted() {
+            this.text = this.value.toString()
         },
         methods: {
-            setValue: function () {
-                this.$emit('change', Number(this.text));
+            setValue: function (v) {
+                this.$emit('change', Number(v));
             }
-        },
-        watch: {
-            'text': {
-                handler: function () {
-                    this.setValue();
-                }
-            },
-            'value': {
-                handler: function () {
-                    this.text = String(this.value);
-                }
-            },
-
         }
     }
 </script>

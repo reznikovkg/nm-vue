@@ -1,10 +1,10 @@
 <template>
     <div>
-        <router-link :to="{ name: 'Scene3D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE2D">
+        <router-link :to="{ name: 'Scene3D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE_2D">
             <at-button type="primary" size="large" icon="icon-box" circle/>
         </router-link>
 
-        <router-link :to="{ name: 'Scene2D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE3D">
+        <router-link :to="{ name: 'Scene2D' }" tag="div" class="openScene3D" v-if="getTypeScene === typesOfSceneShow.SCENE_3D">
             <at-button type="primary" size="large" icon="icon-square" circle/>
         </router-link>
 
@@ -42,8 +42,43 @@
     <!--                    </at-select>-->
                         <div class="nav-tab-new-models-list">
                             <div v-for="(type, index) in typesOfModelsShow" class="nav-tab-new-models-item">
-                                <at-button  type="primary" icon="icon-plus" @click="createNewModel(type)">{{ type.name }}</at-button>
+                                <at-button  type="primary" icon="icon-plus" @click="createNewModel(type)">{{ getNameOfModel(index) }}</at-button>
                             </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div v-if="scene === typesOfSceneShow.SCENE_3D" class="nav-tab">
+                        <h3>Settings:</h3>
+                        <hr>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}"
+                                icon="icon-done"
+                                @click="toggleRT">Toggle Ray Tracing</at-button>
+                        </div>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraAnimate}" icon="icon-done" @click="toggleAM">Toggle Animate Mode</at-button>
+                        </div>
+                    </div>
+                    <div v-if="scene === typesOfSceneShow.SCENE_3D" class="nav-tab">
+                        <h3>Statistics:</h3>
+                        <hr>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}"
+                                icon="icon-done"
+                                @click="rerendering">Rerendering</at-button>
+                        </div>
+                        <div class="nav-tab-new-models-list">
+                            <at-button
+                                :class="{ 'at-btn--primary': getModeCameraRayTracing}"
+                                icon="icon-done"
+                                @click="printTimeLogs">Print Time Logs</at-button>
+                        </div>
+                        <div class="nav-tab-new-models-list left">
+                            Polygons: {{ getPolygons }} <br>
+                            TimeRendering: {{ getTimeRendering }}
                         </div>
                     </div>
                 </div>
@@ -72,12 +107,15 @@
         props: {
 			scene: {
 				type: String,
-                default: typesOfScene.SCENE2D
+                default: typesOfScene.SCENE_2D
             }
         },
         computed: {
 			...mapGetters('scene', [
-				'getTypeScene'
+				'getTypeScene',
+                'getCamera',
+                'getModeCameraRayTracing',
+                'getModeCameraAnimate'
 			]),
 			...mapGetters('navigation', [
 				'getMainMenuShow',
@@ -93,6 +131,12 @@
 			typesOfSceneShow: function () {
 				return typesOfScene;
 			},
+            getPolygons: function () {
+                return this.getCamera.polygons[0] && this.getCamera.polygons[0].length
+            },
+            getTimeRendering: function () {
+                return this.getCamera.timeRendering
+            }
         },
         methods: {
 			...mapActions('navigation', [
@@ -100,11 +144,33 @@
                 'choiceNavigation'
 			]),
 			...mapActions('models', [
-				'createModel',
+				'addModel',
 			]),
-            createNewModel: function (model) {
-                this.createModel(model);
-			}
+            ...mapActions('scene', [
+                'cameraToggleRayTracing',
+                'cameraToggleAnimateMode',
+                'reRender'
+            ]),
+            getNameOfModel: function (typeIndex) {
+                return this.typesOfModelsShow[typeIndex].name
+            },
+            createNewModel: function (modelClass) {
+			    const model = new modelClass.class();
+			    if (!model.type) model.setTypeForce(this.getTypeScene)
+                this.addModel(model);
+			},
+            toggleRT: function () {
+			    this.cameraToggleRayTracing()
+            },
+            toggleAM: function () {
+                this.cameraToggleAnimateMode()
+            },
+            rerendering: function () {
+                this.reRender()
+            },
+            printTimeLogs: function () {
+                console.log(this.getCamera.timeRenderingLog)
+            },
         }
 	}
 </script>
@@ -136,6 +202,15 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+
+        margin-bottom: 5px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &.left {
+            align-items: flex-start;
+        }
     }
 
     .nav-tab-new-models-item {

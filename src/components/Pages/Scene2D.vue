@@ -15,7 +15,7 @@
         },
         computed: {
         	typesOfScene2d: function () {
-                return typesOfScene.SCENE2D;
+                return typesOfScene.SCENE_2D;
 			}
         }
     }

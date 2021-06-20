@@ -12,6 +12,7 @@
 	import { mapGetters, mapActions } from 'vuex';
 	import typesOfScene from "../../../../scene/typesOfScene";
 	import typesOfModels from "../../../../models/typesOfModels";
+    import Points, { CODE as Points_CODE } from "@/models/Points";
 
 	export default {
 		name: "Spline",
@@ -27,7 +28,7 @@
                 'getModelByHash'
 			]),
 			getModelsForChoice: function () {
-				return this.getModels.filter((item) => (item.code === typesOfModels[typesOfScene.SCENE2D].points.code))
+				return this.getModels.filter((item) => (item.code === Points_CODE))
 			},
 			points: {
 				get() {
