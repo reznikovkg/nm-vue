@@ -32,6 +32,14 @@
                         {{ modelChoice.name }}
                     </at-option>
                 </at-select>
+                <div>
+                    Count:
+                    <InputCustom v-model="animationFramesCount"/>
+                </div>
+                <div>
+                    Param:
+                    <at-input v-model="animationFramesParam" placeholder="Please input"></at-input>
+                </div>
             </div>
         </div>
     </div>
@@ -43,10 +51,11 @@
     import { mapGetters, mapActions } from 'vuex';
     import {Animations} from "@/scene/Animations";
     import ColorPicker from "@/components/Elements/Forms/Elements/ColorPicker";
+    import InputCustom from "@/components/Elements/Forms/Elements/InputCustom";
 
 	export default {
 		name: "ModelPreview",
-        components: {ColorPicker},
+        components: {InputCustom, ColorPicker},
         props: {
 			model: {
 				type: Object,
@@ -81,7 +90,23 @@
                 set(v) {
                     this.setColor(v)
                 }
-            }
+            },
+            animationFramesCount: {
+                get() {
+                    return this.model.animationFramesCount;
+                },
+                set(animationFramesCount) {
+                    this.setAnimationFramesCount({ animationFramesCount: parseInt(animationFramesCount), hash: this.model.hash })
+                }
+            },
+            animationFramesParam: {
+                get() {
+                    return this.model.animationFramesParam;
+                },
+                set(animationFramesParam) {
+                    this.setAnimationFramesParam({ animationFramesParam: animationFramesParam, hash: this.model.hash })
+                }
+            },
         },
         methods: {
 			...mapActions('models', [
@@ -90,7 +115,9 @@
 				'removeModel',
                 'setTitleOfModel',
                 'setAnimationOfModel',
-                'setColor'
+                'setColor',
+                'setAnimationFramesCount',
+                'setAnimationFramesParam'
 			]),
 			choiceModelActive: function () {
 				if (!this.isActive) this.setActiveModel(this.model);

@@ -45,7 +45,7 @@ export default class Camera3D extends Camera2D {
 
         this.animateMode = false;
         this.animateModeInterval = null;
-        this.animateFramerate = 24;
+        this.animateFramerate = 192;
         this.animateActiveFrame = 0;
 
         this.timeRendering = 0
@@ -286,7 +286,8 @@ export default class Camera3D extends Camera2D {
 
             }
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            alert('ACCESS NOT PROVIDED FOR WEBGL');
             this.destroy()
         }
     }

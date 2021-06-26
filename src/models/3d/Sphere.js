@@ -16,12 +16,11 @@ export default class Sphere extends BaseModel {
     constructor() {
         super();
 
-        this.position = new Matrix([[3],[3],[3],[1]]);
-
         this.radius = 10;
         this.segments = 4;
         this.intervals = 4;
-        this.type = TypeModelsByScene.SCENE_3D
+        this.type = TypeModelsByScene.SCENE_3D;
+        this.animateModel = true;
     }
 
     apply(at) {
@@ -31,6 +30,17 @@ export default class Sphere extends BaseModel {
     render(camera) {
         if (!this.show) {
             return;
+        }
+
+        console.log(this.hash, this.animation)
+
+        let matrixResult = this.pivotPosition;
+
+        if (camera.animateMode) {
+            matrixResult = new Matrix();
+            matrixResult.AllocateCells(this.pivotPosition.getStrNum(), this.pivotPosition.getColNum())
+            matrixResult.sumWith(this.pivotPosition);
+            matrixResult.compWithLeft(this.getAnimateFrameAT(camera))
         }
 
         const matForm = new Matrix([
@@ -62,17 +72,17 @@ export default class Sphere extends BaseModel {
             const matP1 = new Matrix();
             matP1.setMatrixForce(oldMatForm);
             matP1.compWithLeft(AT3D.translation(
-                this.pivotPosition.cells[0][0],
-                this.pivotPosition.cells[1][0],
-                this.pivotPosition.cells[2][0],
+              matrixResult.cells[0][0],
+              matrixResult.cells[1][0],
+              matrixResult.cells[2][0],
             ));
 
             const matP2 = new Matrix();
             matP2.setMatrixForce(matForm);
             matP2.compWithLeft(AT3D.translation(
-                this.pivotPosition.cells[0][0],
-                this.pivotPosition.cells[1][0],
-                this.pivotPosition.cells[2][0],
+              matrixResult.cells[0][0],
+              matrixResult.cells[1][0],
+              matrixResult.cells[2][0],
             ));
 
             for (let j = 0; j < matP1.getColNum() - 1; j++) {
@@ -105,14 +115,6 @@ export default class Sphere extends BaseModel {
     }
 
 
-    getPosition() {
-        return [
-            this.position.cells[0][0],
-            this.position.cells[1][0],
-            this.position.cells[2][0],
-        ]
-    }
-
     setRadius(v) {
         this.radius = v;
     }
@@ -122,5 +124,4 @@ export default class Sphere extends BaseModel {
     setSegments(v) {
         this.segments = v;
     }
-
 }

@@ -53,6 +53,12 @@ export const mutations = {
 	setAnimationOfModel(state, animate) {
 		state.models.find(item => item.hash === state.activeModelHash).setAnimationOfModel(animate);
 	},
+	setAnimationFramesCount(state, animate) {
+		state.models.find(item => item.hash === state.activeModelHash).setAnimationFramesCount(animate.animationFramesCount);
+	},
+	setAnimationFramesParam(state, animate) {
+		state.models.find(item => item.hash === state.activeModelHash).setAnimationFramesParam(animate.animationFramesParam);
+	},
 	setColor(state, c) {
 		state.models.find(item => item.hash === state.activeModelHash).setColor(c);
 	},
@@ -85,6 +91,14 @@ export const actions = {
 	},
 	setAnimationOfModel({ commit, dispatch }, params) {
 		commit('setAnimationOfModel', params);
+		dispatch('reBuildModels');
+	},
+	setAnimationFramesCount({ commit, dispatch }, params) {
+		commit('setAnimationFramesCount', params);
+		dispatch('reBuildModels');
+	},
+	setAnimationFramesParam({ commit, dispatch }, params) {
+		commit('setAnimationFramesParam', params);
 		dispatch('reBuildModels');
 	},
 	setColor({ commit, dispatch }, c) {
