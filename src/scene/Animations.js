@@ -19,7 +19,7 @@ export const Animations = [
       new ScalingAT3D(1.4,1.4,1.4),
       new ScalingAT3D(1.2,1.2,1.2),
       new ScalingAT3D(1,1,1),
-    ]
+    ],
   },
   {
     name: 'circle1',
@@ -38,5 +38,17 @@ export const Animations = [
       new RotationYDegAT3D(Math.PI*(11/6)),
       new RotationYDegAT3D(Math.PI*2),
     ]
+  },
+  {
+    name: 'circleM',
+    buildFrames: (n, phi) => {
+      let arr = []
+
+      for (let i = 0; i < n; i++) {
+        arr.push(new RotationYDegAT3D(i*phi))
+      }
+
+      return arr;
+    }
   }
 ]
